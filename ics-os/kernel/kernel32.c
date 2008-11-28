@@ -72,6 +72,7 @@ extern void textcolor(unsigned char c);
 #include <stdarg.h>
 #include <limits.h>
 
+#include "version.h"
 #include "dextypes.h"
 #include "process/sync.h"
 #include "stdlib/time.h"
@@ -119,13 +120,6 @@ kernel_sysinfo kernel_systeminfo;
 
 //This stores the current virtual console the kernel will use
 DEX32_DDL_INFO *consoleDDL;
-char *dex32_versionstring="DEX Extensible Operating System, project \"Chameleon\" \
-\nVersion 1.02 build April 9 2004\n \
-Copyright (C) 2004  Joseph Emmanuel DL Dayo\n \
-Developed as a requirement for CMSC 190 at the Institute of Computer Science\n \
-University of the Philippines, Los Baños.\n\n \
-This program is free software; you can redistribute it and/or modify\n \
-it under the terms of the GNU General Public License\n";
 
 void dex_kernel32();
 
