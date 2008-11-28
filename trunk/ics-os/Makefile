@@ -7,7 +7,7 @@ vmdex:
 	make -C kernel/
 
 clean:
-	rm ics-os.img
+	rm ics-os-floppy.img
 	rm vmdex
 	make -C kernel/ clean
 	rm bochslog

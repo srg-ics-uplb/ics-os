@@ -270,6 +270,9 @@ void dex32_startup()
 
     //Display some output for introductory purposes :)
     clrscr();
+    printf(KERNEL_NAME);;
+    printf(KERNEL_VERSION);;
+/*
     textbackground(BLUE);
     textcolor(YELLOW);
     printf("DEX");
@@ -283,7 +286,7 @@ void dex32_startup()
     printf("it under the terms of the GNU General Public License\n");
     printf("======================================================================\n");
     printf("dex32_startup(): Welcome! starting up the DEX Operating System.\n");
-
+*/
     /*show parameter information sent by the multiboot compliant bootloader.*/
     printf("dex32_startup(): Bootloader name : %s\n", mbhdr->boot_loader_name);
     printf("dex32_startup(): Memory size: %d KB\n",memamount/1024);
