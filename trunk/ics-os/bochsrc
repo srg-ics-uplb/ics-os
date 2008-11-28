@@ -14,8 +14,7 @@ display_library: x
 # we want a floppy drive(called a), the disk image that we are using is called "1.44"
 #floppya: 1_44=/home/jach/dex-os-1.0/dex-os.img, status=inserted
 #floppya: 1_44=/home/jach/disk.img, status=inserted
-floppya: 1_44=ics-os.img, status=inserted
-floppyb: 1_44=grub-floppy.img, status=inserted
+floppya: 1_44=ics-os-floppy.img, status=inserted
 
 # choose the boot disk.
 boot: floppy
