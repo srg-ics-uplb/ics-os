@@ -1,0 +1,3 @@
+1. Extract the distribution tar.gz file.
+2. make install #as root
+3. make disk #after inserting floppy

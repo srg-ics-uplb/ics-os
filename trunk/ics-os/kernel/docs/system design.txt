@@ -1,0 +1,150 @@
+===============================================================================
+       DESIGN AND IMPLEMENTATION OF THE DEX EXTENSIBLE OPERATING SYSTEM
+Author: Joseph Emmanuel DL Dayo
+Version: 1.0
+Date: 4-3-2004
+===============================================================================
+
+	Much of the design of the operating system is based on the UNIX model although some features were taken from other operating systems like DOS and Microsoft Windows. Like Windows NT and VMS, modules in the operating system is based on a layered approach. The benefit of a layered approach is that any modification in any of the layers would not affect the other layers. This would enable the users to easily modify parts of the operating system.  But a major difference in the DEX design is that it also uses a 3-dimensional layering approach as discussed by Netinant, Constantinides et. al. in their paper on operating systems design using Aspect-Oriented Frameworks. 
+ 
+
+	The component layer is the layer that provides core operating system functionality and is most similar to the traditional UNIX model as well as most other operating systems. The actual components of this layer will be discussed in the succeeding sections.
+
+	The Aspect layer, as introduced by the AOP approach, consists of modules that have crosscutting concerns like process synchronization, debugging, and inter-module communication. An important characteristic of the modules in this layer is that they are used in one way or another in the component layer as a form of crosscutting concern.
+
+	Finally, the Interface layer is the layer that separates user mode programs from the other layers. The application programs interface (API) reside in this layer.
+
+	In keeping up with the educational nature of DEX, most of the algorithms used in this operating system is as simple as possible, therefore not all algorithms used is the most optimal for the given circumstances. Nevertheless, this lacking of optimal algorithms would actually present challenges for the users and could actually be part of exercises in laboratories. Also, simplicity of algorithms actually presents an additional benefit with regards to the extensibility feature of DEX.
+
+COMPONENT LAYER
+
+	The DEX component layer is the lowest of all the layers and is divided into four main modules each having its own distinct function. These basically are the:
+
+(1)	Memory Manager
+(2)	Device Manager
+(3)	Process Manager 
+(4)	Virtual File System 
+
+	There are only two privilege levels implemented in the operating system, these are the system/ supervisor level and user level. Processes running with supervisor privileges are capable of accessing any memory region, accessing any port as well as using CPU instructions that require system privileges. Processes with user privilege levels on the other hand are only allowed to access its’ own assigned memory region and is not capable of using CPU instructions that require system privileges. Operating System services needed by user processes are provided by means of system calls and is accessed by invoking interrupt 0x30h.
+ 
+MEMORY MANAGER
+
+	The memory manager is primarily the module responsible for allocating memory to various processes in the Operating system. Like other modern 32-bit operating systems, the DEX Operating System features a flat memory model that supports Paging and Virtual Memory. The memory manager is composed of various independent parts, mainly the low-level memory manager, high-level memory manager and the virtual memory manager. 
+
+	The low-level memory manager provides device dependent functions essential for operating in a protected mode 32-bit environment. Examples of functions include selector management, Global Descriptor Table (GDT) and page table management. As a protected mode operating system, the low-level manager provides a means of detecting invalid memory accesses like Page Faults or Protection violations. If a user program causes a fault, it will be terminated. 
+The high-level memory manager provides a direct interface with the other modules and provides important memory allocation functions like malloc and free. The virtual memory manager on the other hand is an extensible module that handles virtual memory management functions like swapping, paging etc.
+
+DEVICE MANAGEMENT
+
+	The device manager system is responsible for device drivers and other low-level hardware functions that the operating system needs. Hardware supported includes the ones most commonly found in IBM-PC systems like the keyboard, text-mode monitors, floppy disk drives and standard IBM-PC components (PIC, TIMER, etc.). Although the device manager is responsible for hardware devices, it also manages the interfaces of other modules in the operating system, most notably the extension modules.
+
+	A registered device or module in the device manager is uniquely identified by a device ID. Devices can be loaded into the device manager by means of a module loader (part I) or it can already be compiled along with the kernel.
+
+PROCESS MANAGER
+
+	The process manager is the module responsible for handling everything that relates to processes in the operating system. This includes scheduling, interprocess communication and process dispatching. Process synchronization on the other hand is managed by the synchronization aspect at the aspect layer.
+DEX-OS is a multitasking operating system and has support for Linux-style threads and forks. It has a replaceable scheduler that user programs could modify. Currently it uses a round-robin preemptive scheduling algorithm which is the simplest algorithm to implement for multitasking. Other modules that provide other kinds of scheduling are also available and users could also implement their own algorithms for educational purposes. 
+
+	The module loader is responsible for running programs from the disk and creating processes. The DEX-OS module loader has a built-in support for WIN32 Portable Executable (PE) Format files while there is partial support for Linux Executable and Linkable Format (ELF) and UNIX Common Object File Format (COFF). Although the implementation for ELF and COFF formats are not complete the dispatcher is capable of loading simple executables that do not use external libraries. The module loader could also support additional formats through loadable modules.
+ 
+THE VIRTUAL FILE SYSTEM(VFS)
+
+	The Virtual File System (VFS) serves as a device independent abstraction of the various files found in a computer system. DEX provides a simple VFS that is capable of interfacing with various filesystems although currently the FAT12/32 filesystem is the only one that is supported.  The DEX VFS currently supports basic file operations like create, rename, make directory, delete, copy, append and move. DEX also supports mount operations and is able to utilize other devices like ramdisks and IDE hard drives.
+ 
+
+ASPECT LAYER
+
+	The Aspect Layer handles all cross-cutting modules of the operating system and is composed of two main parts the inter-module communication or bridge and the extensible manager.
+ 
+Inter-Module Communication (Bridge)
+
+The inter-module communication aspect or the bridge manager is responsible for handling the transition from one kernel module to the next. This module is similar to the KEA inter-module communication abstraction called portals (Veitch, 1996). The bridge manager gets called when a module accesses the services of another module. An example of this would be the scheduler and the process manager, when the process manger adds a new process to the process queue using the scheduler’s enqueue() function, the bridge manager gets called. 
+
+	The bridge manager is very useful since it centralizes all synchronization and logging. In fact, all communication between modules can be monitored and is extremely useful for debugging and monitoring the activity of the operating system. The bridge manager also has an important function for the extension manager, which is to prevent access to a module if it is being replaced.
+
+EXTENSIONS MANAGER
+
+ 	The Extensible Modules(s) Manager is responsible for  coordinating and managing extensions to the operating system.
+
+Overview of Extensible Operating Systems
+
+	An extensible operating system is an operating system that lets an application apply certain customization to tailor the operating system’s behavior to the needs of the application. Extensibility allows the operating system to have the maximum flexibility when it comes to executing programs. There are various methods operating systems use to enable such extensions one of these is by using kernel embedded handlers. Kernel embedded handlers are basically user-defined code that was inserted by the operating system into its kernel space. One of the advantages offered by extensible operating systems is the capability of allowing the application to determine what is the best memory management for it. Current research in extensible operating systems focuses on modifying operating system parts safely to ensure that the new extensions will not harm other user programs (Riessen, 1997).
+
+Extensibility Implementation in DEX-OS
+
+	Unlike other extensible operating systems, which aim for performance, DEX-OS uses extensible modules for educational purposes only. Being extensible provides the following advantages:
+
+(1) It allows for software-controlled modification of DEX system modules that makes it more convenient than recompilation.
+
+(2) When creating new scheduling algorithms or other OS algorithms the user is not limited to the programming language of the source code.
+
+(3) Changing an important OS algorithm may not require a system restart.
+
+(4) DEX-OS may provide a degree of exception handling and error catching that might prevent system crashes.
+
+(5) As a side effect, it makes each module more independent of each other, thus improving code encapsulation.
+
+	All of these advantages further make extensibility a viable learning tool for students, Operating System enthusiasts and developers.
+
+	By design DEX-OS keeps track of a table that stores that addresses of the OS functions that are currently active. These OS functions may include the executable module loaders, scheduling algorithms, page replacement algorithms, memory allocators and even device drivers. This table, which is called the extension table, can be modified by user applications by loading extension modules. Extension modules are like ordinary executable modules or application modules only that they are loaded like device drivers and occupy a region of memory that is visible to all processes. Extension modules will be given system privileges (ring 0) to enable them to access any data structure that DEX-OS uses. DEX-OS also keeps track of the default OS functions so that in case a user extension module fails for some reason the operating system may be able to recover by restoring the functions back to the default configuration.
+
+Extensible Module API
+
+	The extensible module API is a subset of the DEX API that handles the registration and removal of extension modules. The API enables applications to determine if a particular OS function or service has already been overridden. Additionally, the API also provides the location of the previous function and the name of the module that owns that function.
+
+Extension Module Specification
+
+	Extension modules are loaded like device drivers and as such they are loaded into the shared memory region located at 0xE0000000h. Upon being loaded, the operating system will call the initialization routine of the module. The extension module is free to perform any task in its initialization routine since it is given system privileges. During the initialization routine, the extension module should call the dex32_override() function in order to register the new functions. The executable format of the extension module may be any format that the module loader can recognize. The dex32_override() function automatically locks the system and prevents other processes from taking control until the override function is complete. Specifically an extensible module goes through the following phases/steps in order for it to integrate itself completely to DEX:
+
+1.	Load Phase – This phase begins when the application or user requests to load an extension module through the DEX API. The API then calls the module loader to read the extension module from the disk into memory. Finally the module loader calls the lib_main() function of the library so that it could initialize itself.
+
+2.	Pre-suspension phase – This phase starts when an application, extension module or user makes a request to activate an extension module. The extension module calls the pre-initialization function of the extension module.
+
+3.	Suspension Phase – After the pre-suspension phase, the extension manager waits to makes sure that no process currently running is using the module that is to be replaced (i.e. if the scheduler is to be replaced, and the scheduler is busy sending the next process to be run, the extension manager must wait for it to finish). The extension manager knows if a module is inside the module to be replaced through the help of the bridge manager. The extension manager will then instruct the bridge manager to suspend all calls to the outgoing module. Next, the extension manager stops multitasking by disabling all hardware interrupts.
+
+4.	Clean-up and override phase – The extension manager calls the clean-up method of the module that will be replaced. The clean-up method of the current module should return the state of the OS data structures it used to its default state. An example of an OS data structure that should be returned to its default state is the process queue. Then the extension manager calls the extension_main() function of the new module. The extension manager may also pass as parameters to the new module information about the data structures it might need (e.g. like the head of the process queue). The kind of information passed differs greatly depending on what kind of module is being replaced.
+
+5.	Resume Phase - The extension manager re-enables all interrupts and resumes normal operating system operation. Finally, the extension manager notifies the user or requesting module of the completion of the operation.
+If there is any failure, the operating system will attempt to return control to the previous module, otherwise if it fails it will then return to the default state.
+
+	It can be observed that in the clean-up phase the module to be replaced should return the system to its default state. The default state is the default structure of the operating systems’ data structures on startup. Since only the structure is important, the outgoing module may leave the contents of the data as it is (although the meaning of the elements in the data structure should be consistent). An example clean-up operation would include returning a multi-level process queue to a single-level process queue that is compatible with the default scheduler.
+
+	The default state is important since it makes it possible for the replacing module to make assumptions about the current state of the system and make modifications to it.
+
+DEBUGGER AND LOGGER MODULE
+
+	The debugger and logger module is an essential part of the kernel since it provides useful information for educational purposes as well as error correction. Additionally the debugger and logger module serves as a convenient way to perform debugging and assess the current condition of various operating system modules.  As an added benefit of the centralized nature of the module, it is easy to modify or override the debugger in a way that the user sees fit. Its link with the bridge manager also enables it to  determine the device id of the module, the particular function being called and the parameters passed to the function.
+
+The Interface Layer and Applications Development
+
+	The interface layer is the layer that links the user mode applications and the operating system. Basically this layer is mainly composed of the DEX API manager and the DEX console services. The DEX API manager provides functions that require services of the modules in the lower layers like file I/O, process creation etc. Like the scheduler, the extension manager can override or customize these modules.
+
+	The DEX API services are accessed through the software interrupt 0x30h. The user can assume that all system calls the API provides are reentrant. Additionally, the DEX API manager has facilities for device drivers to add more system calls as it sees fit. 
+
+	The DEX Console on the other hand is a kernel mode thread that is executed during startup. The DEX console becomes the preliminary user interface until the user decides to use another console application.
+
+MODULE LOADING
+
+	The DEX module loader supports three executable file formats: (1) The WIN32 PE format, (2) the ELF format and, (3) the COFF format. Since the ELF and COFF formats lack descriptors about the stack segment (Linux stacks) the DEX module loader reserves 2 MB of stack space. Additional module loaders can be supported through extension modules.
+
+a .WIN32 PE format
+
+	The WIN32 PE format includes files with a .EXE and .DLL (Dynamic Link Libraries) extension. The DEX operating system has been tested to run programs compiled by Borland C++ 5.0/ 5.5 and DEV-C++ 5.0 using custom standard C libraries. Unfortunately, even with the presence of an entrypoint descriptor (contains the address of the main() function) in the PE file, the module loader requires the programmer to declare an alternate entrypoint by defining an exported function called dex32_main(). This is because of undocumented code added by most compilers. There is limited support for DLLs and dynamic linking since not all kinds of linking is implemented. It should also be noted that DEX does not support WIN32 function calls of any kind, doing so will cause the program commit a page fault exception.
+
+b. LINUX ELF and COFF format
+
+	The ELF and COFF formats can be identified and loaded by the system but there are a few limitations. One of these is that the ELF file must be relocatable (can be moved in memory) or must be statically linked so that the base of the code segment located at 0x400000. Another would be the lack of support of some POSIX calls which would limit the operations that ELF files can perform.
+
+REFERENCES
+----------
+
+Coady, Yvonne, Gregor Kiczales and Michael Feeley. 2000. Exploring an 	Aspect-Oriented Approach to Operating System Code. Department of Computer 	Science, University of British Columbia. 
+
+Riessen, Rolf. 1997.Extensible Operating Systems [Internet]. Available online 
+	at: http://www/cs/unm.edu/~riesen/prop/26.html [Accessed July 20 2003].
+
+Silberschatz, Abraham and Peter Galvin. 1998. Operating System Concepts. Reading, 
+	Massachusetts: Addison-Wesley publishing Company.
+
+Tanenbaum, Andrew S. 1992. Modern Operating Systems. Englewood Cliffs, New Jersey: 	Prentice-Hall Inc.
+
