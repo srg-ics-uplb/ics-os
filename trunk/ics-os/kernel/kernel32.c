@@ -345,8 +345,9 @@ void dex_kernel32()
     //More importantly, interrupts are already operational, which means we can now set up
     //devices that require IRQs like the floppy disk driver 
     textcolor(GREEN);
-    printf("   ------- Welcome! DEX operating system kernel initialized -------\n");
-    printf("   press <spacebar> to skip startup script file ...\n");
+    printf("\n");
+	 printf("\t\t");printf(OS_NAME);printf(" ");printf(OS_VERSION);
+    printf("\n\n");
     textcolor(WHITE);
       
     //initialize the keyboard device driver
@@ -361,7 +362,7 @@ void dex_kernel32()
     
     /*Now that the timer is active we can now use time based functions.
       Delay for two seconds in order to see previous messages */  
-    textbackground(WHITE);
+    textbackground(YELLOW);
     for (i=0 ;i < 80; i++)
       {
           printf(" ");  
@@ -412,7 +413,7 @@ void dex_kernel32()
     tm_pid=createkthread((void*)dex32_tm_updateinfo,"dex32_taskmanager",3500);
 
 
-    printf("Initializng the I/O manager..\n");
+    printf("Initializng the disk manager\n");
     //create the IO manager thread which handles all I/O to and from
     //block devices like the hard disk, floppy, CD-ROM etc. see iosched.c
     createkthread((void*)iomgr_diskmgr,"iomgr_diskmgr",200000);
@@ -432,10 +433,10 @@ void dex_kernel32()
     //initialize the CDFS (ISO9660/Joliet) filesystem
     iso9660_init();
 
-    printf("Mounting boot device...\n");
+    printf("Mounting boot device\n");
     
     //mount the floppy disk drive
-    vfs_mount_device("fat","floppy","start");
+    vfs_mount_device("fat","floppy","root");
 
     printf("Initializing first module loader(s) [EXE][COFF][ELF][DEX B32]\n");
 
@@ -453,7 +454,7 @@ void dex_kernel32()
     fg_pid = createkthread((void*)fg_updateinfo,"fg_manager",20000);
     
     if (baremode) console_first++;
-    printf("dex32_startup(): Running console thread..\n");
+    printf("dex32_startup(): Running console thread\n");
     
     //Create a new console instance
     consolepid = console_new();
