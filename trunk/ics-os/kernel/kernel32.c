@@ -111,9 +111,10 @@ extern void textcolor(unsigned char c);
 #include "console/script.h"
 #include "vfs/vfs_aux.h"
 #include "iomgr/iosched.h"
+
 typedef struct _kernel_sysinfo {
-int boot_device;
-int part[3];
+	int boot_device;
+	int part[3];
 } kernel_sysinfo;
 
 kernel_sysinfo kernel_systeminfo;
@@ -270,38 +271,24 @@ void dex32_startup()
 
     //Display some output for introductory purposes :)
     clrscr();
-    printf(KERNEL_NAME);;
-    printf(KERNEL_VERSION);;
-/*
-    textbackground(BLUE);
-    textcolor(YELLOW);
-    printf("DEX");
-    textcolor(WHITE);
-    printf("%-76s\n"," Extensible Operating System v.1.02 Beta project \"Chameleon\"");
-    textcolor(WHITE);
-    textbackground(BLACK);
-    printf("BUILD April 9 2004\n");
-    textbackground(BLACK);
-    printf("This program is free software; you can redistribute it and/or modify\n");
-    printf("it under the terms of the GNU General Public License\n");
-    printf("======================================================================\n");
-    printf("dex32_startup(): Welcome! starting up the DEX Operating System.\n");
-*/
+    printf(KERNEL_NAME);
+    printf(KERNEL_VERSION);
+
     /*show parameter information sent by the multiboot compliant bootloader.*/
-    printf("dex32_startup(): Bootloader name : %s\n", mbhdr->boot_loader_name);
-    printf("dex32_startup(): Memory size: %d KB\n",memamount/1024);
+    printf("Bootloader name : %s\n", mbhdr->boot_loader_name);
+    printf("Memory size: %d KB\n",memamount/1024);
 
     //Initialize the extension manager
-    printf("dex32_startup(): Initializing the extension manager..\n");
+    printf("Initializing the extension manager..\n");
     extension_init();
 
 
     //initialize the device manager
-    printf("dex32_startup(): Initializing the device manager\n");
+    printf("Initializing the device manager\n");
     devmgr_init();
 
 
-    printf("dex32_startup(): Registering the memory manager and the memory allocator\n");
+    printf("Registering the memory manager and the memory allocator\n");
 
     //register the memory manager
     mem_register();
@@ -316,18 +303,18 @@ void dex32_startup()
     alloc_init("dl_malloc"); 
     
     //register the hardware ports manager
-    printf("dex32_startup(): Initializing ports\n");
+    printf("Initializing ports\n");
     ports_init();
 
     //Initialize the PCI bus driver
-    printf("dex32_startup(): Initializing PCI devices...\n");
+    printf("Initializing PCI devices...\n");
     //show_pci();
     //delay(400/80);
 						  
     //initialize the DEX API module
     api_init();
 
-    printf("dex32_startup(): Initializing the process manager..\n");
+    printf("Initializing the process manager..\n");
     //Initialize the process manager
     process_init();
 
@@ -411,7 +398,7 @@ void dex_kernel32()
     myblock->init_device();
 
 
-    printf("dex32_startup(): Initializing the Virtual File System...\n");
+    printf("Initializing the Virtual File System\n");
 
     //initialize the file tables (Initialize the VFS)
     vfs_init();
@@ -419,20 +406,23 @@ void dex_kernel32()
 
     current_process->workdir= vfs_root;
     
-    printf("dex32_startup(): Initializng the task manager..\n");
+    printf("Initializng the task manager\n");
     //Initialize the task manager - a module program that monitors processes
     //for the user's convenience
     tm_pid=createkthread((void*)dex32_tm_updateinfo,"dex32_taskmanager",3500);
 
 
+    printf("Initializng the I/O manager..\n");
     //create the IO manager thread which handles all I/O to and from
     //block devices like the hard disk, floppy, CD-ROM etc. see iosched.c
     createkthread((void*)iomgr_diskmgr,"iomgr_diskmgr",200000);
 
    
+    printf("Initializng the null block device\n");
     //Install a null block device
     devfs_initnull();
     
+    printf("Initializng the filesystem driver\n");
     //install and initialize the Device Filesystem driver
     devfs_init();
     
@@ -445,9 +435,9 @@ void dex_kernel32()
     printf("Mounting boot device...\n");
     
     //mount the floppy disk drive
-    vfs_mount_device("fat","floppy","boot");
+    vfs_mount_device("fat","floppy","start");
 
-    printf("dex32_startup(): Initializing first module loader(s) [EXE][COFF][ELF][DEX B32]..\n");
+    printf("Initializing first module loader(s) [EXE][COFF][ELF][DEX B32]\n");
 
     //setup the initial executable loaders (So we could run .EXEs,.b32,coff and elfs)
     dex32_initloader();
@@ -457,7 +447,7 @@ void dex_kernel32()
     dex32apm_init();
 
 	 
-    printf("dex32_startup(): Running foreground manager thread..\n");
+    printf("Running foreground manager thread\n");
     
     //create the foreground manager
     fg_pid = createkthread((void*)fg_updateinfo,"fg_manager",20000);
