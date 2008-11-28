@@ -13,8 +13,8 @@ clean:
 	rm bochslog
 
 install: vmdex
-	cp grub.img ics-os.img
-	mount ics-os.img mnt -tmsdos -oloop
+	cp grub.img ics-os-floppy.img
+	mount ics-os-floppy.img mnt -tmsdos -oloop
 	cp -r vmdex mnt
 	cp  base/* mnt
 	mkdir -p mnt/apps
@@ -24,8 +24,8 @@ install: vmdex
 	cp sdk/* mnt/tcc/
 	cp lib/* mnt/lib/
 	umount mnt
-	chmod 666 ics-os.img
+	chmod 666 ics-os-floppy.img
 
 disk: install
-	dd if=ics-os.img of=/dev/fd0 bs=1440
+	dd if=ics-os-floppy.img of=/dev/fd0 bs=1440
 
