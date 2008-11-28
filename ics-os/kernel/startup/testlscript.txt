@@ -1,0 +1,16 @@
+SECTIONS {
+  .text 0x00100000 :{
+    *(.text)
+  }
+  code = .;
+  .data :{
+    *(.data)
+    *(.rodata)
+  }
+  data = .;
+  .bss :{
+    *(.common)
+    *(.bss)
+  }
+  bss = .;
+}

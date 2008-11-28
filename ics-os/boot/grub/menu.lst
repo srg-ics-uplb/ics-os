@@ -1,0 +1,4 @@
+ # Entry 0:
+        title   ICS Operating System
+        root    (fd0)
+        kernel  /vmdex

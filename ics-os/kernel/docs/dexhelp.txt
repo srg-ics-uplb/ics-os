@@ -1,0 +1,55 @@
+*************************************************************
+              DEX 1.0SP Operating System Quick Help
+Author: Joseph Emmanuel Dayo
+Date:   1/19/2004
+*************************************************************
+
+I. Quick Help -----------------------------------------------
+Available internal commands:
+cd <directory>  	-change working directory   
+cls             	-clears the screen
+copy  <source> <destination> - copy file from <source> to destination>
+cpuid			-Displays information about the current CPU
+del <filename>  	-deletes a file or a directory
+exit			-exits a console session
+files           	-shows the files currently open
+help            	-shows this screen
+kill <name>     	-kills a process named <name>
+loadmod <filename>[-p]	-load a shared library (.dll or .so) into memory
+lsdev            	-List modules currently installed and available
+lsext            	-List extensions
+listlib         	-List functions exported by library
+ls or dir       	-show directory listing of current drive
+lsmod			-shows the list of installed libraries/modules
+lspcut			-shows a list of path aliases
+pcut <alias:> [path]	-creates a path alias
+rempcut <alias:>	-removes a path alias 
+mem             	-shows memory information
+meminfo			-show memory map information
+mkdir <name>    	-creates a directory
+mount <filesystem> <device> <location>  - mounts filesystem to device at location
+newconsole      	-creates a new console
+path            	-show the current working directory
+prompt <string> 	-change the system prompt
+ps                      -shows the status of the current processes   
+ren   <oldname> <newname> -renames a file
+run   <filename>		-executes a batch file or a script file
+rmdir <dirname>		-Removes a directory and all its subdirectories
+!               	-send last command into keyboard buffer
+!!              	-send last command and execute
+type <filename> [-p]    -show the contents of a file
+                       '-p' show page by page.
+unload <libname> 	-unloads a library from memory
+umount  <mountpoint> 	-unmounts the device mounted at <mountpoint>
+use	<extension>	-Tells the extension manager to use this extension
+ver             	-show version information
+<filename> [parameters] -load an executable (PE or elf) into memory
+                        '-h' to enable HACK mode
+   
+Note: commands are case sensitive
+II. Hotkeys -------------------------------------------------
+CTRL+ALT+F1	    -> Shows the task manager window
+ALT+TAB		    -> Foreground manager window	
+Ctrl+ALT+F4	    -> Terminates user process in the foreground.	
+CTRL+ALT+F2	    -> Create a new console
+CTRL+ALT+F5,F6 	    -> Switch consoles	

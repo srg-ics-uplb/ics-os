@@ -1,0 +1,4 @@
+ # Entry 0:
+        title   DEX 1.00SP Operating System
+        root    (fd0)
+        kernel  /kernel32.bin

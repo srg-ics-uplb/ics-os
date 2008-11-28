@@ -1,0 +1,345 @@
+Technical Reference
+DEX-OS 1.0
+
+Document version 0.01
+Author: Joseph Emmanuel DL Dayo
+
+
+I.	Introduction
+
+This section is contains the technical details on the implementation of the DEX Extensible operating system and is meant as a guide to developers and to those who wish to improve the design and implementation of DEX-OS. Unfortunately, this is not meant to be a stand-alone guide and it is important that the reader has an understanding of computer architecture. A reference manual on programming the Intel 386/486/Pentium processors would also be extremely useful and an operating systems book is highly recommended.
+
+This reference manual has been divided in into various sections, the first being, a description of the start-up sequence followed by a technical description of the various modules of DEX and finally a section on the applications program interface. The descriptions of the modules serve only as an overview and for more detailed information you must look at the source code itself.
+	
+	Source Code organization
+
+	The source code is divided into folders depending on which module it belongs to. For example, assuming the source code is located at directory source, process.c would be located at source\process\process.c. The main kernel source file kernel32.c is located at source\kernel32.c.
+
+Here is an overview of the various source files included:
+
+
+process.h, process.c 		- Handles everything about processes
+scheduler.c			- The default round-robin scheduler
+pdispatch.h,pdispatch.c	- The process dispatcher
+
+vfs_core.c,vfs_core.h		- The Virtual File System
+vfs_aux.c,vfs_aux.h		- Utilility functions for the VFS
+
+fat12.c, fat12.h			- The FAT filesystem driver
+iso9660.c			- The CDFS/ISO9660/Joliet filesystem driver
+
+kheap.c, kheap.h		- Memory allocator management module
+bsdmalloc.c			- BSD malloc function (Best Fit?)
+dexmalloc.c			- First fit malloc function
+dlmalloc.c			- Doug Lea’s Best Fit malloc function
+dexmem.c,dexmem.h		- Low-level memory management module
+
+module.c			- Module loader management function
+elf_module.c			- Executable and Linkable Format loader
+pe_module.c			- Portable Executable Format loader
+coff.c				- Common Object File Format loader
+
+stdlib.c	, stdlib.h		- Standard library functions
+
+dex32_devmgr.c, dex32_devmgr.h –The DEX device manager
+extensions.c, extensions.h	-The DEX extension module manager
+
+floppy.c			- The floppy disk drive driver
+ide.c				- The ATA/IDE device driver
+
+exceptions.c, exceptions.h	- The GPF, PF, and other fault handlers
+irqhandlers.c			- The interrupt management module
+time.c, time.h			- Everything about time
+
+console.c			- The DEX default kernel mode console
+foreground.c, foreground.h	- Foreground and virtual management module
+dex_DDL.c,dex_DDL.h	- Display device management module
+
+II.	Start-up Sequence
+
+In order to start DEX, it has to be loaded into memory from a storage medium first. This loading of the operating system is accomplished through the use of the bootloader. The bootloader automatically gets loaded by the computers’ BIOS into a specified memory location (located at 0x7c00). The bootloader is then responsible for locating the operating system kernel on the disk or any other medium it supports and then loading it into a memory region where the operating system kernel can be executed. Although you can make your own bootloader, there are a number of freely available bootloaders like lilo and GRUB which should simplify this task. The DEX operating system uses GRUB (Grand Unified Bootloader) since it has many features, one of those is support for many filesystems and it is very easy to use and integrate.
+
+	A. Using GRUB to load DEX
+	
+In order for DEX to use GRUB, the operating system kernel binary file must contain a multiboot header. The multiboot header is a data structure found around the start of the OS kernel binary file that gives GRUB information on how the kernel is to be loaded. Here is a sample code fragment of the multiboot header from startup.asm:
+	
+_startup:
+;Multiboot Header information
+align 4
+mb_header:
+mb_magic         dd  MULTIBOOT_MAGIC                       ;magic
+mb_flags         dd MULTIBOOT_FLAGS                       ;bit 16 is set	
+mb_checksum      dd - (MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)  ;compute checksum
+mb_header_addr   dd mb_header
+mb_load_addr     dd _startup
+mb_load_end_addr dd 0x100000+185733; /*FIXME: _END2 gives wrong value????*/
+mb_bss_end_addr  dd 0x200000
+mb_entry_addr    dd multiboot
+mb_header_end:
+
+	Based on the sample code, it can be seen that the header tells GRUB to load the OS kernel at location _startup (which will be statically linked to be located at 0x100000h)and that it has a length of 185733. Before GRUB passes on control to the kernel, it first disables interrupts, sets up the initial Global Descriptor Tables and enables protected mode (Refer to your Intel manual). For more information on the multiboot specification, you may refer to the GRUB manual.
+	
+	B. Kernel Initialization
+
+	Step 1: Initializes segment registers and setup protected mode environment. 
+	(Refer to startup.asm)
+
+After control is passed to the kernel from the bootloader, the kernel first needs to setup the memory so that it can be used. Before that, DEX first initializes the segment registers which are the CS,DS,ES,SS,FS and GS segments since they still contain real-mode segment and values and not protected mode selector values. Unlike real-mode segment registers, protected-mode segment registers or otherwise known as selectors do not contain the location of the base of the segment, instead it is an index to the Global Descriptor Table(GDT) which contains the address of the segment. After that, DEX then re-initializes the Global Descriptor Table (GDT). As mentioned earlier, the GDT  contains information about a particular segment like it’s base address, some protection bits and segment size. Since DEX uses a flat memory model, the base addresses in all segments are located at memory address 0x00000000h.
+	
+	Step 2:  Setup memory and enable paging
+	(Refer to kernel32.c/ dexmem.c)
+		
+	Using the amount of physical memory detected by GRUB, DEX first creates a stack of free physical memory pages. This stack is located by default at physical memory location 0x200000 and is pointed to by the variable userstackloc. Whenever the system needs a physical frame, it “pops” the physical frame from the stack, if it wants to return used memory it then “pushes” the physical frame back from the stack. The location of the top of the stack is contained in index 0 of userstackloc or userstackloc[0].
+
+In order to enable paging on an Intel 386 compatible CPU, you must first setup the page directories and page tables (Refer to the Intel manual for a description on paging implementation).  DEX does this by calling the function mem_init() that will set up the page table/directories and then initially map one-to-one the first 3MB of memory. Finally, it assigns the physical location of the page directory to the CR3 CPU register, enables paging and then exits.
+
+	Step 3: Initialize the programmable interrupt controller and Interrupt handlers
+	(refer to /hardware/irqhandlers.c: setdefaulthandlers( ) )
+
+		Since Intel has marked the first 32 interrupts as reserved (0 - 0x1Ah respectively), we have to reprogram the Programmable Interrupt Controller (PIC) so that IRQs (0-15) are mapped instead to interrupts 0x20h-0x2Fh. IRQ’s are signals generated by hardware upon completion of a task or a specific event (etc. timer signals). After this, the Interrupt Descriptor Table(IDT) must be set up so that we can begin to assign interrupt handlers. The IDT is the protected mode version of the Interrupt Vector Table (IVT) in real mode, it basically also contains the location of the interrupt handler plus some user level information. The following table [Table 1] illustrates the assignment of the various interrupts DEX uses:
+
+Interrupt Number	Description
+13	Page Fault Handler
+14	General Protection Fault Handler
+32	Timer and Task Switcher (IRQ 0)
+33	Keyboard (IRQ 1)
+38	Floppy Disk Controller (IRQ 6)
+48 (0x30h)	Application Programs Interface
+Table 1. Default Interrupt Assignments
+
+	Other Interrupts not indicated in this table have default handlers assigned to them for debugging purposes.
+
+Step 4: Initialize the Device and Extension Manager
+(Refer to devmgr/dex32_devmgr.c: devmgr_init( ) )
+
+	The Device Manager provides services to device drivers and extension modules and must be initialized. Initialization consists of allocating space for the device table [See the section on Device Management] and creating the initial interfaces or services for the devices to use. An interface, for purposes of simplicity, is simply a data structure containing a table of pointers to functions that a module provides as well as other important attributes.
+ 
+ After creating the device table, the device manager first creates the interface to itself named “devmgr” and then the interface for the kernel standard library functions named "stdlib". Other modules also register themselves to the device manager, like the memory management modules and process management services. These interfaces could now be obtained by device drivers and other modules using the devmgr_getdevice() and devmgr_copyinterface() commands.
+
+Next, DEX initializes the extension table and the extension manager. Since DEX is an extensible operating system, there are in theory, no static kernel modules. The device id of the active kernel module is stored in the extension table [See section on Device Management for details].
+
+Step 5: Initialize the Process Manager and Enable Multitasking 
+(Refer to process/process.c: process_init() )
+	
+	So far, only the kernel process is running and we must initialize the Process Manager so that we could have multitasking. To begin with, the kernel calls process_init() which in turn creates the PCB (Process Control Block) of the Kernel and the Task Switcher. For purposes of simplicity the PCB is a data structure that contains CPU register information and other data used for process management like the process ID, name and others. Afterwards, the process manager calls the function ps_scheduler_install() in order for default scheduler to register its’ interface to the device manager and then calls the extension_override() function to tell the extension manager that this is the current scheduler to be used. And then the Process Manager calls sched_enqueue() to place the kernel PCB at the process queue and then passes control to the taskswitcher.
+
+	The Task Switcher is the module that is responsible for switching between processes using scheduling information from the current process scheduler. The task switcher then obtains the next ready process from the scheduler and since at this point only the kernel PCB is at the queue, it immediately switches back to the kernel.
+
+Step 6: Initialize other hardware and services
+(Refer to kernel32.c: dex_kernel32() )
+
+	At this point, interrupts are already enabled and also we have a task switcher that gets called almost 200 times a second. This means that we can now initialize devices that use interrupts, most notably the keyboard and the floppy disk controller (ATA/IDE devices do not require IRQs and/or interrupts to operate). Finally, After the hardware devices initialize themselves (by also registering their interfaces to the device manager), dex_kernel32() then creates the I/O manager thread and then the console thread.
+
+ 
+Device Management
+
+Overview
+
+The Device Manager is responsible for keeping track of devices installed in the system as well as managing the interfaces of the modules in memory. Please also note that term devices here will refer to any module that has its interface registered in the device table, therefore if the scheduler has its interface registered in the device table it will also be referred to as a device even though it technically isn’t. As stated before, the device manager keeps track of these devices using the Device Table which is an array of pointers to devmgr_generic data structures. All interfaces whether it is for the scheduler, floppy disk or whatever contain  devmgr_generic as its header. For illustration purposes devmgr_generic is of the following form [see code 1]:
+
+typedef struct _devmgr_generic {
+int size;           //size of this structure
+int id;             //An ID assigned by the Device manager
+int type;           //Identifies what kind of device this is
+int source;       /*holds the module ID of the library or 0 if it is 
+	from the kernel*/
+char name[20];      //The name of the device
+char description[256]; //a short description of the device
+int lock;           //determines if this device is already being used
+int (*sendmessage)(int type, int message); /*used by the device to 
+		receive messages*/
+} devmgr_generic;
+
+Code 1. The devmgr_generic data structure
+
+	Here is a brief description of the devmgr_generic fields:
+a.	size – This is the size of the devmgr_generic header plus the size of the table of function interfaces specific to a device.
+b.	id – An identifier assigned by the device manager when it is registered via devmgr_register().
+c.	type – A constant value that determines what kind of interface this is, this value is also used to determine what functions this device provides. Ideally, all block devices would have the same type since they provide the same set of functions. The list of the different types is defined in dex32_devmgr.h.
+d.	name – An null-terminated identifier defined by the module or device. The maximum character length is 20 and allowable characters are the same as the ones allowed by the VFS.
+e.	Description – A null-terminated string defined by the module that describes what this device does as well as copyright information etc.
+f.	lock – some devices like the filesystem drivers locks a block device to prevent it from being used by other modules. Although DEX does not prevent accesses to a device, this at least tells a module that  to think twice before using this. DEX also prevents locked devices from being unloaded from memory until it is unlocked.
+g.	sendmessage – A multipurpose pointer to a function that could be used by modules to commnunicate with each other or as a means for the user to pass parameters to the device to configure it.
+
+Device Registration
+
+	In order for a device to be visible to the system, it must first register itself, below is an actual process for registering a device as seen in floppy.c:
+
+devmgr_block_desc floppy_desc;
+
+memset(&floppy_desc,0,sizeof(devmgr_block_desc));
+
+//fill up the driver “registration form”
+floppy_desc.hdr.size = sizeof(devmgr_block_desc);
+floppy_desc.hdr.type = DEVMGR_BLOCK;
+strcpy(floppy_desc.hdr.name,name);
+strcpy(floppy_desc.hdr.description,"Generic Floppy Disk Controller driver");
+
+//Assign the public functions that will be visible to the IO manager
+floppy_desc.read_block = read_block;
+floppy_desc.write_block = write_block;
+floppy_desc.invalidate_cache = invalidatecache;
+floppy_desc.init_device = flopinit;
+floppy_desc.flush_device = flushcache;
+floppy_desc.getcache = getcache;
+floppy_desc.total_blocks = floppy_totalblocks;
+
+//Register the device
+floppy_deviceid = devmgr_register((devmgr_generic*) &floppy_desc);
+
+Code 2. A Sample registration process
+
+	Based on the sample code [code 2], the first step is to initialize the data structure to zero. The next step would be to fill in the identifiers and function pointers. Finally, the last step would be to register the device using devmgr_register() which in turn returns the device ID assigned to the device.
+
+Extension modules
+
+	Extension modules in DEX are represented as devices and its’ interface is managed by the device manager. Only one extension module per type can be active at any given moment. For example, DEX only uses one scheduler extension and one memory allocation extension at a time. The extension table maintains a pointer to the currently active extension module. The extension table, like the device table is an array of devmgr_generic structures, and each index of the extension table corresponds to a given type, for example index 0 refers to the active scheduler, while index 1 refers to the active memory allocator. The extension and device table are designed so that a lookup will at most take up a constant running time to perform.
+
+	 
+Process Management
+
+Each process in DEX is represented by a data structure called the PCB which is of the following form (refer to process/process.c):
+	
+//the primary data structure used for describing a process
+//the first element of this data structure holds TSS data
+typedef struct _PCB386 {
+    saveregs regs;  //TSS data, also for placing initial values for EAX,EBX etc.
+                    //A very hardware specific data structure for the Intel x86 family
+    FPUregs regs2; //stores the FPU registers, for Processors with FPU's
+    
+    DWORD size,version;     //the size of the PCB386 structure is placed here
+                    //this is for extensibility purposes
+    DWORD *pagedirloc; //location of the processes active pagedirectory
+                      //NULL if page directory is the same as kernel's
+    DWORD processid;  //a process ID that is generated by the system
+    DWORD owner;      //the owner refers to the pid of the process that spawned
+                      //this thread/process
+    char name[256]; // the name of the process
+    vfs_node *workdir; //points to the vfs_node of the working directory 
+    DWORD accesslevel;  //the security bits for this process
+    DWORD priority; //the process priority
+    DWORD locked,unloadable,blocked,waiting,thread; //describes the status of the process
+    DWORD childwait; //used by dex32_wait to check if a child has terminated
+                     //or not, incremented by 1 when a child process is spawned
+
+    DWORD syscallsize;  //stores the size of the system call stack
+    DWORD totalcputime; //the taskswitcher increments this value every time
+                        //the process takes control of the CPU
+    DWORD arrivaltime;  //holds the time when this process arrived
+    
+    process_mem *meminfo; //points to a data structure containing the memory locatons taken up by
+			  //this process so that the process manager could clean this up easily.	
+
+    void *stackptr,*stackptr0; //user and system bottom of stack pointers
+    char *parameters;  //stores the parameters passed to this process
+    char *imagesource; //records the full path of the source file
+    char *knext;      //holds the location the programs' break (Or the end of the heap)
+    
+    void (*putc)(char *c); //points the output function to be used
+    char (*getc)(); //points to the input function to be used
+    
+    /*----------------Process I/O data------------------------------*/
+    DEX32_DDL_INFO *outdev;  // points to the output device descriptor
+    file_PCB *stdout;
+    void *stdin;    
+    int context,function;    //used by device drivers to determine context info.
+                             //Reserved on USER mode programs.
+    
+    int meshead,mestotal,curmes;
+    int lasterror; //used by API calls to set the last error on a per thread basis
+    int misc;
+
+    struct _PCB386 *next;   //Points to the next PCB
+    struct _PCB386 *before; //Points to the previous PCB
+    
+    IPC_message mesq[MAX_MESSAGE]; //pointer to the process message queue
+    DWORD (*dex32_signal)(DWORD,DWORD);//the dex32 general signal handler
+    
+    //Debugging data
+    DWORD cursyscall[2],op_success; //gives information about the last systems calls made    
+    void *signaltable;
+    } PCB386;
+	
+	Please note that this is the default PCB and may be changed depending on the scheduler module that is being used. Additionally, although the PCB definition has a next and before pointer (indicating that it uses a doubly linked list) the process manager still uses the scheduler’s interface to navigate around the process queue. This is to enable the scheduler to modify the structure of the process queue as it wishes.
+
+The core functions that make up the process manager consists of the following:
+
+Functions for kernel mode processes:
+
+DWORD   createkthread(void *ptr,char *name,DWORD stacksize);
+DWORD   dex32_killkthread(DWORD processid);
+DWORD   kill_thread(PCB386 *ptr);
+DWORD   dex32_exitprocess(DWORD ret_value);
+
+Functions for user mode processes:
+
+DWORD   createprocess(void *ptr,char *name,
+                     DWORD *pagedir,process_mem *pmem,
+                     void *stack,DWORD stacksize,
+                     DWORD syscallsize,
+                     void *dex32_signal,
+                     char *params,
+                     char *workdir,
+                     PCB386 *parent);
+
+DWORD   kill_children(DWORD processid);
+DWORD   kill_process(DWORD processid);
+DWORD   createthread(void *ptr,void *stack,DWORD stacksize);
+
+	Unlike other operating systems, DEX treats the scheduler as a totally independent module, as such, if you analyze process.c you would immediately see that the process manager does not directly access the process queue. In fact, the process manager does not even know the location of the head of the process queue. Other modules in DEX like the IO manager and the memory allocator also exhibit this feature. The rationale behind this is that it enables the scheduler to be a lot more configurable since it may now have freedom to decide on the how the structure of the process queue should be.
+
+Memory Management
+
+	Consistent with the extensibility feature of DEX, it allows for the easy replacement of the kernel memory allocation function (kmalloc). Unlike other modules discussed, memory allocation modules can only be replaced once. This is due to the fact that, memory allocation modules cannot be easily removed simply because of the two functions it implements, realloc and free. Upon encountering an override request, the top of heap location of the previous memory allocator is saved, the new memory allocator is installed in memory and handles all new malloc requests. Whenever a free()  command is encountered, the malloc bridge (see kheap.c)  will have to determine which of the memory allocators it will use. It does this by using the saved top of heap before the override request. If the pointer given in free is less than the value of the saved top of heap, it uses the previous memory allocator, otherwise the new one is used. 
+
+	In the case of the realloc function, there are a few complications that would result. If the new request size is smaller than the old request size, we simply use the malloc function of the new memory allocator, use memcpy and then use the free functon of the old memory allocator. A big problem arises when the new requested size is bigger than the old size, since the malloc bridge will have no way to determine the old size, which will make memcpy() unreliable at worst. The solution in DEX is simple, we don’t use realloc().
+ 
+
+VI. Applications Development
+
+A.	Before you start
+
+The following applications and files are needed in order to be able to develop applications for DEX:
+
+1.	DEV-C++ 5.0
+2.	dexsdk header files and libraries
+
+Other than this, you must have DEX-OS to test your program or an IBM PC emulator like Bochs so that you could boot DEX without leaving MS Windows (Refer to the Bochs documention for this).
+
+B.	Your first program
+
+Start DEV-C++, create a new console project and choose C as the default programming language. Choose the folder to place your project files into then click OK. DEV-C++ will automatically create a main.c file in the editor window with some contents. Erase the contents of main.c and type the following in the editor window:
+
+#include <dexsdk.h>
+
+int main2(int argc, char *argv[])
+{
+	printf(“Hello World!\n”);
+};
+
+Although this is basically what the program contains, it will not work when you compile it now since DEV-C++ will generate a windows executable. We must then add parameters to create a DEX-OS program, first click on Project | Options and then on the linker parameters tab, add the parameter –e _dexsdk_crt. The –e parameter tells the linker to use dexsdk_crt() as the entrypoint of the program instead of the entrypoint for MS Windows. Then click on the add library or object file button and add syslib.o and dexsdk.a. Finally copy dexsdk.h to the directory where your project is (or simply point your include statement to where it is) and then click on rebuild all, or compile. Copy the executable file(.EXE)  generated and copy it to your DEX-OS floppy disk, boot DEX and check if it works. It should print hello world to the screen and then terminate.
+
+	Notes about the SDK
+
+The DEX SDK library is designed to replace some of the functions declared in stdlib.h, time.h, conio.h, files.h and stdio.h. It contains only a very small subset of the POSIX calls and therefore not all commands are supported. Refer to the prototype definitions in dexsdk.h for a list of implemented POSIX calls.
+ 
+
+C.	Developing Applications using Assembly Language (NASM)
+
+If you used the floppy disk image in creating the DEX boot disk, there should already be a ported copy of the Netwide Free Assembler (NASM) located at /boot/nasm/.Go to the nasm directory by typing cd /boot/nasm and then type:
+
+nasm.exe testapp.asm –o testapp
+
+After the assembler finishes its work, it should generate an application file called testapp. Run testapp by typing testapp at the command prompt and it should display “Hello World” to the screen. To edit or create files, there is a simple text editor located at /boot/ed.exe, you may use this to create your own assembly files. Edit testapp.asm by typing:
+
+/boot/nasm/ % ../ed.exe testapp.asm
+
+ed.exe should load testapp.asm and display its contents. Commands for the editor include the following:
+
+Arrow Keys, HOME, END, Page-Up, Page-Down for moving around
+ALT+X : exit editor
+ALT+O : save file
+ALT+N: new file
+ALT+L: load file
+	
+ 

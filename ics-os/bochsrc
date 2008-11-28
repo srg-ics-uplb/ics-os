@@ -1,0 +1,27 @@
+# how much memory the emulated machine will have
+# if you have less than 64MB of memory in your actuall computer, set this lower(16 is good)
+megs: 16
+
+# filename of ROM images
+# note that if before a filename we put "../" then the file is looked
+# for in the directory above that the current directory(the one the configuration
+# file is in).
+romimage: file=/usr/share/bochs/BIOS-bochs-latest
+vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
+
+display_library: x
+
+# we want a floppy drive(called a), the disk image that we are using is called "1.44"
+#floppya: 1_44=/home/jach/dex-os-1.0/dex-os.img, status=inserted
+#floppya: 1_44=/home/jach/disk.img, status=inserted
+floppya: 1_44=ics-os.img, status=inserted
+floppyb: 1_44=grub-floppy.img, status=inserted
+
+# choose the boot disk.
+boot: floppy
+
+# where do we send log/error messages?
+log: bochslog
+
+# disable the mouse unless your OS uses it
+mouse: enabled=0
