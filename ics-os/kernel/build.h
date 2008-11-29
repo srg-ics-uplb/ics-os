@@ -1,1 +1,1 @@
-const char *build_id="$Id$";
+const char *build_id ="$Id$";
