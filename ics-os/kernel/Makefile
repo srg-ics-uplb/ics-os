@@ -13,7 +13,9 @@ obj: scheduler.o fat.o iso9660.o devfs.o iomgr.o devmgr_error.o kernel32.o \
 		startup.o asmlib.o irqwrap.o 
 	strip --strip-debug *.o
 		
-kernel32.o: kernel32.c
+kernel32.o: kernel32.c build.h
+	echo -n "#define BUILD_ID " > build.h
+	date +%m%d%y >> build.h
 	$(CC) $(CFLAGS) -o kernel32.o kernel32.c 
 	
 scheduler.o:

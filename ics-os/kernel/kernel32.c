@@ -72,6 +72,7 @@ extern void textcolor(unsigned char c);
 #include <stdarg.h>
 #include <limits.h>
 
+#include "build.h"
 #include "version.h"
 #include "dextypes.h"
 #include "process/sync.h"
@@ -353,7 +354,8 @@ void dex_init()
     textcolor(GREEN);
     printf("\n");
     printf("\t\t");printf(OS_NAME);printf(" ");printf(OS_VERSION);
-    printf("\n\n");
+    printf("\n");
+    printf("( Build: %l )\n",BUILD_ID);
     textcolor(WHITE);
     printf("Starting dex_init()...\n");
     printf("Press space to skip autoexec.bat processing\n");
