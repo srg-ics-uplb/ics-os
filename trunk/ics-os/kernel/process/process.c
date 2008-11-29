@@ -1395,7 +1395,7 @@ void process_init()
     memcpy(&kernel->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
     
     memset(&kernel->regs,0,sizeof(saveregs));
-    kernel->regs.EIP=(DWORD)dex_kernel32;
+    kernel->regs.EIP=(DWORD)dex_init;
     kernel->regs.ESP= DISPATCHER_STACK_LOC;
     kernel->regs.CR3=pagedir1;
     kernel->regs.ES=SYS_DATA_SEL;

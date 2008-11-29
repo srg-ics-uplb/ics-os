@@ -122,7 +122,7 @@ kernel_sysinfo kernel_systeminfo;
 //This stores the current virtual console the kernel will use
 DEX32_DDL_INFO *consoleDDL;
 
-void dex_kernel32();
+void dex_init();
 
 /*I know there are some disadvantages to directly including files
   in the source code instead of using object files, but it simplifies
@@ -315,16 +315,20 @@ void dex32_startup()
     printf("[OK]\n");
 
     //Initialize the PCI bus driver
-    printf("Initializing PCI devices\n");
+    printf("Initializing PCI devices...");
     //show_pci();
     //delay(400/80);
-						  
+    printf("[OK]\n");
+				
+    printf("Initializing kernel API...");		  
     //initialize the DEX API module
     api_init();
+    printf("[OK]\n");
 
-    printf("Initializing the process manager\n");
+    printf("Initializing the process manager...");
     //Initialize the process manager
     process_init();
+    printf("[OK]\n");
 
     //process manager is ready, pass execution to the taskswitcher
     taskswitcher();
@@ -336,8 +340,9 @@ void dex32_startup()
 #define STARTUP_DELAY 400
 
 /*This function is the first function that is called by the taskswitcher
+ * see process/process.c
   incidentally it is also the first process that gets run*/
-void dex_kernel32()
+void dex_init()
 {
     char temp[255],spk;
     int consolepid,i,baremode = 0;
