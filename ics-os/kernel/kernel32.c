@@ -450,7 +450,7 @@ void dex_init()
     printf("Mounting boot device...");
     
     //mount the floppy disk drive
-    vfs_mount_device("fat","floppy","icsos");
+    vfs_mount_device("fat","floppy","icso");
     printf("[OK]\n");   
 
 
