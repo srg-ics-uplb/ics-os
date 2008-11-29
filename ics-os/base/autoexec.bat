@@ -1,6 +1,7 @@
 @echo off
+rem The Microsoft C runtime library is needed by tcc
 @echo Loading Microsoft C runtime library...
-loadmod /boot/lib/msvcrt.dll
+loadmod /start/lib/msvcrt.dll
 rem @echo Initializing RAM Disk...
 rem loadmod /boot/lib/ramdisk.dll -blocks 9000
 rem mount fat ramdisk /ramdisk
