@@ -691,7 +691,7 @@ int console_execute(const char *str)
                clrscr();
                 else
     if (strcmp(u,"help")==0)
-               console_execute("type /start/dexhelp.txt");
+               console_execute("type /start/icsoshlp.txt");
                 else
     if (strcmp(u,"umount")==0)
              {
