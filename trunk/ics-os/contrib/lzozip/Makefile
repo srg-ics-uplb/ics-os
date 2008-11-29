@@ -1,4 +1,4 @@
-CC=gcc
+CC=tcc
 ICSOS_ROOT=../..
 KERNEL=$(ICSOS_ROOT)/kernel
 SDK=../../sdk
