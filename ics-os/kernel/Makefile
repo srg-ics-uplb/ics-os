@@ -14,6 +14,9 @@ obj: scheduler.o fat.o iso9660.o devfs.o iomgr.o devmgr_error.o kernel32.o \
 	strip --strip-debug *.o
 		
 kernel32.o: kernel32.c build.h
+	echo -n "const char *build_id= \"" > build.h
+	svnversion -n >> build.h
+	echo "\";" >> build.h
 	$(CC) $(CFLAGS) -o kernel32.o kernel32.c 
 	
 scheduler.o:
