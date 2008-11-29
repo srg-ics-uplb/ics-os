@@ -355,7 +355,7 @@ void dex_init()
     printf("\n");
     printf("\t\t");printf(OS_NAME);printf(" ");printf(OS_VERSION);
     printf("\n");
-    printf("( Build: %l )\n",BUILD_ID);
+    printf("(%s)\n\n",build_id);
     textcolor(WHITE);
     printf("Starting dex_init()...\n");
     printf("Press space to skip autoexec.bat processing\n");

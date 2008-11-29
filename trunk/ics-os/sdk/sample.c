@@ -6,7 +6,7 @@
   Description: A sample C program for tcc and for creating DEX applications
 */
 
-#include "/boot/tcc/dexsdk.h"
+#include "/start/tcc/dexsdk.h"
 
 int main() 
 {
@@ -18,7 +18,7 @@ int main()
        textcolor(i+1);
        printf("Hello Glorious World!\n");
       };
-   printf("Welcome to the dex-os platform....\n");
+   printf("Welcome to the ICS Operating System....\n");
    getch();
    return 0;
 }
