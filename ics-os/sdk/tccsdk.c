@@ -528,7 +528,6 @@ void sety(int y)
 
 void textcolor(char val)
 {
-   printf("System Call");
    dexsdk_systemcall(13,val,0,0,0,0);
 };
 
