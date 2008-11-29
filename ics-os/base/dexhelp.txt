@@ -1,7 +1,10 @@
 *************************************************************
-              DEX 1.03 Operating System Quick Help
-Author: Joseph Emmanuel Dayo
-Date:   1/19/2004
+
+ICS Operating System
+
+Institute of Computer Science
+University of the Philippines, Los Banos
+
 *************************************************************
 
 I. Quick Help -----------------------------------------------
