@@ -218,6 +218,7 @@ void main()
      memory_map = mbhdr->mmap_addr;
      map_length = mbhdr->mmap_length;
         
+   
      /*
       DEX stores the free physical pages as a stack of free pages, therefore
       when a physical page of memory is needed, DEX just pops it off the stack.
@@ -271,24 +272,29 @@ void dex32_startup()
 
     //Display some output for introductory purposes :)
     clrscr();
-    printf(KERNEL_NAME);
-    printf(KERNEL_VERSION);
 
     /*show parameter information sent by the multiboot compliant bootloader.*/
-    printf("Bootloader name : %s\n", mbhdr->boot_loader_name);
-    printf("Memory size: %d KB\n",memamount/1024);
+    //printf("Bootloader name : %s\n", mbhdr->boot_loader_name);
+    
+    //obtain CPU information using the CPUID instruction
+    printf("Obtaining CPU information\n");
+    hardware_getcpuinfo(&hardware_mycpu);
+    hardware_printinfo(&hardware_mycpu);
+    
+    printf("Available size: %d KB\n",memamount/1024);
 
     //Initialize the extension manager
-    printf("Initializing the extension manager..\n");
+    printf("Initializing the extension manager...");
     extension_init();
-
+    printf("[OK]\n");
 
     //initialize the device manager
-    printf("Initializing the device manager\n");
+    printf("Initializing the device manager...");
     devmgr_init();
+    printf("[OK]\n");
 
 
-    printf("Registering the memory manager and the memory allocator\n");
+    printf("Registering the memory manager and the memory allocator...");
 
     //register the memory manager
     mem_register();
@@ -301,28 +307,25 @@ void dex32_startup()
     /* initialize the malloc server, place the device name of the malloc
        function you wish to use as the paramater*/
     alloc_init("dl_malloc"); 
+    printf("[OK]\n");
     
     //register the hardware ports manager
-    printf("Initializing ports\n");
+    printf("Initializing ports...");
     ports_init();
+    printf("[OK]\n");
 
     //Initialize the PCI bus driver
-    printf("Initializing PCI devices...\n");
+    printf("Initializing PCI devices\n");
     //show_pci();
     //delay(400/80);
 						  
     //initialize the DEX API module
     api_init();
 
-    printf("Initializing the process manager..\n");
+    printf("Initializing the process manager\n");
     //Initialize the process manager
     process_init();
 
-#ifdef DEBUG_STARTUP
-    printf("dex32_startup(): process manager initialized.\n");
-#endif   
-
-   
     //process manager is ready, pass execution to the taskswitcher
     taskswitcher();
 
@@ -344,11 +347,6 @@ void dex_kernel32()
     //At this point, the kernel has fininshed setting up memory and the process scheduler.
     //More importantly, interrupts are already operational, which means we can now set up
     //devices that require IRQs like the floppy disk driver 
-    textcolor(GREEN);
-    printf("\n");
-	 printf("\t\t");printf(OS_NAME);printf(" ");printf(OS_VERSION);
-    printf("\n\n");
-    textcolor(WHITE);
       
     //initialize the keyboard device driver
     init_keyboard();
@@ -365,18 +363,15 @@ void dex_kernel32()
     textbackground(YELLOW);
     for (i=0 ;i < 80; i++)
       {
-          printf(" ");  
+          //printf(" ");  
           if (kb_ready())
              if (getch() ==' ') {baremode = 1;break;};        
           delay( delay_val );
       };
     textbackground(BLACK);
       
-    printf("\n");  
-
-    //obtain CPU information using the CPUID instruction
-    hardware_getcpuinfo(&hardware_mycpu);
-    hardware_printinfo(&hardware_mycpu);
+    //printf("\n");  
+    //cpu info
 
     getdatetime(&date);
     getmonthname(date.month,temp);
@@ -473,7 +468,13 @@ void dex_kernel32()
 
     Dex32SetProcessDDL(consoleDDL, getprocessid());
     
-	 
+/*	 
+    textcolor(GREEN);
+    printf("\n");
+    printf("\t\t");printf(OS_NAME);printf(" ");printf(OS_VERSION);
+    printf("\n\n");
+    textcolor(WHITE);
+*/
     /*Run the process dispatcher.
       The process dispatcher is responsible for running new modules/process.
       It is the only one that could disable paging without crashing the system since
