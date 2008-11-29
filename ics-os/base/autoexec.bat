@@ -8,7 +8,7 @@ rem mount fat ramdisk /ramdisk
 rem copy /boot/apps/ed.exe /ramdisk
 rem pcut rd: /ramdisk/
 cls
-cd icsos
+cd icso
 @echo 
 @echo Welcome to the ICS Operating System
 echo
