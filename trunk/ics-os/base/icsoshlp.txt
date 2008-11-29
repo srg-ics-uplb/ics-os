@@ -1,0 +1,73 @@
+*************************************************************
+
+ICS Operating System
+
+Institute of Computer Science
+University of the Philippines, Los Banos
+
+*************************************************************
+
+I. Quick Help -----------------------------------------------
+Available internal commands:
+cd <directory>          -change working directory   
+cls                      -clears the screen
+copy  <source> <destination> - copy file from <source> to destination>
+cpuid                   -Displays information about the current CPU
+del <filename>          -deletes a file or a directory
+exit                    -exits a console session
+files                   -shows the files currently open
+help                    -shows this screen
+kill <name>             -kills a process named <name>
+loadmod <filename>[-p]  -load a shared library (.dll or .so) into memory
+lsdev                   -List modules currently installed and available
+lsext                   -List extensions
+listlib                 -List functions exported by library
+ls or dir               -show directory listing of current drive
+lsmod                   -shows the list of installed libraries/modules
+lspcut                  -shows a list of path aliases
+pcut <alias:> [path]    -creates a path alias
+rempcut <alias:>        -removes a path alias 
+mem                     -shows memory information
+meminfo                 -show memory map information
+mkdir <name>            -creates a directory
+mount <filesystem> <device> <location>  - mounts filesystem to device at location
+newconsole              -creates a new console
+path                    -show the current working directory
+prompt <string>         -change the system prompt
+ps                      -shows the status of the current processes   
+ren   <oldname> <newname> -renames a file
+run   <filename>        -executes a batch file or a script file
+rmdir <dirname>         -Removes a directory and all its subdirectories
+!                       -send last command into keyboard buffer
+!!                      -send last command and execute
+type <filename> [-p]    -show the contents of a file
+                        '-p' show page by page.
+unload <libname>        -unloads a library from memory
+umount  <mountpoint>    -unmounts the device mounted at <mountpoint>
+use <extension>         -Tells the extension manager to use this extension
+ver                     -show version information
+<filename> [parameters] -load an executable (PE or elf) into memory
+
+   
+Note: commands are case sensitive
+
+II. Mounting ATA / ATAPI drives==============================================
+
+In order to mount IDE drives, first dtermine the name assigned to 
+the partition you wish to mount (dex-os supports FAT16/FAT32) using
+the lsdev command.
+
+Then use the mount command:
+mount fat <name of partition> <desired mount point>
+
+For CD-ROM drives, chage fat to cdfs like this:
+mount cdfs <name of partition> < desired mount point>
+
+
+III. Hotkeys -------------------------------------------------
+CTRL+ALT+F1         -> Shows the task manager window
+ALT+TAB             -> Foreground manager window	
+Ctrl+ALT+F4         -> Terminates user process in the foreground.	
+CTRL+ALT+F2         -> Create a new console
+CTRL+ALT+F5,F6      -> Switch consoles	
+---------------------------------------------------------------
