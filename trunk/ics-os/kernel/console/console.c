@@ -691,7 +691,7 @@ int console_execute(const char *str)
                clrscr();
                 else
     if (strcmp(u,"help")==0)
-               console_execute("type /icsos/icsoshlp.txt");
+               console_execute("type /icso/icsoshlp.txt");
                 else
     if (strcmp(u,"umount")==0)
              {
@@ -991,7 +991,7 @@ void console_main()
     strcpy(last,"");
     
     
-    if (console_first == 0) script_load("/icsos/autoexec.bat");
+    if (console_first == 0) script_load("/icso/autoexec.bat");
     
     console_first++;  
     do {
