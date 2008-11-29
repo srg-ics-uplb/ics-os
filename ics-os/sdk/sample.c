@@ -6,7 +6,7 @@
   Description: A sample C program for tcc and for creating DEX applications
 */
 
-#include "/start/tcc/dexsdk.h"
+#include "dexsdk.h"
 
 int main() 
 {
