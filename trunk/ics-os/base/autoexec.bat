@@ -7,10 +7,15 @@ rem mount fat ramdisk /ramdisk
 rem copy /boot/apps/ed.exe /ramdisk
 rem pcut rd: /ramdisk/
 cls
+cd start
 @echo 
-@echo Welcome to ICS-OS!
+@echo Welcome to the ICS Operating System
+echo
+@echo Institute of Computer Science
+@echo University of the Philippines, Los Banos
+@echo
 @echo Type "help" on the command prompt to
-@echo display help.
+@echo display available commands.
 @echo 
 
 

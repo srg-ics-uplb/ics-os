@@ -349,6 +349,15 @@ void dex_init()
     int delay_val =  STARTUP_DELAY / 80;
     devmgr_block_desc *myblock;
     dex32_datetime date;
+    
+    textcolor(GREEN);
+    printf("\n");
+    printf("\t\t");printf(OS_NAME);printf(" ");printf(OS_VERSION);
+    printf("\n\n");
+    textcolor(WHITE);
+    printf("Starting dex_init()...\n");
+    printf("Press space to skip autoexec.bat processing\n");
+
     //At this point, the kernel has fininshed setting up memory and the process scheduler.
     //More importantly, interrupts are already operational, which means we can now set up
     //devices that require IRQs like the floppy disk driver 
@@ -365,18 +374,17 @@ void dex_init()
     
     /*Now that the timer is active we can now use time based functions.
       Delay for two seconds in order to see previous messages */  
-    textbackground(YELLOW);
-    for (i=0 ;i < 80; i++)
+    textbackground(GREEN);
+    for (i=0 ;i < 79; i++)
       {
-          //printf(" ");  
+          printf(" ");  
           if (kb_ready())
              if (getch() ==' ') {baremode = 1;break;};        
           delay( delay_val );
       };
     textbackground(BLACK);
       
-    //printf("\n");  
-    //cpu info
+    printf("\n");  
 
     getdatetime(&date);
     getmonthname(date.month,temp);
@@ -390,40 +398,44 @@ void dex_init()
     ide_init();
 
     /*Install the VGA driver*/
+    printf("Loading VGA driver...");
     vga_init();
-    
+    printf("[OK]\n");   
+ 
     //initialize the I/O manager
     iomgr_init();
 
     myblock = (devmgr_block_desc*)devmgr_devlist[floppy_deviceid];
     myblock->init_device();
 
-
-    printf("Initializing the Virtual File System\n");
-
     //initialize the file tables (Initialize the VFS)
+    printf("Initializing the Virtual File System...");
     vfs_init();
+    printf("[OK]\n");   
 
-
+    //set the current directory of the init process to the vfs root
     current_process->workdir= vfs_root;
     
-    printf("Initializng the task manager\n");
+    printf("Initializing the task manager...");
     //Initialize the task manager - a module program that monitors processes
     //for the user's convenience
     tm_pid=createkthread((void*)dex32_tm_updateinfo,"dex32_taskmanager",3500);
+    printf("[OK]\n");   
 
 
-    printf("Initializng the disk manager\n");
     //create the IO manager thread which handles all I/O to and from
     //block devices like the hard disk, floppy, CD-ROM etc. see iosched.c
+    printf("Initializing the disk manager...");
     createkthread((void*)iomgr_diskmgr,"iomgr_diskmgr",200000);
+    printf("[OK]\n");   
 
    
-    printf("Initializng the null block device\n");
+    printf("Initializng the null block device...");
     //Install a null block device
     devfs_initnull();
+    printf("[OK]\n");   
     
-    printf("Initializng the filesystem driver\n");
+    printf("Initializing the filesystem driver...");
     //install and initialize the Device Filesystem driver
     devfs_init();
     
@@ -432,22 +444,24 @@ void dex_init()
     
     //initialize the CDFS (ISO9660/Joliet) filesystem
     iso9660_init();
+    printf("[OK]\n");   
 
-    printf("Mounting boot device\n");
+    printf("Mounting boot device...");
     
     //mount the floppy disk drive
-    vfs_mount_device("fat","floppy","root");
+    vfs_mount_device("fat","floppy","start");
+    printf("[OK]\n");   
 
-    printf("Initializing first module loader(s) [EXE][COFF][ELF][DEX B32]\n");
 
     //setup the initial executable loaders (So we could run .EXEs,.b32,coff and elfs)
+    printf("Initializing first module loader(s) [EXE][COFF][ELF][DEX B32]...");
     dex32_initloader();
+    printf("[OK]\n");   
 
     /*Supposed to initialize the Advanced Power Management Interface
       so that I could do a "software" shutdown **IN PROGRESS** */
-    dex32apm_init();
+    //dex32apm_init();
 
-	 
     printf("Running foreground manager thread\n");
     
     //create the foreground manager
@@ -474,11 +488,6 @@ void dex_init()
     Dex32SetProcessDDL(consoleDDL, getprocessid());
     
 /*	 
-    textcolor(GREEN);
-    printf("\n");
-    printf("\t\t");printf(OS_NAME);printf(" ");printf(OS_VERSION);
-    printf("\n\n");
-    textcolor(WHITE);
 */
     /*Run the process dispatcher.
       The process dispatcher is responsible for running new modules/process.
