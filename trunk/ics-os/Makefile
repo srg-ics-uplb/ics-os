@@ -7,7 +7,7 @@ vmdex:
 	make -C kernel/
 
 clean:
-	rm vmdex
+	rm -f vmdex
 	make -C kernel/ clean
 	rm bochslog
 

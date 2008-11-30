@@ -50,6 +50,6 @@ Kernel32.bin:
 	ld -T lscript.txt -Map mapfile.txt
 
 clean:
-	rm *.o
-	rm Kernel32.bin
-	rm vmdex
+	rm -f *.o
+	rm -f Kernel32.bin
+	rm -f vmdex
