@@ -1014,7 +1014,6 @@ int fread(char *buf,int itemsize,int noitems,file_PCB* fhandle)
     DWORD size=itemsize*noitems,i;
     devmgr_fs_desc *fs;
     char temp[200];
-#define DEBUG_VFSREAD 1
 #ifdef DEBUG_VFSREAD
     printf("fread called\n");
 #endif
