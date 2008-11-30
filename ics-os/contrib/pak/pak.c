@@ -6,6 +6,7 @@
 
 #include "../../sdk/dexsdk.h"
 
+/*Maximum number of files in a pak*/
 #define MAXPAK 10
 
 struct _pak_header{
