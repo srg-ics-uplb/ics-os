@@ -69,6 +69,39 @@ void extract(char *pak){
 
 }
 
+void list(char *pak){
+   FILE *fp_pak;
+   FILE *fp;
+   char *buf;
+   struct _pak_header pak_header;
+   struct _pak_trailer pak_trailer;
+   unsigned long pak_found=0;  
+   unsigned long fsize;
+   unsigned long i;
+ 
+   /*Open the pak file if it exists */
+   fp_pak = fopen(pak,"r");
+   if (fp_pak != NULL){
+     fread(&pak_header,sizeof(pak_header),1,fp_pak);
+     if (pak_header.magic[0] != 'P' && pak_header.magic[1] != 'K'){
+        printf("Not a valid pak file!");
+        exit(1);
+     }
+     pak_found=1;
+   }
+
+   if (pak_found){
+     fseek(fp_pak,pak_header.trailer_pos,SEEK_SET);
+     fread(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
+     printf("Found %ul files in pak.\n",pak_trailer.num_entries);
+     for (i=0;i<pak_trailer.num_entries;i++){
+       printf("%s with %ul bytes at offset %ul \n",pak_trailer.entries[i].fname,
+               pak_trailer.entries[i].size,pak_trailer.entries[i].pos);
+     }
+   }else{
+     printf("Pack file not found!");
+   }
+}
 
 /* Adds a file to a pak */
 void add(char *pak, char *fname){
@@ -175,10 +208,10 @@ int main(int argc, char **argv)
      else if (argv[1][0]=='x'){
        extract(argv[2]);
      }else{
-       printf("Usage: pak.exe [a/x] <pak file> <file>\n");
+       printf("Usage: pak.exe [a/l/x] <pak file> <file>\n");
      }
    }else{
-     printf("Usage: pak.exe [a/x] <pak file> <file>\n");
+     printf("Usage: pak.exe [a/l/x] <pak file> <file>\n");
    }
    return 0;
 }
