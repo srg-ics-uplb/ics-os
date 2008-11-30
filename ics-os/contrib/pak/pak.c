@@ -7,6 +7,8 @@
 #include "../../sdk/dexsdk.h"
 
 
+#define _DEBUG_PAK_
+
 /*Maximum number of files in a pak*/
 #define MAXPAK 10
 
@@ -26,7 +28,6 @@ struct _pak_trailer{
    struct _pak_entry entries[MAXPAK]; /* Entries */
 };
 
-#define _DEBUG_PAK_ 1
 #ifdef _DEBUG_PAK_
 void dump_header(struct _pak_header *header){
   printf("Header size: %d\n",sizeof(struct _pak_header));
@@ -73,18 +74,19 @@ void extract(char *pak){
      exit(1);
    }
    
-   dump_header(&pak_header);
 
    fseek(fp_pak,0,SEEK_SET);
    fseek(fp_pak,pak_header.trailer_pos,SEEK_SET);
    fread(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
 
+#ifdef _DEBUG_PAK_
+   dump_header(&pak_header);
    dump_trailer(&pak_trailer);
-
+#endif
 
    printf("Found %d files in pak.\n",pak_trailer.num_entries);
    for (i=0;i<pak_trailer.num_entries;i++){
-     printf("Extracting %s with %d bytes...",pak_trailer.entries[i].fname,
+     printf("Extracting [%s] with %d bytes...",pak_trailer.entries[i].fname,
              (int)pak_trailer.entries[i].size);
      fp=fopen(pak_trailer.entries[i].fname,"w");
      buf=(char *)malloc(pak_trailer.entries[i].size);
@@ -118,11 +120,12 @@ void list(char *pak){
    }
 
    if (pak_found){
+     fseek(fp_pak,0,SEEK_SET);
      fseek(fp_pak,pak_header.trailer_pos,SEEK_SET);
      fread(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
      printf("Found %d files in pak.\n",pak_trailer.num_entries);
      for (i=0;i<pak_trailer.num_entries;i++){
-       printf("%s with %d bytes at offset %d \n",pak_trailer.entries[i].fname,
+       printf("[%s] with %d bytes at offset %d \n",pak_trailer.entries[i].fname,
                pak_trailer.entries[i].size,pak_trailer.entries[i].pos);
      }
    }else{
@@ -154,6 +157,7 @@ void add(char *pak, char *fname){
    }
 
    if (!pak_found){
+     printf("Creating new pak file...\n");
      pak_header.magic[0]='P'; 
      pak_header.magic[1]='K'; 
      fp_pak=fopen(pak,"w");
@@ -176,9 +180,10 @@ void add(char *pak, char *fname){
 
      pak_header.trailer_pos=fsize+sizeof(pak_header);
 
+#ifdef _DEBUG_PAK_
      dump_header(&pak_header);
      dump_trailer(&pak_trailer);
-
+#endif
      printf("Adding %s with %d bytes...",fname,fsize);
      fwrite(&pak_header,sizeof(pak_header),1,fp_pak);
      fwrite(buf,fsize,1,fp_pak);
@@ -186,8 +191,9 @@ void add(char *pak, char *fname){
      fclose(fp_pak);
      printf("done\n");
    }else{
+     printf("Pak file found...\n");
      fclose(fp_pak);
-     fp_pak=fopen(pak,"rw+");
+     fp_pak=fopen(pak,"rw");
      fseek(fp_pak,pak_header.trailer_pos,SEEK_SET);
      fread(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
      fp = fopen(fname,"r");
@@ -212,8 +218,10 @@ void add(char *pak, char *fname){
     
      pak_header.trailer_pos+=fsize;
 
+#ifdef _DEBUG_PAK_
      dump_header(&pak_header);
      dump_trailer(&pak_trailer);
+#endif
 
      printf("Adding %s with %d bytes...",fname,fsize);
 
