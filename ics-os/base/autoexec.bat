@@ -2,7 +2,7 @@
 @echo Loading Microsoft C runtime library...
 loadmod /icsos/lib/msvcrt.dll
 @echo Initializing RAM Disk...
-loadmod /icsos/lib/ramdisk.dll -blocks 9000
+loadmod /icsos/lib/ramdisk.dll -blocks 1000000
 mount fat ramdisk /ramdisk
 copy /boot/apps/ed.exe /ramdisk
 pcut rd: /ramdisk/

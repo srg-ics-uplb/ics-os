@@ -93,9 +93,9 @@ void list(char *pak){
    if (pak_found){
      fseek(fp_pak,pak_header.trailer_pos,SEEK_SET);
      fread(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
-     printf("Found %ul files in pak.\n",pak_trailer.num_entries);
+     printf("Found %u files in pak.\n",pak_trailer.num_entries);
      for (i=0;i<pak_trailer.num_entries;i++){
-       printf("%s with %ul bytes at offset %ul \n",pak_trailer.entries[i].fname,
+       printf("%s with %u bytes at offset %u \n",pak_trailer.entries[i].fname,
                pak_trailer.entries[i].size,pak_trailer.entries[i].pos);
      }
    }else{
@@ -207,6 +207,9 @@ int main(int argc, char **argv)
      }
      else if (argv[1][0]=='x'){
        extract(argv[2]);
+     }
+     else if (argv[1][0]=='l'){
+       list(argv[2]);
      }else{
        printf("Usage: pak.exe [a/l/x] <pak file> <file>\n");
      }
