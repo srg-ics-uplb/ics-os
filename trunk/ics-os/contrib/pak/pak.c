@@ -11,17 +11,17 @@
 
 struct _pak_header{
    char magic[2];  /* 'P' and 'K' */
-   unsigned int trailer_pos; /* The position of the trailer */
+   unsigned long trailer_pos; /* The position of the trailer */
 };
 
 struct _pak_entry{
    char fname[15]; /* The filename */
-   unsigned int pos;    /* Offset of this entry in the pak */
-   unsigned int size;      /* The size of this entry */
+   unsigned long pos;    /* Offset of this entry in the pak */
+   unsigned long size;      /* The size of this entry */
 };
 
 struct _pak_trailer{
-   unsigned int num_entries; /* The number of entries */   
+   unsigned long num_entries; /* The number of entries */   
    struct _pak_entry entries[MAXPAK]; /* Entries */
 };
 
@@ -32,9 +32,9 @@ void extract(char *pak){
    char *buf;
    struct _pak_header pak_header;
    struct _pak_trailer pak_trailer;
-   unsigned int pak_found=0;  
-   unsigned int fsize;
-   unsigned int i;
+   unsigned long pak_found=0;  
+   unsigned long fsize;
+   unsigned long i;
  
    /*Open the pak file if it exists */
    fp_pak = fopen(pak,"r");
@@ -77,9 +77,9 @@ void add(char *pak, char *fname){
    char *buf;
    struct _pak_header pak_header;
    struct _pak_trailer pak_trailer;
-   unsigned int pak_found=0;  
-   unsigned int fsize;
-   unsigned int old_trailer_pos;
+   unsigned long pak_found=0;  
+   unsigned long fsize;
+   unsigned long old_trailer_pos;
  
  
    /*Open the pak file if it exists */
