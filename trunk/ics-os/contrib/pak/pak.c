@@ -11,17 +11,17 @@
 
 struct _pak_header{
    char magic[2];  /* 'P' and 'K' */
-   unsigned long trailer_pos; /* The position of the trailer */
+   unsigned int trailer_pos; /* The position of the trailer */
 };
 
 struct _pak_entry{
    char fname[15]; /* The filename */
-   unsigned long pos;    /* Offset of this entry in the pak */
-   unsigned long size;      /* The size of this entry */
+   unsigned int pos;    /* Offset of this entry in the pak */
+   unsigned int size;      /* The size of this entry */
 };
 
 struct _pak_trailer{
-   unsigned long num_entries; /* The number of entries */   
+   unsigned int num_entries; /* The number of entries */   
    struct _pak_entry entries[MAXPAK]; /* Entries */
 };
 
@@ -32,9 +32,9 @@ void extract(char *pak){
    char *buf;
    struct _pak_header pak_header;
    struct _pak_trailer pak_trailer;
-   unsigned long pak_found=0;  
-   unsigned long fsize;
-   unsigned long i;
+   unsigned int pak_found=0;  
+   unsigned int fsize;
+   unsigned int i;
  
    /*Open the pak file if it exists */
    fp_pak = fopen(pak,"r");
@@ -75,9 +75,9 @@ void list(char *pak){
    char *buf;
    struct _pak_header pak_header;
    struct _pak_trailer pak_trailer;
-   unsigned long pak_found=0;  
-   unsigned long fsize;
-   unsigned long i;
+   unsigned int pak_found=0;  
+   unsigned int fsize;
+   unsigned int i;
  
    /*Open the pak file if it exists */
    fp_pak = fopen(pak,"r");
@@ -110,9 +110,9 @@ void add(char *pak, char *fname){
    char *buf;
    struct _pak_header pak_header;
    struct _pak_trailer pak_trailer;
-   unsigned long pak_found=0;  
-   unsigned long fsize;
-   unsigned long old_trailer_pos;
+   unsigned int pak_found=0;  
+   unsigned int fsize;
+   unsigned int old_trailer_pos;
  
  
    /*Open the pak file if it exists */
@@ -200,7 +200,7 @@ void add(char *pak, char *fname){
 int main(int argc, char **argv) 
 {
 
-   printf("PAK 1.0 for ICS-OS\n");
+   printf("PAK 1.0 for ICS-OS (jachermocilla@gmail.com)\n\n");
    if (argc >= 3){
      if (argv[1][0]=='a'){
        add(argv[2],argv[3]);
