@@ -1,0 +1,6 @@
+romimage: file=$BXSHARE/BIOS-bochs-latest 
+cpu: count=1, ips=10000000, reset_on_triple_fault=1
+megs: 16
+floppya: 1_44=ics-os-floppy.img, status=inserted
+boot: floppy
+log: /dev/null
