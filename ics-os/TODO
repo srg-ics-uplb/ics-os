@@ -1,0 +1,34 @@
+Things to do for ICS-OS
+-----------------------
+
+A. General Testing, Bug Fixing, Documentation
+  1. Review implementation of the system calls
+  2. Revisit Scheduler 
+  3. Documentation 
+  4. Improve build process
+
+B. Kernel Space
+  1. Provide support for booting from hard disk
+  2. support for ext2 filesystem
+  3. support for PCI  
+  4. improve C library
+  6. 
+
+C. User Space (System Programs)
+  1. date/time
+  2. a fast text editor
+  3. disk space utility program
+  4. man page utility
+  5. file archiving utility 
+  6. shells
+  7. calendar utility
+  8. GUI
+  9. grep
+  10. port a compiler
+  11. debugger
+  12. pagers (less, more)
+  13. hexdump 
+  14. package manager
+  15. simple Make implementation
+  16.  
+      
