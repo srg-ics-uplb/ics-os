@@ -21,3 +21,7 @@ In linux, the disk image and bochsrc should be in the same directory. Run Boch's
 $bochs -q
 }}}
 In windows, the disk image and bochsrc should be placed in Boch's installation directory.
+
+If everything is successful, then you should see something similar to the picture below when you run Bochs.
+
+http://code.google.com/p/ics-os/source/browse/trunk/ics-os/icsos01.png
