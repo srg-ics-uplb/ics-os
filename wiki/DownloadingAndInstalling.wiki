@@ -20,3 +20,4 @@ In linux, the disk image and bochsrc should be in the same directory. Run Boch's
 {{{
 $bochs -q
 }}}
+In windows, the disk image and bochsrc should be placed in Boch's installation directory.
