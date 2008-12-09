@@ -2,7 +2,7 @@
 
 == Quick Install ==
 
-ICS-OS fits in a single 1.44MB floppy disk. The fastest way to test ICS-OS is to download the latest floppy disk image and write it directly to a floppy disk.
+ICS-OS fits in a single 1.44MB floppy disk. The fastest way to test ICS-OS is to download the latest floppy disk <a href="http://ics-os.googlecode.com/svn/trunk/ics-os/ics-os-floppy.img">image</a> and write it directly to a floppy disk.
 
 In linux, you can use the dd command
 {{{
