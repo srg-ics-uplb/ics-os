@@ -1,10 +1,5 @@
 #summary Downloading and Installing ICS-OS.
 
-== Introduction ==
+== Quick Install ==
 
-(Coming soon...)
-
-
-== Details ==
-
-(Coming soon...)
+ICS-OS fits in a single 1.44MB floppy disk. The fastest way to test ICS-OS is to download the latest floppy disk image and write it directly to a floppy disk.
