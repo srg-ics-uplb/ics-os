@@ -12,3 +12,7 @@ If the write is successful, test the floppy by rebooting your PC. Make sure that
 
 
 == Boch's Install ==
+
+ # Download the latest <a href="http://bochs.sourceforge.net/">Boch's</a> version for your OS.
+ # Download this <a href="http://ics-os.googlecode.com/svn/trunk/ics-os/bochsrc">bochsrc</a>. Take note of the section {{{ floppya: 1_44=ics-os-floppy.img, status=inserted }}}. This section specifies that the floppy drive contains the ics-os floppy disk image.
+ # 
