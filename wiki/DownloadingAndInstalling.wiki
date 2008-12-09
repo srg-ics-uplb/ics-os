@@ -1,6 +1,6 @@
 #summary Downloading and Installing ICS-OS.
 
-== Quick Install ==
+== Floppy Install==
 
 ICS-OS fits in a single 1.44MB floppy disk. The fastest way to test ICS-OS is to download the latest floppy disk <a href="http://ics-os.googlecode.com/svn/trunk/ics-os/ics-os-floppy.img">image</a> and write it directly to a floppy disk.
 
@@ -8,3 +8,7 @@ In linux, you can use the {{{ dd }}} command
 {{{
 #dd if=ics-os-floppy of=/dev/fd0 bs=2880
 }}}
+If the write is successful, test the floppy by rebooting your PC. Make sure that the floppy comes first in the boot device priority in the BIOS setup.
+
+
+== Boch's Install ==
