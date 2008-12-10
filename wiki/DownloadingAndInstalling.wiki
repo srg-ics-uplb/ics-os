@@ -11,16 +11,16 @@ In linux, you can use the {{{ dd }}} command
 If the write is successful, test the floppy by rebooting your PC. Make sure that the floppy comes first in the boot device priority in the BIOS setup.
 
 
-== Boch's Install ==
+== Bochs Install ==
 
- # Download the latest <a href="http://bochs.sourceforge.net/">Boch's</a> version for your OS.
+ # Download the latest <a href="http://bochs.sourceforge.net/">Bochs'</a> version for your OS.
  # Download ics-os disk <a href="http://ics-os.googlecode.com/svn/trunk/ics-os/ics-os-floppy.img">image</a>
  # Download this <a href="http://ics-os.googlecode.com/svn/trunk/ics-os/bochsrc">bochsrc</a>. Take note of the section {{{ floppya: 1_44=ics-os-floppy.img, status=inserted }}}. This section specifies that the floppy drive contains the ics-os floppy disk image.
-In linux, the disk image and bochsrc should be in the same directory. Run Boch's using the following command
+In linux, the disk image and bochsrc should be in the same directory. Run Bochs' using the following command
 {{{
 $bochs -q
 }}}
-In windows, the disk image and bochsrc should be placed in Boch's installation directory.
+In windows, the disk image and bochsrc should be placed in Bochs' installation directory.
 
 If everything is successful, then you should see something similar to the picture below when you run Bochs. Press enter to load ics-os.
 
