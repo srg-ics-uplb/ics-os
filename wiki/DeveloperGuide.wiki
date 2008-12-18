@@ -2,8 +2,7 @@
 
 ==== Introduction ====
 This guide is for software developers who would like to work on the source code of
-ics-os. The suggested development platform is a linux box with development tools 
-installed. The following packages should be available on the development machine.
+ics-os. The suggested development platform is a linux box with the following tools installed.
 
   * make
   * gcc/tcc
@@ -11,6 +10,7 @@ installed. The following packages should be available on the development machine
   * mount
   * bochs
   * nasm
+  * subversion (optional)
 
 Instructions for installing the above packages differ from one linux distribution to another. Consult the documentation for the distribution that you use.
 
@@ -20,6 +20,7 @@ $sudo apt-get install build-essential
 $sudo apt-get install nasm
 $sudo apt-get install bochs
 $sudo apt-get install tcc
+$sudo apt-get install subversion
 }}}
 ==== Obtaining the Source Code ====
 To obtain the source code for ics-os, visit the http://code.google.com/p/ics-os/downloads/list. 
