@@ -1,6 +1,6 @@
 #summary Developer's Guide
 
-=== Introduction ===
+==== Introduction ====
 This guide is for software developers who would like to work on the source code of
 ics-os. The suggested development platform is a linux box with development tools 
 installed. The following packages should be available on the development machine.
@@ -12,7 +12,7 @@ installed. The following packages should be available on the development machine
   * bochs
   * nasm
 
-=== Obtaining the Source Code ===
-
+==== Obtaining the Source Code ====
+To obtain the source code for ics-os, visit the http://code.google.com/p/ics-os/downloads/list. 
 
 (Work in progress...)
