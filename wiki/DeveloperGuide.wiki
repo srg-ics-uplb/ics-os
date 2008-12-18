@@ -35,14 +35,12 @@ $make
 }}}
   # Build the distribution floppy image. Make sure that you have root privileges.
 {{{
-#sudo make install
+#make install
 }}}
-
   # Test the distribution floppy image. This does not require root privileges.
 {{{
 $bochs -q
 }}}
-
 
 
 (Work in progress...)
