@@ -76,6 +76,9 @@ Kernel source directories.
 ||{{{mnt/}}}||Temporary mount directory||
 ||{{{module/}}}||Implementation of supported executable file formats (PE, ELF)||
 ||{{{process/}}}||Process management routines||
+||{{{startup/}}}||Contains startup routines after bootloader finishes(enables 32-bit protected mode||
+||{{{stdlib/}}}||Standard library routines||
+
 
 
 (Work in progress...)
