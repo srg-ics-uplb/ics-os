@@ -1,6 +1,6 @@
 #summary Developer's Guide
 
-=== Introduction ===
+=== 1. Introduction ===
 This guide is for software developers who would like to work on the source code of
 ics-os. The suggested development platform is a linux box with the following tools installed.
 
@@ -22,11 +22,11 @@ $sudo apt-get install bochs
 $sudo apt-get install tcc
 $sudo apt-get install subversion
 }}}
-=== Obtaining the Source Code ===
+=== 2. Obtaining the Source Code ===
 To obtain the source code for ics-os, visit the http://code.google.com/p/ics-os/downloads/list. 
 You can also access the latest snapshot of the source tree via Subversion by following the instructions at http://code.google.com/p/ics-os/source/checkout.
 
-=== Building the Source Code ===
+=== 3. Building the Source Code ===
 Building the source code for the kernel and the distribution disk is accomplished using {{{ make }}}. 
 
   # First extract the source distribution .tar.gz.
@@ -49,7 +49,7 @@ $make
 {{{
 $bochs -q
 }}}
-=== Source Code Directory Structure ===
+=== 4. Source Code Directory Structure ===
 Top level directories.
 || *Directory* || *Description* ||
 ||{{{apps/}}}||Executables of application programs ||
