@@ -5,12 +5,14 @@ This guide is for software developers who would like to work on the source code 
 ics-os. The suggested development platform is a linux box with development tools 
 installed. The following packages should be available on the development machine.
 
-  * Make
-  * gcc
-  * GNU binutils
+  * make
+  * gcc/tcc
+  * GNU binutils (ld, strip)
   * mount
   * bochs
   * nasm
+
+Instructions for installing the above packages differ from one linux distribution to another. Consult the documentation for the distribution that you use.
 
 ==== Obtaining the Source Code ====
 To obtain the source code for ics-os, visit the http://code.google.com/p/ics-os/downloads/list. 
