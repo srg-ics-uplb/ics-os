@@ -33,7 +33,7 @@ Building the source code for the kernel and the distribution disk is accomplishe
 {{{
 $tar xzvf ics-os-121808.tar.gz
 }}}
-  # Next, go inside the directory of the extracted source
+  # Next, go inside the directory of the extracted source.
 {{{
 $cd ics-os
 }}}
@@ -41,7 +41,7 @@ $cd ics-os
 {{{
 $make
 }}}
-  # Create the distribution floppy image. Make sure that you have root privileges.
+  # Create the distribution floppy image. Make sure that you have root privileges(Use the {{{su}}} or {{{sudo}}} command.
 {{{
 #make install
 }}}
