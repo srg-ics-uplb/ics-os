@@ -59,7 +59,7 @@ Top level directories.
 ||{{{contrib/}}}||Sources for applications||
 ||{{{kernel/}}}||Kernel sources directory||
 ||{{{lib/}}}||Binaries of extension modules||
-||{{{mnt/}}}||Temporary folder for mounting the floppy image||
+||{{{mnt/}}}||Temporary folder for mounting the floppy image when creating the distribution||
 ||{{{sdk/}}}||Libraries for application development||
 
 
