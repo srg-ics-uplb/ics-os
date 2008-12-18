@@ -62,6 +62,12 @@ Top level directories.
 ||{{{mnt/}}}||Temporary folder for mounting the floppy image when creating the distribution||
 ||{{{sdk/}}}||Libraries for application development||
 
-
+Kernel source directories.
+|| *Directory* || *Description* ||
+||{{{console/}}}||Sources for the main shell||\
+||{{{devmgt/}}}||Sources for the device and extension manager||
+||{{{dexapi/}}}||Sources for setting up the system call table||
+||{{{docs/}}}||Documentation files for kernel||
+||{{{filesystem/}}}||Sources for filesystem support (fat12 and iso9660)||
 
 (Work in progress...)
