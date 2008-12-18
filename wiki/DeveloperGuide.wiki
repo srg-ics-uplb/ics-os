@@ -1,4 +1,5 @@
 #summary Developer's Guide
+(Work in progress...)
 
 === 1. Introduction ===
 This guide is for software developers who would like to work on the source code of
@@ -80,5 +81,3 @@ Kernel source directories.
 ||{{{stdlib/}}}||Standard library routines||
 ||{{{vfs/}}}||Virtual File System implementation||
 ||{{{vmm/}}}||Virtual Memory Management implementation||
-
-(Work in progress...)
