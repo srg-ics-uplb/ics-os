@@ -65,9 +65,17 @@ Top level directories.
 Kernel source directories.
 || *Directory* || *Description* ||
 ||{{{console/}}}||Sources for the main shell||
-||{{{devmgt/}}}||Sources for the device and extension manager||
+||{{{devmgr/}}}||Sources for the device and extension manager||
 ||{{{dexapi/}}}||Sources for setting up the system call table||
 ||{{{docs/}}}||Documentation files for kernel||
 ||{{{filesystem/}}}||Sources for filesystem support (fat12 and iso9660)||
+||{{{grub/}}}||Files needed by grub||
+||{{{hardware/}}}||Sources for hardware device drivers||
+||{{{iomgr/}}}||Input/Output manager code||
+||{{{memory/}}}||Memory management routines||
+||{{{mnt/}}}||Temporary mount directory||
+||{{{module/}}}||Implementation of supported executable file formats (PE, ELF)||
+||{{{process/}}}||Process management routines||
+
 
 (Work in progress...)
