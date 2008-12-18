@@ -41,7 +41,7 @@ $cd ics-os
 {{{
 $make
 }}}
-  # Create the distribution floppy image. Make sure that you have root privileges(Use the {{{su}}} or {{{sudo}}} command.
+  # Create the distribution floppy image. Make sure that you have root privileges(use the {{{su}}} or {{{sudo}}} command).
 {{{
 #make install
 }}}
