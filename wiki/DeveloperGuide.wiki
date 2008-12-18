@@ -49,9 +49,10 @@ $make
 {{{
 $bochs -q
 }}}
-
 === Source Code Directory Structure ===
+Top Level
 || *File/Folder* || *Description* ||
-||{{{apps/}}}||Executables ||
+||{{{apps/}}}||Executables of application programs ||
+||{{{base/}}}||Contains files that will be on the root directory of the floppy distribution||
 
 (Work in progress...)
