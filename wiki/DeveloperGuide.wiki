@@ -78,7 +78,7 @@ Kernel source directories.
 ||{{{process/}}}||Process management routines||
 ||{{{startup/}}}||Contains startup routines after bootloader finishes(enables 32-bit protected mode||
 ||{{{stdlib/}}}||Standard library routines||
-
-
+||{{{vfs/}}}||Virtual File System implementation||
+||{{{vmm/}}}||Virtual Memory Management implementation||
 
 (Work in progress...)
