@@ -1,5 +1,16 @@
 #summary Developer's Guide
 
 === Introduction ===
+This guide is for software developers who would like to work on the source code of
+ics-os. The suggested development platform is a linux box with development tools 
+installed. The following packages should be available on the development machine.
 
-(Coming soon...)
+  * Make
+  * gcc
+  * GNU binutils
+  * mount
+  * Bochs
+
+
+
+(Work in progress...)
