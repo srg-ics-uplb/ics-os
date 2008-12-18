@@ -50,8 +50,8 @@ $make
 $bochs -q
 }}}
 
-If everything is successful, then you should see something similar to the picture below when you run Bochs. Press enter to start ics-os.
-
-http://ics-os.googlecode.com/svn/trunk/ics-os/icsos01.png
+==== Source Code Directory Structure ====
+||File/Folder||Description||
+||apps/|| ||
 
 (Work in progress...)
