@@ -18,4 +18,9 @@ Instructions for installing the above packages differ from one linux distributio
 To obtain the source code for ics-os, visit the http://code.google.com/p/ics-os/downloads/list. 
 You can also access the latest snapshot of the source tree via Subversion by following the instructions at http://code.google.com/p/ics-os/source/checkout.
 
+==== Building the Source Code ====
+Building the source code for the kernel and the distribution disk is accomplished using {{{ make }}}. First extract the .tar.gz file.
+
+
+
 (Work in progress...)
