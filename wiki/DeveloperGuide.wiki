@@ -64,7 +64,7 @@ Top level directories.
 
 Kernel source directories.
 || *Directory* || *Description* ||
-||{{{console/}}}||Sources for the main shell||\
+||{{{console/}}}||Sources for the main shell||
 ||{{{devmgt/}}}||Sources for the device and extension manager||
 ||{{{dexapi/}}}||Sources for setting up the system call table||
 ||{{{docs/}}}||Documentation files for kernel||
