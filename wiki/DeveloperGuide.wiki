@@ -115,4 +115,5 @@ This section describes an example on how to modify ics-os, specifically the kern
 }}}
 
 Perform the steps 3-5 of Section 3 to build the source. You should see something similar to the figure below after typing {{{hello}}} on the command prompt and pressing enter.
+
 http://ics-os.googlecode.com/svn/trunk/ics-os/kernel/docs/figure01.png
