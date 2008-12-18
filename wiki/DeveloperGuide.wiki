@@ -37,11 +37,11 @@ $tar xzvf ics-os-121808.tar.gz
 {{{
 $cd ics-os
 }}}
-  # Build the kernel
+  # Build the kernel.
 {{{
 $make
 }}}
-  # Build the distribution floppy image. Make sure that you have root privileges.
+  # Create the distribution floppy image. Make sure that you have root privileges.
 {{{
 #make install
 }}}
@@ -50,9 +50,15 @@ $make
 $bochs -q
 }}}
 === Source Code Directory Structure ===
-Top Level
+Top level directories.
 || *File/Folder* || *Description* ||
 ||{{{apps/}}}||Executables of application programs ||
+||{{{apps-old/||Executables of old application programs||
 ||{{{base/}}}||Contains files that will be on the root directory of the floppy distribution||
+||{{{boot/}}}||Contains files for grub||
+||{{{kernel/}}}||Kernel sources directory||
+||{{{sdk/}}}||Libraries for application development||
+
+
 
 (Work in progress...)
