@@ -1,1 +1,1 @@
-const char *build_id= "devel ..";
+const char *build_id= "devel";
