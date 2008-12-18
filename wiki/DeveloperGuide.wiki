@@ -14,7 +14,6 @@ installed. The following packages should be available on the development machine
 
 ==== Obtaining the Source Code ====
 To obtain the source code for ics-os, visit the http://code.google.com/p/ics-os/downloads/list. 
-
-You can also access the latest snapshot of the source tree via Subversion. Follow the instructions at http://code.google.com/p/ics-os/source/checkout
+You can also access the latest snapshot of the source tree via Subversion by following the instructions at http://code.google.com/p/ics-os/source/checkout
 
 (Work in progress...)
