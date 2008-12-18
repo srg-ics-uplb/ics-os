@@ -6,6 +6,7 @@
 vmdex:
 	make -C kernel/
 
+.PHONY: clean
 clean:
 	rm -f vmdex
 	make -C kernel/ clean
