@@ -85,7 +85,7 @@ Kernel source directories.
 
 === 5. A "Hello World" Example ===
 This section describes an example on how to modify ics-os, specifically the kernel by adding a new command. After extracting the sources, open the file {{{kernel/console/console.c}}} from the top level directory of the extracted source. Locate the function
-{{{int console_execute(const char *str)}}}. 
+{{{int console_execute(const char *str)}}}. Modify the body of the function by inserting the code fragment between the START and END comment lines on the location shown below.
 
 {{{
     //check if a pathcut command was executed
@@ -96,10 +96,16 @@ This section describes an example on how to modify ics-os, specifically the kern
                     console_execute(temp); 
                 }
                 else
+    /*----------------------START------------------*/
+    if (strcmp(u,"hello")==0)
+                {
+                   printf("Hello World command!");
+                }
+		else
+    /*-----------------------END------------------*/
     if (strcmp(u,"fgman")==0)
                 {
                     fg_set_state(1);
                 }
-                else
 
 }}}
