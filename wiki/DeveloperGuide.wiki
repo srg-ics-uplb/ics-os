@@ -51,12 +51,15 @@ $bochs -q
 }}}
 === Source Code Directory Structure ===
 Top level directories.
-|| *File/Folder* || *Description* ||
+|| *Directory* || *Description* ||
 ||{{{apps/}}}||Executables of application programs ||
-||{{{apps-old/||Executables of old application programs||
+||{{{apps-old/}}}||Executables of old application programs||
 ||{{{base/}}}||Contains files that will be on the root directory of the floppy distribution||
 ||{{{boot/}}}||Contains files for grub||
+||{{{contrib/}}}||Sources for applications||
 ||{{{kernel/}}}||Kernel sources directory||
+||{{{lib/}}}||Binaries of extension modules||
+||{{{mnt/}}}||Temporary folder for mounting the floppy image||
 ||{{{sdk/}}}||Libraries for application development||
 
 
