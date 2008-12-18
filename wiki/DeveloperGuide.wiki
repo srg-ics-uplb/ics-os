@@ -29,16 +29,18 @@ $tar xzvf ics-os-121808.tar.gz
 {{{
 $cd ics-os
 }}}
-  # Run {{{ make }}} to build the kernel
+  # Build the kernel
 {{{
-ics-os$make
+$make
 }}}
+  # Build the distribution floppy image. Make sure that you have root privileges.
 {{{
-ics-os$sudo make install
+#sudo make install
 }}}
 
+  # Test the distribution floppy image. This does not require root privileges.
 {{{
-ics-os$bochs -q
+$bochs -q
 }}}
 
 
