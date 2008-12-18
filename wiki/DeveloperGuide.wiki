@@ -9,8 +9,10 @@ installed. The following packages should be available on the development machine
   * gcc
   * GNU binutils
   * mount
-  * Bochs
+  * bochs
+  * nasm
 
+=== Obtaining the Source Code ===
 
 
 (Work in progress...)
