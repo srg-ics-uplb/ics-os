@@ -51,7 +51,7 @@ $bochs -q
 }}}
 
 ==== Source Code Directory Structure ====
-||File/Folder||Description||
-||apps/|| ||
+||*File/Folder*||*Description*||
+||{{{apps/}}}||Executables ||
 
 (Work in progress...)
