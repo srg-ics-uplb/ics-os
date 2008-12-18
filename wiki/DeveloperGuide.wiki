@@ -14,7 +14,7 @@ installed. The following packages should be available on the development machine
 
 Instructions for installing the above packages differ from one linux distribution to another. Consult the documentation for the distribution that you use.
 
-For Ubuntu users, the following commands will install the above packages.
+For Ubuntu users, the following commands will install the required packages.
 {{{
 $sudo apt-get install build-essential
 $sudo apt-get install nasm
