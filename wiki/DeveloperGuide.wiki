@@ -14,6 +14,13 @@ installed. The following packages should be available on the development machine
 
 Instructions for installing the above packages differ from one linux distribution to another. Consult the documentation for the distribution that you use.
 
+For Ubuntu users, the following commands will install the above packages.
+{{{
+$sudo apt-get install build-essential
+$sudo apt-get install nasm
+$sudo apt-get install bochs
+$sudo apt-get install tcc
+}}}
 ==== Obtaining the Source Code ====
 To obtain the source code for ics-os, visit the http://code.google.com/p/ics-os/downloads/list. 
 You can also access the latest snapshot of the source tree via Subversion by following the instructions at http://code.google.com/p/ics-os/source/checkout.
