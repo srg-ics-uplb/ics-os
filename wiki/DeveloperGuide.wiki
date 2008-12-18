@@ -81,3 +81,6 @@ Kernel source directories.
 ||{{{stdlib/}}}||Standard library routines||
 ||{{{vfs/}}}||Virtual File System implementation||
 ||{{{vmm/}}}||Virtual Memory Management implementation||
+
+=== 5. A "Hello World" Command ===
+This section describes an example on how to modify ics-os, specifically the kernel by adding a new command.
