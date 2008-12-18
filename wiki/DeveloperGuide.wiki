@@ -99,7 +99,7 @@ This section describes an example on how to modify ics-os, specifically the kern
     /*----------------------START------------------*/
     if (strcmp(u,"hello")==0)
                 {
-                   printf("Hello World command!");
+                   printf("Hello World command!\n");
                 }
 		else
     /*-----------------------END------------------*/
@@ -109,3 +109,5 @@ This section describes an example on how to modify ics-os, specifically the kern
                 }
 
 }}}
+
+Perform the steps in Section 3 to build the source.
