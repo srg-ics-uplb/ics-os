@@ -21,17 +21,23 @@ You can also access the latest snapshot of the source tree via Subversion by fol
 ==== Building the Source Code ====
 Building the source code for the kernel and the distribution disk is accomplished using {{{ make }}}. 
 
-  #First extract the source distribution .tar.gz.
+  # First extract the source distribution .tar.gz.
 {{{
 $tar xzvf ics-os-121808.tar.gz
 }}}
-  #Next, go inside the directory of the extracted source
-{{
+  # Next, go inside the directory of the extracted source
+{{{
 $cd ics-os
-}}
-
+}}}
+  # Run {{{ make }}} to build the kernel
+{{{
 ics-os$make
+}}}
+{{{
 ics-os$sudo make install
+}}}
+
+{{{
 ics-os$bochs -q
 }}}
 
