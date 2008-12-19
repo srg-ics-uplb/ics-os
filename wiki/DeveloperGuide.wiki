@@ -1,6 +1,9 @@
 #summary Developer's Guide
 (Work in progress...)
 
+Table of Contents
+<wiki:toc max_depth="1" />
+
 === 1. Introduction ===
 This guide is for software developers who would like to work on the source code of
 ics-os. The suggested development platform is a linux box with the following tools installed.
