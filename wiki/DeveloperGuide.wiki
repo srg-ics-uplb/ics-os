@@ -3,7 +3,7 @@
 
 Table of Contents
 
-<wiki:toc max_depth="3" />
+<wiki:toc max_depth="1" />
 
 === 1. Introduction ===
 This guide is for software developers who would like to work on the source code of
