@@ -217,11 +217,8 @@ INPUT(startup.o asmlib.o kernel32.o scheduler.o iomgr.o fat.o iso9660.o
       devfs.o irqwrap.o devmgr_error.o)
 OUTPUT(Kernel32.bin)
 }}}
-The first line of the linker script specifies the type of executable to produce, elf32-i386. There are several executable file formats available but in the case of ics-os, we want to use ELF which is used in linux. The second line specifies {{{startup}}} as the entry point for the operating system to begin its execution. The entry point is a symbol (a label in assembly) to jump to. This symbol is defined in the file {{{kernel/startup/startup.asm}}}. {{{SECTIONS}}} specify the memory area where the instructions(.text) and data(.data) will be placed which in ics-os case is at memory location 0x00100000. The {{{INPUT}}} section specifies the input files which are the object files and the {{{OUTPUT}}} section specifies the output kernel image file. After linking, the linker generates a map file that summarizes how it created the output file. A portion of the generated mapfile is shown below
+The first line of the linker script specifies the type of executable to produce, elf32-i386. There are several executable file formats available but in the case of ics-os, we want to use ELF which is used in linux. The second line specifies {{{startup}}} as the entry point for the operating system to begin its execution. The entry point is a symbol (a label in assembly) to jump to. This symbol is defined in the file {{{kernel/startup/startup.asm}}}. {{{SECTIONS}}} specify the memory area where the instructions(.text) and data(.data) will be placed which in ics-os case is at memory location 0x00100000. The {{{INPUT}}} section specifies the input files which are the object files and the {{{OUTPUT}}} section specifies the output kernel image file. After linking, the linker generates a map file that summarizes how it created the output file. A portion of the generated mapfile({{{mapfile.txt}}}) is shown below.
 {{{
-Linker script and memory map
-
-
 .text           0x0000000000100000    0x270d4
  *(.text)
  .text          0x0000000000100000      0x2d2 startup.o
