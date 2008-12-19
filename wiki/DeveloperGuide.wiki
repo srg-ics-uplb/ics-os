@@ -127,7 +127,7 @@ Perform steps 3-5 of Section 3 to build the source. You should see something sim
 http://ics-os.googlecode.com/svn/trunk/ics-os/kernel/docs/figure01.png
 
 = 6. Understanding the Kernel Makefile =
-In order to create the floppy distribution image of ICS-OS, it uses the {{{make}}} utility
+In order to create the floppy distribution image of ics-os, it uses the {{{make}}} utility
 to build the sources. For a detailed explanation of this utility, please read the <a href="http://www.gnu.org/software/make/manual/make.html">GNU Make</a> manual. The primary input to {{{make}}} is a makefile. In ICS-OS, there are two makefiles, {{{Makefile}}} and {{{kernel/Makefile}}}. A simple makefile is composed of rules with the following syntax.
 {{{
 target ... : prerequisites ...
@@ -191,4 +191,4 @@ clean:
 	rm -f vmdex
 }}}
 
-When you run {{{make}}}, what happens is that the target {{{bzImage}}} is processed first because it is the very first target. The prerequisite for this target is also a target, {{{all}}}. Thus, the target {{{all}}} will be processed first before the commands for the target {{{bzImage}}} are executed. If you look at the target {{{all}}}, notice that the prerequisites are also targets and thus will be processed first. The processing is thus recursive. Majority of the commands for the targets invoke the C compiler and assembler defined as variables at the start of the makefile. For example the command for the {{{scheduler.o}}} target becomes {{{gcc -w -nostdlib -fno-builtin -ffreestanding -c -o scheduler.o process/scheduler.c}}}
+When you run {{{make}}}, what happens is that the target {{{bzImage}}} is processed first because it is the very first target. The prerequisite for this target is also a target, {{{all}}}. Thus, the target {{{all}}} will be processed first before the commands for the target {{{bzImage}}} are executed. If you look at the target {{{all}}}, notice that the prerequisites are also targets and thus will be processed first. The processing is thus recursive. Majority of the commands for the targets invoke the C compiler and assembler defined as variables at the start of the makefile. For example the command for the {{{scheduler.o}}} target becomes {{{gcc -w -nostdlib -fno-builtin -ffreestanding -c -o scheduler.o process/scheduler.c}}} when executed.
