@@ -128,7 +128,7 @@ http://ics-os.googlecode.com/svn/trunk/ics-os/kernel/docs/figure01.png
 
 = 6. Understanding the Kernel Makefile =
 In order to create the floppy distribution image of ics-os, it uses the {{{make}}} utility
-to build the sources. For a detailed explanation of this utility, please read the <a href="http://www.gnu.org/software/make/manual/make.html">GNU Make</a> manual. The primary input to {{{make}}} is a makefile. In ICS-OS, there are two makefiles, {{{Makefile}}} and {{{kernel/Makefile}}}. A simple makefile is composed of rules with the following syntax.
+to build the sources. For a detailed explanation of this utility, please read the <a href="http://www.gnu.org/software/make/manual/make.html">GNU Make</a> manual. The primary input to {{{make}}} is a makefile. In ics-os, there are two makefiles, {{{Makefile}}} and {{{kernel/Makefile}}}. A simple makefile is composed of rules with the following syntax.
 {{{
 target ... : prerequisites ...
              command
