@@ -1,7 +1,7 @@
 #summary Developer's Guide
 (Work in progress...)
 
-=== Table of Contents ===
+Table of Contents
 
 <wiki:toc max_depth="3" />
 
