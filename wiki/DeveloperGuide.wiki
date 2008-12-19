@@ -52,7 +52,7 @@ $bochs -q
 }}}
   # To remove object files.
 {{{
-  $make clean
+$make clean
 }}}
 === 4. Source Code Directory Structure ===
 Top level directories.
