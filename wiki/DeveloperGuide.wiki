@@ -4,7 +4,7 @@
 
 *Table of Contents*
 
-<wiki:toc max_depth="3" />
+<wiki:toc max_depth="1" />
 
 === 1. Introduction ===
 This guide is for software developers who would like to work on the source code of
@@ -188,4 +188,6 @@ clean:
 	rm -f vmdex
 }}}
 
-When you run {{{make}}}, what happens is that the target {{{bzImage}}} is processed first because it is the very first target. The prerequisite for this target is also a target, {{{all}}}. Thus, the target {{{all}}} will be processed first, before the commands for the target {{{bzImage}}} are executed. If you look at the target {{{all}}}, notice that the prerequisites are also targets and thus will be processed first.
+When you run {{{make}}}, what happens is that the target {{{bzImage}}} is processed first because it is the very first target. The prerequisite for this target is also a target, {{{all}}}. Thus, the target {{{all}}} will be processed first before the commands for the target {{{bzImage}}} are executed. If you look at the target {{{all}}}, notice that the prerequisites are also targets and thus will be processed first. The processing is recursive.
+
+Let us look into the {{{Kernel32.bin}}} target.
