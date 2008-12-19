@@ -28,6 +28,9 @@ $sudo apt-get install bochs
 $sudo apt-get install tcc
 $sudo apt-get install subversion
 }}}
+
+The main target audience for this guide are students learning systems programming and OS kernel programming.
+
 = 2. Obtaining the Source Code =
 To obtain the source code for ics-os, visit the http://code.google.com/p/ics-os/downloads/list. 
 You can also access the latest snapshot of the source tree via Subversion by following the instructions at http://code.google.com/p/ics-os/source/checkout.
@@ -188,6 +191,4 @@ clean:
 	rm -f vmdex
 }}}
 
-When you run {{{make}}}, what happens is that the target {{{bzImage}}} is processed first because it is the very first target. The prerequisite for this target is also a target, {{{all}}}. Thus, the target {{{all}}} will be processed first before the commands for the target {{{bzImage}}} are executed. If you look at the target {{{all}}}, notice that the prerequisites are also targets and thus will be processed first. The processing is recursive.
-
-Let us look into the {{{Kernel32.bin}}} target.
+When you run {{{make}}}, what happens is that the target {{{bzImage}}} is processed first because it is the very first target. The prerequisite for this target is also a target, {{{all}}}. Thus, the target {{{all}}} will be processed first before the commands for the target {{{bzImage}}} are executed. If you look at the target {{{all}}}, notice that the prerequisites are also targets and thus will be processed first. The processing is thus recursive. Majority of the commands for the targets invoke the C compiler and assembler defined as variables at the start of the makefile. For example the command for the {{{scheduler.o}}} target becomes {{{gcc -w -nostdlib -fno-builtin -ffreestanding -c -o scheduler.o process/scheduler.c}}}
