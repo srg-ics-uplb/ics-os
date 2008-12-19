@@ -1,6 +1,8 @@
 #summary Developer's Guide
 (Work in progress...)
 
+#sidebar TableOfContents
+
 *Table of Contents*
 
 <wiki:toc max_depth="3" />
