@@ -29,18 +29,18 @@
 #define IRQ_FDC 64
 
 typedef struct _idtr {
-      WORD limit;
-      idtentry *location;
-}     idtr;
+   WORD limit;
+   idtentry *location;
+}idtr;
 
 /*Used by the irqwrappers to determine the device drivers
   that uses this irq's so that they could be notified whenever
   an IRQ is triggered.*/
   
 typedef struct _irq_attachments {
-int deviceid;
-void (*irq_handler)(); //the device's irq handler
-struct _irq_attachments *next,*prev;
+   int deviceid;
+   void (*irq_handler)(); //the device's irq handler
+   struct _irq_attachments *next,*prev;
 } irq_attachments;
 
 irq_attachments *irq_attachlist[16];
@@ -336,25 +336,25 @@ returns:
 */
 int irq_addhandler(int deviceid,int irq_number,void (*handler)())
 {
-irq_attachments *irqhand = (irq_attachments*)malloc(sizeof(irq_attachments));
-irqhand->deviceid    = deviceid;
-irqhand->irq_handler = handler;
+   irq_attachments *irqhand = (irq_attachments*)malloc(sizeof(irq_attachments));
+   irqhand->deviceid    = deviceid;
+   irqhand->irq_handler = handler;
 
-//attach to irq handlers list using the attach to head method
-//check if nothing is attached yet
-    if (irq_attachlist[irq_number]==0) 
-        {
-           irq_attachlist[irq_number] = irqhand;
-           irqhand->next = 0;
-           irqhand->prev = 0;                 
-           return 0;
-        };
+   //attach to irq handlers list using the attach to head method
+   //check if nothing is attached yet
+   if (irq_attachlist[irq_number]==0) 
+   {
+      irq_attachlist[irq_number] = irqhand;
+      irqhand->next = 0;
+      irqhand->prev = 0;                 
+      return 0;
+   };
         
-irqhand->next = irq_attachlist[irq_number];
-irq_attachlist[irq_number]->prev = irqhand;
-irq_attachlist[irq_number]= irqhand;
-irqhand->prev = 0;    
-return 1;
+   irqhand->next = irq_attachlist[irq_number];
+   irq_attachlist[irq_number]->prev = irqhand;
+   irq_attachlist[irq_number]= irqhand;
+   irqhand->prev = 0;    
+   return 1;
 };
 
 
