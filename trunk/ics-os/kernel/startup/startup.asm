@@ -45,150 +45,140 @@ mb_header_end:
 
 multiboot:
 ;Multi boot compliant code 
-     mov [multiboothdr], ebx   ;record the location of the multiboot information
-                                ;structure
-     mov byte [0xb8000],'.'
+   mov [multiboothdr], ebx   ;record the location of the multiboot information
+                             ;structure
+   mov byte [0xb8000],'.'    ;output a dot to show progress
 
-     ;the null descriptor	
-     mov word  [gdt],0		
-     mov word  [gdt+2],0	
-     mov dword [gdt+4],0	
+   ;setup protected mode data
 
-     ;the linear selector
-     mov word [gdt1],0xFFFF		; limit 0xFFFFF
-     mov word [gdt1+2],0		; base 0
-     mov byte [gdt1+4],0
-     mov byte [gdt1+5],0x92		; present, ring 0, data, expand-up, writable
-     mov byte [gdt1+6],0xCF                 ; page-granular, 32-bit
-     mov byte [gdt1+7],0
+   ;the null descriptor	
+   mov word  [gdt],0		
+   mov word  [gdt+2],0	
+   mov dword [gdt+4],0	
 
+   ;the linear selector
+   mov word [gdt1],0xFFFF    ; limit 0xFFFFF
+   mov word [gdt1+2],0	     ; base 0
+   mov byte [gdt1+4],0
+   mov byte [gdt1+5],0x92    ; present, ring 0, data, expand-up, writable
+   mov byte [gdt1+6],0xCF    ; page-granular, 32-bit
+   mov byte [gdt1+7],0
 
-     xor ebx,ebx
-     mov ebx,0x0000000
-     mov eax,ebx
+   xor ebx,ebx
+   mov ebx,0x0000000
+   mov eax,ebx
 
-;the System Code selector
-     mov word [gdt2],0xFFFF		; limit 0xFFFFF
-     mov word [gdt2+2],ax		; base 0
-     shr eax,16
-     mov byte [gdt2+4],al
-     mov byte [gdt2+5],0x9A		; present, ring 0, data, expand-up, writable
-     mov byte [gdt2+6],0xCF                 ; page-granular, 32-bit
-     mov byte [gdt2+7],ah
+   ;the system Code selector
+   mov word [gdt2],0xFFFF    ; limit 0xFFFFF
+   mov word [gdt2+2],ax	     ; base 0
+   shr eax,16
+   mov byte [gdt2+4],al
+   mov byte [gdt2+5],0x9A    ; present, ring 0, data, expand-up, writable
+   mov byte [gdt2+6],0xCF    ; page-granular, 32-bit
+   mov byte [gdt2+7],ah
 
-;the stack selector                       
-     mov eax,0x80000 
-     mov word [gdt3+2],ax
-     shr eax,16
-     mov byte [gdt3+4],al       
-     mov word [gdt3],0xFFFF		; limit 0xFFFFF
-     mov byte [gdt3+5],0x92		; present, ring 0, data, expand-up, writable
-     mov byte [gdt3+6],0xCF               ; page-granular, 32-bit
-     mov byte [gdt3+7],ah
+   ;the stack selector                       
+   mov eax,0x80000 
+   mov word [gdt3+2],ax
+   shr eax,16
+   mov byte [gdt3+4],al       
+   mov word [gdt3],0xFFFF    ; limit 0xFFFFF
+   mov byte [gdt3+5],0x92    ; present, ring 0, data, expand-up, writable
+   mov byte [gdt3+6],0xCF    ; page-granular, 32-bit
+   mov byte [gdt3+7],ah
 
+   ;set up the data segment selector which is also linear in nature       
+   mov eax, 0x0000
+   mov word [gdt4+2],ax
+   shr eax,16
+   mov byte [gdt4+4],al       
+   mov word [gdt4],0xFFFF    ; limit 0xFFFFF
+   mov byte [gdt4+5],0x92    ; present, ring 0, data, expand-up, writable
+   mov byte [gdt4+6],0xCF    ; page-granular, 32-bit
+   mov byte [gdt4+7],ah
 
-;set up the data segment selector which is also linear in nature       
-      
-     mov eax, 0x0000
-     mov word [gdt4+2],ax
-     shr eax,16
-     mov byte [gdt4+4],al       
-     mov word [gdt4],0xFFFF		; limit 0xFFFFF
-     mov byte [gdt4+5],0x92		; present, ring 0, data, expand-up, writable
-     mov byte [gdt4+6],0xCF               ; page-granular, 32-bit
-     mov byte [gdt4+7],ah
-
-     mov byte [0xb8002],'.'
-     cli                             ;interrupts disabled
-     lgdt [gdtr]                     ;gdtr should have a valid value
+   mov byte [0xb8002],'.'
+   cli                       ;interrupts disabled
+   lgdt [gdtr]               ;gdtr should have a valid value
 
 jmp  SYS_CODE_SEL2:not_multiboot
-
 not_multiboot:
-
-     mov byte [0xb8004],'.' 
-     mov ax,LINEAR_SEL
-     mov es,ax
-     mov ss,ax
-     mov ds,ax
-     mov gs,ax
-     mov fs,ax
-     ;the linear code selector
-     mov eax,0x00000000
-     mov word [es:gdt7],0xFFFF		; 1MB kernel memory length
-     mov word [es:gdt7+2],ax
-     shr eax,16
-     mov byte [es:gdt7+4],al       
+   mov byte [0xb8004],'.' 
+   mov ax,LINEAR_SEL
+   mov es,ax
+   mov ss,ax
+   mov ds,ax
+   mov gs,ax
+   mov fs,ax
+   ;the linear code selector
+   mov eax,0x00000000
+   mov word [es:gdt7],0xFFFF ; 1MB kernel memory length
+   mov word [es:gdt7+2],ax
+   shr eax,16
+   mov byte [es:gdt7+4],al       
       
-        mov byte [es:gdt7+5],0x9A		; present, ring 0, data, expand-up, writable
-        mov byte [es:gdt7+6],0xCF               ; page-granular, 32-bit
-        mov byte [es:gdt7+7],ah     
+   mov byte [es:gdt7+5],0x9A		; present, ring 0, data, expand-up, writable
+   mov byte [es:gdt7+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt7+7],ah     
 
-;refresh the Code Segment selector since we are now going to go into
-;linear mode
+   ;refresh the Code Segment selector since we are now going to go into
+   ;linear mode
 
+   ;the linear stack selector                       
+   mov eax,0x00000 
+   mov word [es:gdt3+2],ax
+   shr eax,16
+   mov byte [es:gdt3+4],al       
+   mov word [es:gdt3],0xFFFF		; limit 0xFFFFF
+   mov byte [es:gdt3+5],0x92		; present, ring 0, data, expand-up, writable
+   mov byte [es:gdt3+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt3+7],ah
+
+   ;set up the data segment selector which is also linear in nature       
+   mov eax, 0x0000
+   mov word [es:gdt4+2],ax
+   shr eax,16
+   mov byte [es:gdt4+4],al       
+   mov word [es:gdt4],0xFFFF		; limit 0xFFFFF
+   mov byte [es:gdt4+5],0x92		; present, ring 0, data, expand-up, writable
+   mov byte [es:gdt4+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt4+7],ah
+
+   ;Set up a video memory selector
+   mov eax,0x0B8000
+   mov word [es:gdt5+2],ax
+   shr eax,16
+   mov byte [es:gdt5+4],al       
+   mov word [es:gdt5],0xFFFF		; limit 0xFFFFF
+   mov byte [es:gdt5+5],0x92		; present, ring 0, data, expand-up, writable
+   mov byte [es:gdt5+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt5+7],ah
         
-        ;the linear stack selector                       
-        mov eax,0x00000 
-        mov word [es:gdt3+2],ax
-        shr eax,16
-        mov byte [es:gdt3+4],al       
-        mov word [es:gdt3],0xFFFF		; limit 0xFFFFF
-        mov byte [es:gdt3+5],0x92		; present, ring 0, data, expand-up, writable
-        mov byte [es:gdt3+6],0xCF               ; page-granular, 32-bit
-        mov byte [es:gdt3+7],ah
-
-
-;set up the data segment selector which is also linear in nature       
+   mov eax,0x01000000
+   mov word [es:gdt6],0x0244		; 1MB kernel memory length
+   mov word [es:gdt6+2],ax
+   shr eax,16
       
-        mov eax, 0x0000
-        mov word [es:gdt4+2],ax
-        shr eax,16
-        mov byte [es:gdt4+4],al       
-        mov word [es:gdt4],0xFFFF		; limit 0xFFFFF
-        mov byte [es:gdt4+5],0x92		; present, ring 0, data, expand-up, writable
-        mov byte [es:gdt4+6],0xCF               ; page-granular, 32-bit
-        mov byte [es:gdt4+7],ah
+   mov byte [es:gdt6+4],al       
+   mov byte [es:gdt6+5],0x92		; present, ring 0, data, expand-up, writable
+   mov byte [es:gdt6+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt6+7],ah     
 
-;Set up a video memory selector
-        mov eax,0x0B8000
-        mov word [es:gdt5+2],ax
-        shr eax,16
-        mov byte [es:gdt5+4],al       
-        mov word [es:gdt5],0xFFFF		; limit 0xFFFFF
-        mov byte [es:gdt5+5],0x92		; present, ring 0, data, expand-up, writable
-        mov byte [es:gdt5+6],0xCF               ; page-granular, 32-bit
-        mov byte [es:gdt5+7],ah
-        
-        mov eax,0x01000000
-        mov word [es:gdt6],0x0244		; 1MB kernel memory length
-        mov word [es:gdt6+2],ax
-        shr eax,16
-      
-        mov byte [es:gdt6+4],al       
-        mov byte [es:gdt6+5],0x92		; present, ring 0, data, expand-up, writable
-        mov byte [es:gdt6+6],0xCF               ; page-granular, 32-bit
-        mov byte [es:gdt6+7],ah     
-
-        mov byte [0xb8006],'.'
-;Set the PE bit to get into protected mode
-        mov eax,cr0
-	or  al,1
-	mov cr0,eax
-
+   mov byte [0xb8006],'.'
+   ;Set the PE bit to get into protected mode
+   mov eax,cr0
+   or  al,1
+   mov cr0,eax
         
 jmp SYS_CODE_SEL:linearcode
 linearcode:
-
-        
-        xor eax,eax
-        mov ax,SYS_STACK_SEL
-        mov ss,ax
-        mov esp,0x9FFFE
-        xor eax,eax
-        mov ax,SYS_DATA_SEL 
-        mov ds,ax
-
+   xor eax,eax
+   mov ax,SYS_STACK_SEL
+   mov ss,ax
+   mov esp,0x9FFFE
+   xor eax,eax
+   mov ax,SYS_DATA_SEL 
+   mov ds,ax
     
 call enable_A20
 call main
@@ -197,35 +187,34 @@ call main
 ;this procedure handles the activation of the A20 line, it uses the standard method
 ;of enabling the A20 line
 enable_A20:
-	cli
+   cli
+   call    a20wait
+   mov     al,0xAD
+   out     0x64,al
 
-	call    a20wait
-	mov     al,0xAD
-	out     0x64,al
+   call    a20wait
+   mov     al,0xD0
+   out     0x64,al
 
-	call    a20wait
-	mov     al,0xD0
-	out     0x64,al
+   call    a20wait2
+   in      al,0x60
+   push    eax
 
-	call    a20wait2
-	in      al,0x60
-	push    eax
+   call    a20wait
+   mov     al,0xD1
+   out     0x64,al
 
-	call    a20wait
-	mov     al,0xD1
-	out     0x64,al
+   call    a20wait
+   pop     eax
+   or      al,2
+   out     0x60,al
 
-	call    a20wait
-	pop     eax
-	or      al,2
-	out     0x60,al
+   call    a20wait
+   mov     al,0xAE
+   out     0x64,al
 
-        call    a20wait
-	mov     al,0xAE
-	out     0x64,al
-
-	call    a20wait
-	ret
+   call    a20wait
+   ret
 
 a20wait:
 .l0:	mov     ecx,65536
@@ -254,7 +243,7 @@ SECTION .data
 
 global multiboothdr        
 multiboothdr dd 0; If this was loaded by a multiboot compliant system,
-                             ; this should point to the multiboot structure.
+                 ; this should point to the multiboot structure.
 
 gdtr:	dw 2047                	; GDT limit of 256 descriptors
 	dd 0x01000              ; (GDT located at 0x01000)
