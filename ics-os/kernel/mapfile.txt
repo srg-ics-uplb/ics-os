@@ -138,7 +138,7 @@ Linker script and memory map
                 0x000000000010044d                repinword
                 0x0000000000100738                textcolor
  *fill*         0x00000000001008de        0x2 00
- .text          0x00000000001008e0    0x20ed1 kernel32.o
+ .text          0x00000000001008e0    0x20ecc kernel32.o
                 0x0000000000120332                setinterruptvector
                 0x000000000010fded                putchar
                 0x0000000000117af5                ps_changename
@@ -331,7 +331,7 @@ Linker script and memory map
                 0x0000000000114800                getcpumodel
                 0x0000000000111db1                kb_dohotkey
                 0x0000000000109d66                vfs_isvalidname
-                0x00000000001217ac                end_func
+                0x00000000001217a7                end_func
                 0x0000000000118679                ps_switchto
                 0x000000000011cab3                sub_trace_command
                 0x0000000000106e18                read_block
@@ -673,7 +673,7 @@ Linker script and memory map
                 0x0000000000100a36                ports_getstatus
                 0x0000000000117edd                exit
                 0x0000000000116dbe                ps_enqueue
-                0x00000000001213c9                dex_init
+                0x00000000001213c4                dex_init
                 0x000000000011fe2f                getlinearloc
                 0x000000000010b85b                showlibinfo
                 0x000000000010b549                relocate
@@ -752,101 +752,100 @@ Linker script and memory map
                 0x000000000011bcdc                reg_pio_data_out
                 0x0000000000105fc2                time_init
                 0x0000000000106330                getcand
- *fill*         0x00000000001217b1        0x3 00
- .text          0x00000000001217b4      0x33a scheduler.o
-                0x000000000012184a                sched_enqueue
-                0x0000000000121818                sched_attach
-                0x00000000001217b4                scheduler
-                0x0000000000121836                sched_getcurrentprocess
-                0x0000000000121912                sched_findprocess
-                0x00000000001218d8                sched_dequeue
-                0x0000000000121979                sched_listprocess
-                0x0000000000121a1a                ps_scheduler_install
-                0x0000000000121840                sched_gethead
- *fill*         0x0000000000121aee        0x2 00
- .text          0x0000000000121af0      0x73e iomgr.o
-                0x0000000000121b9b                iomgr_flushmgr
-                0x0000000000121fa6                dex32_closeIO
-                0x0000000000121f44                dex32_IOcomplete
-                0x0000000000121af0                iomgr_init
-                0x0000000000121e4a                IOmgr_obtainjob
-                0x0000000000121fd7                dex32_requestIO
-                0x0000000000121bc4                iomgr_diskmgr
- *fill*         0x000000000012222e        0x2 00
- .text          0x0000000000122230     0x3761 fat.o
-                0x0000000000124ca2                obtaincluster
-                0x0000000000123744                fat_rewritefileEX
-                0x0000000000123544                update_fats
-                0x000000000012574c                fat_get_fat_type
-                0x0000000000122c97                loadroot
-                0x00000000001235d5                update_dirs_fats
-                0x00000000001245e2                fat_mount_root
-                0x00000000001230f9                fat_addsectorsEX
-                0x0000000000125707                fat_get_eoc
-                0x0000000000123791                fat_modifyattb
-                0x0000000000122ed8                file12tostr
-                0x0000000000122567                clustertoblock
-                0x0000000000123222                fat_getfileblocks
-                0x000000000012486a                fat_mount
-                0x0000000000124776                unicodetoascii
-                0x0000000000123c76                fat_rewritefile
-                0x000000000012267f                readBPB
-                0x0000000000122962                fat_writecluster
-                0x00000000001247d0                fat_mountdirectory
-                0x0000000000122230                obtain_next_cluster
-                0x00000000001228b1                debug_printbuf
-                0x0000000000122a41                fat_loaddirectoryfromcluster
-                0x0000000000123142                fat_getfreeblocks
-                0x0000000000122bf0                fat_validatefilename
-                0x000000000012280e                loadfat
-                0x00000000001231f5                fat_getbytesperblock
-                0x00000000001232d4                get_sector_fromcluster
-                0x0000000000124d06                obtainfreecluster
-                0x00000000001229d9                fat_writeblock
-                0x00000000001256bd                loadfile12
-                0x00000000001226d3                interpretBPB
-                0x00000000001223a6                fat_write_cluster
-                0x000000000012329e                getdirsectorsize
-                0x0000000000124d4b                fillsectorinfo
-                0x0000000000122da9                strtofile12
-                0x00000000001252d8                loadfile12EX2
-                0x0000000000124ef2                writefile12EX2
-                0x00000000001258af                fat_register
-                0x000000000012273f                fat_diskdiagnostics
-                0x000000000012521a                fat_openfileEX
-                0x0000000000122872                loaddirectory
-                0x0000000000122fd9                fat_writefileEX
-                0x00000000001228eb                fat_readcluster
-                0x000000000012264a                fat_sectors_per_fat
-                0x000000000012361c                fat_getsectorsizeEX
-                0x00000000001238ab                fat_addsectors
-                0x0000000000123ab9                fat_deletefile
-                0x0000000000123373                update_dirs
-                0x00000000001230a6                fat_createfileEX
-                0x0000000000123e13                fat_createfile
- *fill*         0x0000000000125991        0x3 00
- .text          0x0000000000125994      0x90a iso9660.o
-                0x0000000000125f3f                iso9660_mountdirectory
-                0x0000000000125e0e                iso9660_getbytesperblock
-                0x00000000001261f7                iso9660_init
-                0x0000000000125d65                iso9660_convertname
-                0x0000000000125f15                iso9660_unmount
-                0x0000000000125da6                iso9660_iso_unicodetoascii
-                0x0000000000126012                iso9660_mount
-                0x0000000000125994                iso9660_loaddirectory
-                0x0000000000125e18                iso9660_openfile
-                0x0000000000125a2d                iso9660_mountroot
-                0x0000000000125fae                iso9660_isjoliet
- *fill*         0x000000000012629e        0x2 00
- .text          0x00000000001262a0      0x979 devfs.o
-                0x0000000000126b55                devfs_init
-                0x00000000001265c2                devfs_openfile
-                0x0000000000126923                devfs_mountroot
-                0x0000000000126ad8                devfs_initnull
-                0x00000000001262aa                devfs_rewritefile
-                0x00000000001262af                devfs_writefile
-                0x00000000001262a0                devfs_getbytesperblock
- *fill*         0x0000000000126c19        0x7 00
+ .text          0x00000000001217ac      0x33a scheduler.o
+                0x0000000000121842                sched_enqueue
+                0x0000000000121810                sched_attach
+                0x00000000001217ac                scheduler
+                0x000000000012182e                sched_getcurrentprocess
+                0x000000000012190a                sched_findprocess
+                0x00000000001218d0                sched_dequeue
+                0x0000000000121971                sched_listprocess
+                0x0000000000121a12                ps_scheduler_install
+                0x0000000000121838                sched_gethead
+ *fill*         0x0000000000121ae6        0x2 00
+ .text          0x0000000000121ae8      0x73e iomgr.o
+                0x0000000000121b93                iomgr_flushmgr
+                0x0000000000121f9e                dex32_closeIO
+                0x0000000000121f3c                dex32_IOcomplete
+                0x0000000000121ae8                iomgr_init
+                0x0000000000121e42                IOmgr_obtainjob
+                0x0000000000121fcf                dex32_requestIO
+                0x0000000000121bbc                iomgr_diskmgr
+ *fill*         0x0000000000122226        0x2 00
+ .text          0x0000000000122228     0x3761 fat.o
+                0x0000000000124c9a                obtaincluster
+                0x000000000012373c                fat_rewritefileEX
+                0x000000000012353c                update_fats
+                0x0000000000125744                fat_get_fat_type
+                0x0000000000122c8f                loadroot
+                0x00000000001235cd                update_dirs_fats
+                0x00000000001245da                fat_mount_root
+                0x00000000001230f1                fat_addsectorsEX
+                0x00000000001256ff                fat_get_eoc
+                0x0000000000123789                fat_modifyattb
+                0x0000000000122ed0                file12tostr
+                0x000000000012255f                clustertoblock
+                0x000000000012321a                fat_getfileblocks
+                0x0000000000124862                fat_mount
+                0x000000000012476e                unicodetoascii
+                0x0000000000123c6e                fat_rewritefile
+                0x0000000000122677                readBPB
+                0x000000000012295a                fat_writecluster
+                0x00000000001247c8                fat_mountdirectory
+                0x0000000000122228                obtain_next_cluster
+                0x00000000001228a9                debug_printbuf
+                0x0000000000122a39                fat_loaddirectoryfromcluster
+                0x000000000012313a                fat_getfreeblocks
+                0x0000000000122be8                fat_validatefilename
+                0x0000000000122806                loadfat
+                0x00000000001231ed                fat_getbytesperblock
+                0x00000000001232cc                get_sector_fromcluster
+                0x0000000000124cfe                obtainfreecluster
+                0x00000000001229d1                fat_writeblock
+                0x00000000001256b5                loadfile12
+                0x00000000001226cb                interpretBPB
+                0x000000000012239e                fat_write_cluster
+                0x0000000000123296                getdirsectorsize
+                0x0000000000124d43                fillsectorinfo
+                0x0000000000122da1                strtofile12
+                0x00000000001252d0                loadfile12EX2
+                0x0000000000124eea                writefile12EX2
+                0x00000000001258a7                fat_register
+                0x0000000000122737                fat_diskdiagnostics
+                0x0000000000125212                fat_openfileEX
+                0x000000000012286a                loaddirectory
+                0x0000000000122fd1                fat_writefileEX
+                0x00000000001228e3                fat_readcluster
+                0x0000000000122642                fat_sectors_per_fat
+                0x0000000000123614                fat_getsectorsizeEX
+                0x00000000001238a3                fat_addsectors
+                0x0000000000123ab1                fat_deletefile
+                0x000000000012336b                update_dirs
+                0x000000000012309e                fat_createfileEX
+                0x0000000000123e0b                fat_createfile
+ *fill*         0x0000000000125989        0x3 00
+ .text          0x000000000012598c      0x90a iso9660.o
+                0x0000000000125f37                iso9660_mountdirectory
+                0x0000000000125e06                iso9660_getbytesperblock
+                0x00000000001261ef                iso9660_init
+                0x0000000000125d5d                iso9660_convertname
+                0x0000000000125f0d                iso9660_unmount
+                0x0000000000125d9e                iso9660_iso_unicodetoascii
+                0x000000000012600a                iso9660_mount
+                0x000000000012598c                iso9660_loaddirectory
+                0x0000000000125e10                iso9660_openfile
+                0x0000000000125a25                iso9660_mountroot
+                0x0000000000125fa6                iso9660_isjoliet
+ *fill*         0x0000000000126296        0x2 00
+ .text          0x0000000000126298      0x979 devfs.o
+                0x0000000000126b4d                devfs_init
+                0x00000000001265ba                devfs_openfile
+                0x000000000012691b                devfs_mountroot
+                0x0000000000126ad0                devfs_initnull
+                0x00000000001262a2                devfs_rewritefile
+                0x00000000001262a7                devfs_writefile
+                0x0000000000126298                devfs_getbytesperblock
+ *fill*         0x0000000000126c11        0xf 00
  .text          0x0000000000126c20      0x1d1 irqwrap.o
                 0x0000000000126c7e                irq1wrapper
                 0x0000000000126ca1                irq2wrapper
