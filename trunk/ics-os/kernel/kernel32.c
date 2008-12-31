@@ -272,7 +272,7 @@ void dex32_startup()
       until the scheduler starts, the interrupts must be disabled*/
 
     //Display some output for introductory purposes :)
-    clrscr();
+    //clrscr();
 
     /*show parameter information sent by the multiboot compliant bootloader.*/
     //printf("Bootloader name : %s\n", mbhdr->boot_loader_name);
