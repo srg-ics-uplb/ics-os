@@ -58,10 +58,6 @@ $make
 {{{
 #make install
 }}}
-or
-{{{
-#sudo make install
-}}}
   # Test the distribution floppy image. This does not require root privileges.
 {{{
 $bochs -q
