@@ -36,7 +36,7 @@ To obtain the source code for ics-os, visit the http://code.google.com/p/ics-os/
 You can also access the latest snapshot of the source tree via Subversion by following the instructions at http://code.google.com/p/ics-os/source/checkout.
 
 = 3. Building the Source Code =
-Building the source code for the kernel and the distribution disk is accomplished using {{{ make }}}. 
+Building the source code for the kernel and the distribution disk is accomplished using {{{ make }}}. Make sure you perform the following steps every time you make changes in the source code.
 
   # First extract the source distribution .tar.gz.
 {{{
@@ -46,6 +46,10 @@ $tar xzvf ics-os-121808.tar.gz
 {{{
 $cd ics-os
 }}}
+  # Remove binary files.
+{{{
+$make clean
+}}}
   # Build the kernel.
 {{{
 $make
@@ -53,6 +57,10 @@ $make
   # Create the distribution floppy image. Make sure that you have root privileges(use the {{{su}}} or {{{sudo}}} command).
 {{{
 #make install
+}}}
+or
+{{{
+#sudo make install
 }}}
   # Test the distribution floppy image. This does not require root privileges.
 {{{
@@ -62,6 +70,7 @@ $bochs -q
 {{{
 $make clean
 }}}
+
 = 4. Source Code Directory Structure =
 Top level directories.
 || *Directory* || *Description* ||
