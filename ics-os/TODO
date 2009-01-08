@@ -31,4 +31,9 @@ C. User Space (System Programs)
   14. package manager
   15. simple Make implementation
   16. picture viewer (bmp, gif, png)
-      
+
+D. Others
+  1. csplit      
+  2. cut
+  3. diff
+  4. 
