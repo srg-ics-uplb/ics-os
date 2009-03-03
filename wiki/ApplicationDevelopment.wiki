@@ -1,0 +1,11 @@
+#summary Application Development Guide
+(Work in progress...)
+
+*Table of Contents*
+
+<wiki:toc max_depth="1" />
+
+= 1. Introduction =
+This guide is for software developers who would like to develop applications for ics-os.
+It is assumed in this guide that you have downloaded a copy of the source code for ics-os and has successfully run ics-os on an emulator.
+
