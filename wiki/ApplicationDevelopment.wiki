@@ -13,7 +13,7 @@ In the ics-os directory you will find two folders relevant to application develo
 {{{sdk}}} and {{{contrib}}}.
 
 = 2. Tutorial =
-Let us write a program that prompts the user to enter his name and greet the user.
+Let us write an application that prompts the user to enter his name and greet the user.
 
 Go to the {{{contrib}}} folder in ics-os.
 
@@ -30,5 +30,19 @@ $cp -r hello greeter
 Rename {{{hello.c}}} to {{{greeter.c}}}.
 
 {{{
+$cd greeter
 $mv hello.c greeter.c
+}}}
+
+Replace the main function of {{{greeter.c}}} with the following:
+
+{{{
+int main()
+{
+   char name[30];
+   printf("Please enter your name: ");
+   gets(name);
+   printf("Hello there %s!\n",name);
+   return 0;
+}
 }}}
