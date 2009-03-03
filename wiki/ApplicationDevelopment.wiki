@@ -87,3 +87,8 @@ Run {{{bochs}}}
 {{{
 $bochs -q
 }}}
+
+Below is a screenshot of the application in bochs.
+
+
+http://ics-os.googlecode.com/svn/trunk/ics-os/greeter.jpg
