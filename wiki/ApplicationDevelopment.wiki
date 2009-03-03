@@ -26,3 +26,9 @@ Inside the directory you will find a folder named {{{hello}}}. Copy this folder 
 {{{
 $cp -r hello greeter
 }}}
+
+Rename {{{hello.c}}} to {{{greeter.c}}}.
+
+{{{
+$mv hello.c greeter.c
+}}}
