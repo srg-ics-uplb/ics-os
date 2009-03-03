@@ -1,7 +1,6 @@
 #summary Developer's Guide
 (Work in progress...)
 
-
 *Table of Contents*
 
 <wiki:toc max_depth="1" />
@@ -232,3 +231,9 @@ The first line of the linker script specifies the type of executable to produce,
                 0x00000000001005dc                refreshpages
 
 }}}
+
+The final kernel image {{{Kernel32.bin}}} is then gzipped into {{{vmdex}}} to conserve space. Control is transferred to this image after GRUB has loaded.
+ 
+
+
+= 7.  =
