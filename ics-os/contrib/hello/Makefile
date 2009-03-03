@@ -6,7 +6,7 @@ LIBS=$(SDK)/tccsdk.c $(SDK)/libtcc1.c $(SDK)/crt1.c
 EXE=hello.exe
 
 $(EXE): hello.c
-	$(CC) $(CFLAGS) -ohello.exe hello.c $(LIBS)
+	$(CC) $(CFLAGS) -o${EXE} hello.c $(LIBS)
 
 install: $(EXE)
 	cp $(EXE) $(ICSOS_ROOT)/apps
