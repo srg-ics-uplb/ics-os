@@ -65,6 +65,7 @@ install: $(EXE)
 
 uninstall:
         rm $(ICSOS_ROOT)/apps/$(EXE)
+
 clean:
         rm $(EXE)
 }}}
@@ -80,4 +81,9 @@ Install application in ics-os disk image.
 {{{
 $cd ../../
 #make install
+}}}
+
+Run {{{bochs}}}
+{{{
+$bochs -q
 }}}
