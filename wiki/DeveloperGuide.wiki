@@ -1,4 +1,5 @@
 #summary Developer's Guide
+#labels Featured
 (Work in progress...)
 
 *Table of Contents*
