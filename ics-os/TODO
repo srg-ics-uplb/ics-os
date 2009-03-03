@@ -12,7 +12,7 @@ B. Kernel Space
   2. support for ext2 filesystem
   3. support for PCI  
   4. improve C library
-  6. 
+  5. mouse support 
 
 C. User Space (System Programs)
   1. date/time
@@ -36,4 +36,3 @@ D. Others
   1. csplit      
   2. cut
   3. diff
-  4. 
