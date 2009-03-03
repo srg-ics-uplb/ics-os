@@ -68,3 +68,16 @@ uninstall:
 clean:
         rm $(EXE)
 }}}
+
+Build and install the application
+
+{{{
+$make
+$make install
+}}}
+
+Install application in ics-os disk image.
+{{{
+$cd ../../
+#make install
+}}}
