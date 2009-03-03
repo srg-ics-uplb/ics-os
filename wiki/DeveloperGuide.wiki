@@ -236,4 +236,5 @@ The final kernel image {{{Kernel32.bin}}} is then gzipped into {{{vmdex}}} to co
  
 
 
-= 7.  =
+= 7. startup.asm =
+The file {{{startup/startup.asm}}} enables the 32-bit protected mode of x86 and transfers control to the {{{main}}} function in {{{Kernel32.c}}}
