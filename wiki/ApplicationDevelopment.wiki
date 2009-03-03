@@ -9,5 +9,20 @@
 This guide is for software developers who would like to develop applications for ics-os.
 It is assumed in this guide that you have downloaded a copy of the source code for ics-os and has successfully run ics-os on an emulator.
 
-In the ics-os directory you will find two folders relevant to application development.
-These folders are {{{sdk}}} and {{{contrib}}}.
+In the ics-os directory you will find two folders relevant to application development,
+{{{sdk}}} and {{{contrib}}}.
+
+= 2. Tutorial =
+Let us write a program that prompts the user to enter his name and greet the user.
+
+Go to the {{{contrib}}} folder in ics-os.
+
+{{{
+$cd contrib
+}}}
+
+Inside the directory you will find a folder named {{{hello}}}. Copy this folder to {{{greeter}}}.
+
+{{{
+$cp -r hello greeter
+}}}
