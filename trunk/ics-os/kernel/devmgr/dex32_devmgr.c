@@ -266,13 +266,12 @@ void devmgr_showdevices()
 
     //wait until the device manager is ready
     sync_entercrit(&devmgr_busy);
-
     printf("%-5s %-15s %-15s %-30s\n","ID","Device Name","Type","Description");
-    for (i=0;i<MAXDEVICES;i++)
+    for (i=1;i<MAXDEVICES;i++)
       {
             if (devmgr_devlist[i]!=0)
             {
-                char typestr[10];
+                char typestr[40];
                 strcpy(typestr,devmgr_identify(devmgr_devlist[i]->type,typestr));
                 
                 if (devmgr_statuslist[i].locked)
