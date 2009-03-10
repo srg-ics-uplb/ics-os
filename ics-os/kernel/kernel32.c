@@ -391,7 +391,8 @@ void dex_init()
     getmonthname(date.month,temp);
 
     //Install the built-in floppy disk driver
-    floppy_install("floppy");
+    floppy_install("floppy0");
+    floppy_install("floppy1");
     
     /*Install the IDE, ATA-2/4 compliant driver in order to be able to
       use CD-ROMS and harddisks. This will also create logical drives from
@@ -450,7 +451,7 @@ void dex_init()
     printf("Mounting boot device...");
     
     //mount the floppy disk drive
-    vfs_mount_device("fat","floppy","icsos");
+    vfs_mount_device("fat","floppy0","icsos");
     printf("[OK]\n");   
 
 
