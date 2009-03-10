@@ -37,7 +37,7 @@
 //#define DEBUG_FORK
 #define FULLSCREENERROR
 //#define DEBUG_KSBRK
-//#define DEBUG_FAT12
+#define DEBUG_FAT12
 #define DEBUG_STARTUP
 #define DEBUG_EXTENSION
 //#define DEBUG_USER_PROCESS

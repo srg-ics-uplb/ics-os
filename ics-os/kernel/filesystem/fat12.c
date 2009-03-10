@@ -1218,8 +1218,9 @@ int fat_mount_root(vfs_node *mountpoint,int id)
    if (mountpoint->files!=0) return -1;
    bpb=(BPB*)malloc(512);
       
-    
+ 
    readBPB(bpb,id); //read the bios parameter block
+   printf("done\n");   
    fatdirentry *fatdir;
 
    //=(fatdirentry*)malloc(bpb->num_root_dir_ents*sizeof(fatdirentry));
@@ -1251,8 +1252,10 @@ int fat_mount_root(vfs_node *mountpoint,int id)
 #ifdef DEBUG_FAT12
    printf("fat: Calling fat_mount\n");
 #endif
+   printf("jach: Calling fat_mount");
    fat_mount(mountpoint,fatdir,bpb,id);
    free(bpb);
+   printf("...done\n");
    return 1;
 };
 
@@ -1317,6 +1320,7 @@ int fat_mount(vfs_node *mountpoint,fatdirentry *buf2,BPB *bpb,int id)
       char filename[255];
       
       file12tostr(&buf2[i],filename);
+      printf("jach: Adding %s\n",filename);
       
 #ifdef DEBUG_FAT12
       printf("fat: Adding %s\n",filename);
