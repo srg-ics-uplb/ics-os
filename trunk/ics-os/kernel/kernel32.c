@@ -401,7 +401,7 @@ void dex_init()
 
     /*Install the VGA driver*/
     printf("Loading VGA driver...");
-    vga_init();
+    //vga_init();
     printf("[OK]\n");   
  
     //initialize the I/O manager
@@ -451,6 +451,7 @@ void dex_init()
     printf("Mounting boot device...");
     
     //mount the floppy disk drive
+    vfs_mount_device("fat","floppy0","icsos");
     vfs_mount_device("fat","floppy0","icsos");
     printf("[OK]\n");   
 

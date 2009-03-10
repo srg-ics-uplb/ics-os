@@ -571,13 +571,22 @@ int vfs_mount_device(const char *fsname,const char *devname,const char *location
     }
     else
     {
+
         int fsid, devid;
         vfs_node *mount_location;
         //get the device id of the devices requested
         fsid = devmgr_finddevice( fsname);
-        if (fsid == -1) return -1;
+        if (fsid == -1)
+	{
+           printf("Unknown filesystem type: %s\n",fsname);
+	   return -1;
+	}
         devid = devmgr_finddevice(devname);
-        if (devid == -1) return -1;
+        if (devid == -1) 
+        {
+          printf("Unknown device name: %s\n",fsname);
+          return -1;
+        }
 
         //tell the device manager to obtain the interfaces for the
         //filesystem and block device driver
@@ -590,24 +599,35 @@ int vfs_mount_device(const char *fsname,const char *devname,const char *location
         if (myfs->hdr.type != DEVMGR_FS)  return -1;
 
         // the device driver selected is not a block device
-        if (myblock->hdr.type != DEVMGR_BLOCK) return -1;
+        if (myblock->hdr.type != DEVMGR_BLOCK){
+           printf("Not a valid block device.\n");
+           return -1;
+        }
 
         //Make sure that the device has not already been mounted...
-        if (devmgr_getlock(devid)) return -1;
+        if (devmgr_getlock(devid))
+	{
+           printf("%s device is already mounted.\n", devname);
+	   return -1;
+	}
 
 
         //obtain the vfs_node for the mountpoint
-        if (location==0)
+        if (location==0){
+            printf("No mount point specified.\n");
             return -1;
-        else
+        }
+        else{
             mount_location= vfs_searchname(location);
-            
+        }    
         if (mount_location == 0) //create directory
         {
             mount_location = mkvirtualdir(location,fsid,devid);
         }
-            else
-        return -1; //mountpoint already exists!!
+        else{
+		printf("%s device is already mounted.\n", devname);
+        	return -1; //mountpoint already exists!!
+	}
         
         mount_location->attb|= FILE_MOUNT;
         
@@ -618,13 +638,13 @@ int vfs_mount_device(const char *fsname,const char *devname,const char *location
         retval = bridges_link(myfs,&myfs->mountroot,mount_location,devid,0,0,0,0);
         
         if (retval == -1) //unsuccessful mount
-                {
+        {
                     vfs_unmount(mount_location);
-                };
+        };
         //return myfs->mountroot(mount_location, devid);
         return retval;
     };  
-    return -1;
+    //return -1;
 };
 
 //opens a file, supports file locking if opened for writing,append
