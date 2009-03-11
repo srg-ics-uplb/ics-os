@@ -1133,7 +1133,7 @@ void kb_ready(){
 //random
 
 int random (unsigned long seed){
-  seed = seed * 1103515245L + 12345L;
+  seed = seed * 1111111111L + 12345L;
   return (unsigned int)((seed > 16) & 0x7fff); 
 }
 
