@@ -172,6 +172,8 @@ extern startup();
 
 fg_processinfo *fg_kernel = 0;
 
+//holds the name of the device that booted the kernel
+char boot_device_name[255]="";
 
 /*the start of the main kernel-- The task here is to setup the memory
   so that we could use it, we also enable some devices like the keyboard 
@@ -210,14 +212,24 @@ void main()
     installkeyboard(); 
 
      //obtain the device which booted this operating system         
-     kernel_systeminfo.boot_device = mbhdr->boot_device >> 24;
-     kernel_systeminfo.part[0] =    (mbhdr->boot_device >> 16) & 0xFF;
+    kernel_systeminfo.boot_device = mbhdr->boot_device >> 24;
+    if (kernel_systeminfo.boot_device == 0)
+    {  //floppy
+       strcpy(boot_device_name,"fd0");
+    }else{
+       //hardisk
+
+    }
+
+/*     kernel_systeminfo.part[0] =    (mbhdr->boot_device >> 16) & 0xFF;
      kernel_systeminfo.part[1] =    (mbhdr->boot_device >> 8) & 0xFF;
      kernel_systeminfo.part[2] =    (mbhdr->boot_device & 0xFF);
+*/
         
+
      //obtain information about the memory configuration
-     memory_map = mbhdr->mmap_addr;
-     map_length = mbhdr->mmap_length;
+    memory_map = mbhdr->mmap_addr;
+    map_length = mbhdr->mmap_length;
         
    
      /*
@@ -391,8 +403,7 @@ void dex_init()
     getmonthname(date.month,temp);
 
     //Install the built-in floppy disk driver
-    floppy_install("floppy0");
-    floppy_install("floppy1");
+    floppy_install("fd0");
     
     /*Install the IDE, ATA-2/4 compliant driver in order to be able to
       use CD-ROMS and harddisks. This will also create logical drives from
@@ -449,10 +460,9 @@ void dex_init()
     printf("[OK]\n");   
 
     printf("Mounting boot device...");
-    
+ 
     //mount the floppy disk drive
-    vfs_mount_device("fat","floppy0","icsos");
-    vfs_mount_device("fat","floppy0","icsos");
+    vfs_mount_device("fat",boot_device_name,"icsos");
     printf("[OK]\n");   
 
 
