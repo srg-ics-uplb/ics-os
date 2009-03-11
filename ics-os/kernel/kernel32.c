@@ -216,16 +216,13 @@ void main()
     if (kernel_systeminfo.boot_device == 0)
     {  //floppy
        strcpy(boot_device_name,"fd0");
-    }else{
-       //hardisk
-
+    }else{ //hard disk
+       kernel_systeminfo.part[0] =    (mbhdr->boot_device >> 16) & 0xFF;
+       kernel_systeminfo.part[1] =    (mbhdr->boot_device >> 8) & 0xFF;
+       kernel_systeminfo.part[2] =    (mbhdr->boot_device & 0xFF);
+       int n=kernel_systeminfo.boot_device - 0x80;
+       sprintf(boot_device_name,"hd%dp%d",n,kernel_systeminfo.part[0]);
     }
-
-/*     kernel_systeminfo.part[0] =    (mbhdr->boot_device >> 16) & 0xFF;
-     kernel_systeminfo.part[1] =    (mbhdr->boot_device >> 8) & 0xFF;
-     kernel_systeminfo.part[2] =    (mbhdr->boot_device & 0xFF);
-*/
-        
 
      //obtain information about the memory configuration
     memory_map = mbhdr->mmap_addr;
