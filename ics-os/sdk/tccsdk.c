@@ -1093,3 +1093,11 @@ int atoi(const char *str)
     return num;
 };
 
+void setgmode(int mode){
+    dexsdk_systemcall(0x60,(int)mode,0,0,0,0);
+}
+
+void writepixel(int x, int y, char color){
+    dexsdk_systemcall(0x5F,(int)x,(int)y,(char)color,0,0);
+}
+
