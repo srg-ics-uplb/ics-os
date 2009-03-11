@@ -1113,7 +1113,15 @@ void write_palette(char r, char g, char b, char index){
 }
 
 //time
+void delay(unsigned int ms){
+    dexsdk_systemcall(0x9B,d,0,0,0,0);
+}
+
+int time(){
+    dexsdk_systemcall(0x55,0,0,0,0,0);
+}
+
 void get_date_time(dex32_datetime *datetime){ 
-    dexsdk_systemcall(0x53,*datetime,0,0,0,0);
+    dexsdk_systemcall(0x53,(int)datetime,0,0,0,0);
 }
 
