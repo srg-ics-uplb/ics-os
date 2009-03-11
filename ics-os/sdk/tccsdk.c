@@ -27,6 +27,7 @@
 
 */
 #include "dexsdk.h"
+#include "time.h"
 
 //global ANSI variables
 int errno;
@@ -1109,5 +1110,10 @@ void read_palette(char *r, char *g, char *b, char index){
 
 void write_palette(char r, char g, char b, char index){
     dexsdk_systemcall(0x61,r,g,b,index,0);
+}
+
+//time
+void get_date_time(dex32_datetime *datetime){ 
+    dexsdk_systemcall(0x53,*datetime,0,0,0,0);
 }
 
