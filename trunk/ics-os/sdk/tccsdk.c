@@ -1132,14 +1132,9 @@ void kb_ready(){
 
 //random
 
-unsigned long next = 1;
-int rand (){
-  next = next * 1103515245L + 12345L;
-  return (unsigned int)((next > 16) & 0x7fff); 
-}
-void srand (unsigned int seed)
-{
- next = seed;
+int random (unsigned long seed){
+  seed = seed * 1103515245L + 12345L;
+  return (unsigned int)((seed > 16) & 0x7fff); 
 }
 
 
