@@ -144,6 +144,13 @@ extern FILE *stdout, *stdin, *stderr;
 #define NULL 0
 #endif
 
+
+/* VGA mode constants*/
+#define VGA_320X200X256   1
+#define VGA_TEXT80X25X16  2
+#define VGA_640X480X16    3
+
+
 /*POSIX typedefs*/
 typedef unsigned int mode_t,dev_t,gid_t,ino_t,nlink_t,off_t,uid_t,clock_t,size_t;
 typedef long int time_t;
@@ -230,5 +237,9 @@ int closefile(FILE* fhandle);
 int remove(char *filename);
 int mkdir (const char *filename, mode_t mode);
 int copyfile(const char *src, const char *dest);
+
+void setgmode(int mode);
+void writepixel(int x, int y, char color);
+
 
 #endif 
