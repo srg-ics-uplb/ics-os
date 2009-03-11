@@ -1133,7 +1133,7 @@ void kb_ready(){
 //random
 int random(int n){
 
-   static long a = time();
+   long a = time();
    a = (a * 125) % 2796203;
    return ((a % n) + 1);
 }
