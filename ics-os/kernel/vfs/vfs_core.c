@@ -1019,8 +1019,9 @@ int fseek(file_PCB *fhandle, long offset, int whence)
                 if (whence== SEEK_CUR)
                     fhandle->ptrlow+=offset;
                 else
-                    if (whence== SEEK_END)
+                    if (whence== SEEK_END){
                         fhandle->ptrlow=fhandle->ptr->size-offset;
+                    }
 
             if (fhandle->ptrlow>fhandle->ptr->size) fhandle->ptrlow=fhandle->ptr->size;
             ;
