@@ -177,6 +177,9 @@ void api_init()
      api_addsystemcall(0x98,vfs_listdir,0,API_REQUIRE_INTS);
      api_addsystemcall(0x99,vfs_mount_device,0,API_REQUIRE_INTS);
      api_addsystemcall(0x9A,vfs_unmount_device,0,API_REQUIRE_INTS);
+     //------------- recently added by jach
+     api_addsystemcall(0x9B,delay,0,API_REQUIRE_INTS);
+     api_addsystemcall(0x9C,kb_ready,0,0);
 };
 
 
