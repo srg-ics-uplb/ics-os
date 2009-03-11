@@ -1207,6 +1207,7 @@ void dex32vga_writepixel(int x,int y,char color)
 
 
 
+
 static void demo_graphics(void)
 {
 	printf("Screen-clear in 16-color mode will be VERY SLOW\n"
