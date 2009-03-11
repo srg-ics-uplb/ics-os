@@ -238,8 +238,10 @@ int remove(char *filename);
 int mkdir (const char *filename, mode_t mode);
 int copyfile(const char *src, const char *dest);
 
-void setgmode(int mode);
+//VGA functions added by jach from dex api
+void setgraphics(int mode);
 void writepixel(int x, int y, char color);
-
+void read_palette(char *r, char *g, char *b, char index);
+void write_palette(char r, char g, char b, char index);
 
 #endif 
