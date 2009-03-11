@@ -1114,7 +1114,7 @@ void write_palette(char r, char g, char b, char index){
 
 //time
 void delay(unsigned int ms){
-    dexsdk_systemcall(0x9B,d,0,0,0,0);
+    dexsdk_systemcall(0x9B,ms,0,0,0,0);
 }
 
 int time(){
@@ -1124,4 +1124,15 @@ int time(){
 void get_date_time(dex32_datetime *datetime){ 
     dexsdk_systemcall(0x53,(int)datetime,0,0,0,0);
 }
+
+//keypressed
+void kb_ready(){
+    dexsdk_systemcall(0x9C,0,0,0,0,0);
+}
+
+//random
+int random(int n){
+   return (time()%n);
+}
+
 
