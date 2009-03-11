@@ -66,6 +66,7 @@ void extract(char *pak){
      fread(&pak_header,sizeof(pak_header),1,fp_pak);
      if (pak_header.magic[0] != 'P' && pak_header.magic[1] != 'K'){
         printf("Not a valid pak file!");
+	fclose(fp_pak);
         exit(1);
      }
    }else{
@@ -113,14 +114,15 @@ void list(char *pak){
      fread(&pak_header,sizeof(pak_header),1,fp_pak);
      if (pak_header.magic[0] != 'P' && pak_header.magic[1] != 'K'){
         printf("Not a valid pak file!");
+	fclose(fp_pak);
         exit(1);
      }
      pak_found=1;
    }
 
    if (pak_found){
-     fseek(fp_pak,0,SEEK_SET);
-     fseek(fp_pak,pak_header.trailer_pos,SEEK_SET);
+     //fseek(fp_pak,(int)0,SEEK_SET);
+     fseek(fp_pak,0,SEEK_END);
      fread(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
      printf("Found %d files in pak.\n",pak_trailer.num_entries);
      for (i=0;i<pak_trailer.num_entries;i++){
@@ -128,7 +130,7 @@ void list(char *pak){
                pak_trailer.entries[i].size,pak_trailer.entries[i].pos);
      }
    }else{
-     printf("Pack file not found!");
+     printf("Pak file not found!");
    }
 }
 
