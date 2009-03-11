@@ -192,7 +192,7 @@ void add(char *pak, char *fname){
    }else{
      printf("Pak file found...\n");
      fclose(fp_pak);
-     fp_pak=fopen(pak,"rw");
+     fp_pak=fopen(pak,"r");
      fseek(fp_pak,pak_header.trailer_pos,SEEK_SET);
      fread(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
      fp = fopen(fname,"r");
