@@ -237,7 +237,7 @@ int loadDLL(char *name,char *p)
  int fsize; vfs_stat filestat;
  int hdl,libid;
  char *buf;
- 
+
  handle=openfilex(name,FILE_READ);
  if (!handle) return -1;
  fstat(handle,&filestat);
