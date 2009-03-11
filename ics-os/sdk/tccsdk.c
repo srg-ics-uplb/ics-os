@@ -1077,4 +1077,19 @@ int copyfile(const char *src, const char *dest)
     return dexsdk_systemcall(0x97,(int)src,(int)dest,0,0,0);
 };
 
+//------------------------------------------
+int atoi(const char *str)
+{
+    int i = strlen(str) - 1 , i2 = 1;
+    int num = 0;
+    for (;i>=0; i--)
+      {
+        if ( (str[i]>='0') && (str[i]<='9') )
+        {
+            num += (str[i]-'0') * i2;
+            i2*=10;
+        };
+      };
+    return num;
+};
 
