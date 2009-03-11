@@ -32,6 +32,7 @@
 #include "../iomgr/iosched.h"
 #include "../vfs/vfs_core.h"
 
+//#define DEBUG_FAT12
 
 int fat_deviceid;
 
@@ -1252,10 +1253,8 @@ int fat_mount_root(vfs_node *mountpoint,int id)
 #ifdef DEBUG_FAT12
    printf("fat: Calling fat_mount\n");
 #endif
-   printf("jach: Calling fat_mount");
    fat_mount(mountpoint,fatdir,bpb,id);
    free(bpb);
-   printf("...done\n");
    return 1;
 };
 
@@ -1320,7 +1319,6 @@ int fat_mount(vfs_node *mountpoint,fatdirentry *buf2,BPB *bpb,int id)
       char filename[255];
       
       file12tostr(&buf2[i],filename);
-      printf("jach: Adding %s\n",filename);
       
 #ifdef DEBUG_FAT12
       printf("fat: Adding %s\n",filename);
@@ -1448,6 +1446,7 @@ int fat_mount(vfs_node *mountpoint,fatdirentry *buf2,BPB *bpb,int id)
       };
    };
    
+
 ;};
 
 
