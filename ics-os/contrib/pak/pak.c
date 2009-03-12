@@ -63,7 +63,7 @@ void extract(char *pak){
    /*Open the pak file if it exists */
    fp_pak = fopen(pak,"r");
    if (fp_pak != NULL){
-     fread(&pak_header,sizeof(pak_header),1,fp_pak);
+     fread(&pak_header,sizeof(struct _pak_header),1,fp_pak);
      if (pak_header.magic[0] != 'P' && pak_header.magic[1] != 'K'){
         printf("Not a valid pak file!");
 	fclose(fp_pak);
@@ -111,7 +111,7 @@ void list(char *pak){
    /*Open the pak file if it exists */
    fp_pak = fopen(pak,"r");
    if (fp_pak != NULL){
-     fread(&pak_header,sizeof(pak_header),1,fp_pak);
+     fread(&pak_header,sizeof(struct _pak_header),1,fp_pak);
      if (pak_header.magic[0] != 'P' && pak_header.magic[1] != 'K'){
         printf("Not a valid pak file!");
 	fclose(fp_pak);
@@ -121,9 +121,8 @@ void list(char *pak){
    }
 
    if (pak_found){
-     fseek(fp_pak,(unsigned int)0,SEEK_SET);
-     fseek(fp_pak,(unsigned int)0,SEEK_END);
-     fread(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
+     fseek(fp_pak,(unsigned int)pak_header.trailer_pos,SEEK_SET);
+     fread(&pak_trailer,sizeof(struct _pak_trailer),1,fp_pak);
      printf("Found %d files in pak.\n",pak_trailer.num_entries);
      for (i=0;i<pak_trailer.num_entries;i++){
        printf("[%s] with %d bytes at offset %d \n",pak_trailer.entries[i].fname,
