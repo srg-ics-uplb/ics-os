@@ -121,8 +121,8 @@ void list(char *pak){
    }
 
    if (pak_found){
-     //fseek(fp_pak,(int)0,SEEK_SET);
-     fseek(fp_pak,0,SEEK_END);
+     fseek(fp_pak,(unsigned int)0,SEEK_SET);
+     fseek(fp_pak,(unsigned int)0,SEEK_END);
      fread(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
      printf("Found %d files in pak.\n",pak_trailer.num_entries);
      for (i=0;i<pak_trailer.num_entries;i++){
@@ -185,7 +185,7 @@ void add(char *pak, char *fname){
      dump_header(&pak_header);
      dump_trailer(&pak_trailer);
 #endif
-     printf("Adding %s with %d bytes...",fname,fsize);
+     printf("Adding %s with %d bytes...\n",fname,fsize);
      fwrite(&pak_header,sizeof(pak_header),1,fp_pak);
      fwrite(buf,fsize,1,fp_pak);
      fwrite(&pak_trailer,sizeof(pak_trailer),1,fp_pak);
