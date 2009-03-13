@@ -6,7 +6,7 @@
 
 #include "../../sdk/dexsdk.h"
 
-#define _DEBUG_PAK_
+//#define _DEBUG_PAK_
 
 /*Maximum number of files in a pak*/
 #define MAXPAK 10
