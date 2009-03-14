@@ -27,6 +27,7 @@
 #define IRQ_TIMER 1
 #define IRQ_KEYBOARD 2
 #define IRQ_FDC 64
+#define IRQ_MOUSE 4096  //added by jach
 
 typedef struct _idtr {
    WORD limit;
@@ -55,6 +56,7 @@ unsigned int ticks=0;
 extern void timerwrapper(void);
 extern void loadregisters(void);
 extern void kbdwrapper(void);
+extern void mousewrapper(void);
 extern void pfwrapper(void);
 extern void switchprocess(void);
 extern void syscallwrapper(void);

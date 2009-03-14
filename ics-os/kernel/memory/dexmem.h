@@ -47,6 +47,7 @@
 #define APM_DS 0xD0
 #define DEX_SYSCALL 0xD8
 #define KEYB_TSS    0xE0
+#define MOUSE_TSS    0xE8
 
 
 #define MACHINE_INTEL386

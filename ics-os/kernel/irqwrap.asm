@@ -6,6 +6,7 @@ section .text
 
 extern time_handler
 extern kbd_irq
+extern mouse_irq
 extern pagefaulthandler
 extern fdchandler
 extern api_syscall
@@ -100,6 +101,30 @@ pop gs
 pop ebp
 
 iret
+
+
+global mousewrapper
+mousewrapper:
+push ebp
+push gs
+push fs
+push es
+push ss
+push ds
+pusha
+
+call mouse_irq
+
+popa
+pop ds
+pop ss
+pop es
+pop fs
+pop gs
+pop ebp
+
+iret
+
 
 global irq1wrapper
 irq1wrapper:
