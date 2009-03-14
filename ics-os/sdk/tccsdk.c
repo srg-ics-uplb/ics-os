@@ -1143,3 +1143,17 @@ void srand(unsigned int seed)
 {
 next = seed;
 }
+
+/*Process control functions */
+int fork(){
+   dexsdk_systemcall(0x90,0,0,0,0,0);   
+}
+
+int exec(char *fname,DWORD mode, char *params){
+   dexsdk_systemcall(0x5C,0,0,0,0,0);     
+}
+
+int execp(char *fname,DWORD mode, char *params){
+   dexsdk_systemcall(0x5B,0,0,0,0,0);     
+}
+
