@@ -409,7 +409,7 @@ void dex_init()
 
     /*Install the VGA driver*/
     printf("Loading VGA driver...");
-    //vga_init();
+    vga_init();
     printf("[OK]\n");   
  
     //initialize the I/O manager
