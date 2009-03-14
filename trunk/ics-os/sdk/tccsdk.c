@@ -1146,17 +1146,14 @@ next = seed;
 
 /*Process control functions */
 int fork(){
-   dexsdk_systemcall(0x90,0,0,0,0,0);   
+   return dexsdk_systemcall(0x90,0,0,0,0,0);   
 }
 
 int exec(char *fname,unsigned short  mode, char *params){
-   dexsdk_systemcall(0x5C,(int)fname,mode,(int)params,0,0);     
+   return dexsdk_systemcall(0x5C,(int)fname,mode,(int)params,0,0);     
 }
 
 int execp(char *fname,unsigned short mode, char *params){
-   dexsdk_systemcall(0x5B,(int)fname,mode,(int)params,0,0);     
+   return dexsdk_systemcall(0x5B,(int)fname,mode,(int)params,0,0);     
 }
 
-void wait(){
-   dexsdk_systemcall(0xC,0,0,0,0,0);   
-}
