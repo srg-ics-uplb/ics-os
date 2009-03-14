@@ -50,7 +50,7 @@ DWORD sched_sysmes[3]={0,0,0}; //[0] = pid, [1] = mes, [2] = data
 int ps_notimeincrement = 0;
 PCB386 *schedp,*plast,*current_process=0,*next_process=0,curp;
 PCB386 kernelPCB,schedpPCB;
-PCB386 sPCB,pfPCB,pfPCB_copy,keyPCB;
+PCB386 sPCB,pfPCB,pfPCB_copy,keyPCB,mousePCB;
 FPUregs ps_fpustate,ps_kernelfpustate;
 
 
@@ -1461,6 +1461,31 @@ void process_init()
     keyPCB.regs.SS0=SYS_STACK_SEL;
     keyPCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
     setgdt(KEYB_TSS,&(keyPCB.regs),103,0x89,0);
+
+    mousePCB.next=0;
+    mousePCB.processid=1;
+    strcpy(mousePCB.name,"mousehandler");
+    mousePCB.accesslevel=ACCESS_SYS;
+    mousePCB.priority=0;
+    mousePCB.status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
+    mousePCB.knext=knext;
+    mousePCB.pagedirloc=pagedir1;
+    mousePCB.outdev= consoleDDL;
+    memset(&mousePCB.regs,0,sizeof(saveregs));
+    mousePCB.regs.EIP=(DWORD)mousewrapper;
+    mousePCB.regs.ESP= PAGEFAULT_STACK_LOC;
+    mousePCB.regs.ES=SYS_DATA_SEL;
+    mousePCB.regs.SS=SYS_STACK_SEL;
+    mousePCB.regs.CS=SYS_CODE_SEL;
+    mousePCB.regs.DS=SYS_DATA_SEL;
+    mousePCB.regs.FS=SYS_DATA_SEL;
+    mousePCB.regs.CR3=pagedir1;
+    mousePCB.regs.GS=SYS_DATA_SEL;
+    mousePCB.regs.EFLAGS=0;
+    mousePCB.regs.SS0=SYS_STACK_SEL;
+    mousePCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
+    setgdt(MOUSE_TSS,&(mousePCB.regs),103,0x89,0);
+
 
     /*set up the PCB of the pagefault handler*/
     pfPCB.next=0;

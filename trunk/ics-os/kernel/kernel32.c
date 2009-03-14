@@ -88,6 +88,7 @@ extern void textcolor(unsigned char c);
 #include "devmgr/devmgr_error.h"
 #include "console/dexio.h"
 #include "hardware/keyboard/keyboard.h"
+#include "hardware/keyboard/mouse.h"
 #include "hardware/hardware.h"
 #include "memory/kheap.h"
 #include "hardware/chips/ports.c"
@@ -143,6 +144,7 @@ void dex_init();
 #include "stdlib/stdlib.c"
 #include "process/dex_taskmgr.c"
 #include "hardware/keyboard/keyboard.c"
+#include "hardware/keyboard/mouse.c"
 #include "hardware/pcibus/dexpci2.c"
 #include "hardware/pcibus/i386-ports.c"
 #include "hardware/pcibus/access.c"
@@ -210,6 +212,7 @@ void main()
     /*and some device handlers like the keyboard handler
       initializes the keyboard*/
     installkeyboard(); 
+
 
      //obtain the device which booted this operating system         
     kernel_systeminfo.boot_device = mbhdr->boot_device >> 24;
@@ -322,6 +325,10 @@ void dex32_startup()
     //register the hardware ports manager
     printf("Initializing ports...");
     ports_init();
+    printf("[OK]\n");
+
+    printf("Initializing mouse...");
+    InitMouse();
     printf("[OK]\n");
 
     //Initialize the PCI bus driver
