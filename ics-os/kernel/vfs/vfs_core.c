@@ -1307,7 +1307,10 @@ void findfile(char *name)
     if (ptr!=0)
     {
         printf("filename:%s size: %d \n",ptr->name,ptr->size);
-    };
+    }else
+    {
+        printf("File not found.\n");
+    }
 };
 
 vfs_node *mkvirtualdir(const char *name,int fsid,int deviceid)
