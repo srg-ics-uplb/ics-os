@@ -1149,11 +1149,11 @@ int fork(){
    dexsdk_systemcall(0x90,0,0,0,0,0);   
 }
 
-int exec(char *fname,DWORD mode, char *params){
-   dexsdk_systemcall(0x5C,fname,mode,params,0,0);     
+int exec(char *fname,unsigned short  mode, char *params){
+   dexsdk_systemcall(0x5C,(int)fname,mode,(int)params,0,0);     
 }
 
-int execp(char *fname,DWORD mode, char *params){
-   dexsdk_systemcall(0x5B,fname,mode,params,0,0);     
+int execp(char *fname,unsigned short mode, char *params){
+   dexsdk_systemcall(0x5B,(int)fname,mode,(int)params,0,0);     
 }
 
