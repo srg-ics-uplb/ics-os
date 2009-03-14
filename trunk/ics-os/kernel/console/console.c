@@ -115,7 +115,8 @@ int user_fork()
     hdl = pd_forkmodule(current_process->processid);
     
     taskswitch();  
-    while (!(id=pd_dispatched(hdl)));
+    while (!(id=pd_dispatched(hdl)))
+      ;
     
     if (curval != current_process->processid) //this is the child
       {
