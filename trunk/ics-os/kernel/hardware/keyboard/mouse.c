@@ -31,7 +31,7 @@ void mouse_irq() //struct regs *a_r (not used but just there)
       break;
   }
   dex32_restoreints(&flags);
-  printf("Mouse Handler\n");
+  printf("Mouse Handler Called\n");
 }
 
 inline void mouse_wait(unsigned char  a_type) //unsigned char
