@@ -543,9 +543,11 @@ int console_execute(const char *str)
                 else
     if (strcmp(u,"mouse")==0)
                 {
-                   installmouse();
+                  while (!kb_ready()){
                    get_mouse_pos(&mouse_x,&mouse_y);
                    printf("Mouse (x,y): %d %d\n",mouse_x, mouse_y);
+                   delay(100);
+                  }
                 }
                 else
     if (strcmp(u,"shutdown")==0)

@@ -9,7 +9,7 @@ signed char mouse_y=0;         //signed char
 
 
 //Mouse functions
-void mouse_irq() //struct regs *a_r (not used but just there)
+void mouse_irq() // (not used but just there)
 {
   DWORD flags;
   dex32_stopints(&flags);
@@ -105,7 +105,6 @@ void installmouse()
   //Enable the mouse
   mouse_write(0xF4);
   mouse_read();  //Acknowledge
-
 }
 
 void get_mouse_pos(signed char *x,signed char *y){
@@ -116,7 +115,7 @@ void get_mouse_pos(signed char *x,signed char *y){
 
 void init_mouse()
 {
-   int devid;
+   int mouse_devid;
    devmgr_char_desc mymouse;
    memset(&mymouse,0,sizeof(mymouse));
    mymouse.hdr.size = sizeof(mymouse);
@@ -131,9 +130,8 @@ void init_mouse()
    mymouse.hdr.sendmessage = 0;
    mymouse.set_callback_handler=0;
    mymouse.get_callback_handler=0;
-   devid=devmgr_register((devmgr_char_desc *)&mymouse);
+   mouse_devid=devmgr_register((devmgr_char_desc *)&mymouse);
    memset(&mouse_busywait,0,sizeof(mouse_busywait));
-   irq_addhandler(devid,12,mouse_irq);
-
+   irq_addhandler(mouse_devid,12,mouse_irq);
 }
 
