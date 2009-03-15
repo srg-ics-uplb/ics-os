@@ -1,202 +1,135 @@
+#include "mouse.h"
+
+//Mouse.inc by SANiK
+//License: Use as you wish, except to cause damage
+unsigned char mouse_cycle=0;     //unsigned char
+signed char mouse_byte[3];    //signed char
+signed char mouse_x=0;         //signed char
+signed char mouse_y=0;         //signed char
 
 
-// commands for PS2
-#define ENABLE_PS2   0xA8
-#define KBD_STAT   0x64
-#define MOUSE      0xD4
-#define MOUSE_STREAM   0xF4
-#define MOUSE_DISABLE   0xF5
-#define KBD_CMD      0x60
-#define DISABLE_KBD   0xAD
-#define ENABLE_KBD   0xAE
-
-// checks the port
-void CheckPort()
+//Mouse functions
+void mouse_irq() //struct regs *a_r (not used but just there)
 {
-   unsigned char temp;
-   while( 1 )
-   {
-      temp = inportb( KBD_STAT );
-      if( (  temp & 2 ) == 0 )
-         break;
-   }
+  switch(mouse_cycle)
+  {
+    case 0:
+      mouse_byte[0]=inportb(0x60);
+      mouse_cycle++;
+      break;
+    case 1:
+      mouse_byte[1]=inportb(0x60);
+      mouse_cycle++;
+      break;
+    case 2:
+      mouse_byte[2]=inportb(0x60);
+      mouse_x=mouse_byte[1];
+      mouse_y=mouse_byte[2];
+      mouse_cycle=0;
+      break;
+  }
 }
 
-// waits for the ouse buffer to be full
-void MouseBufferFull()
+inline void mouse_wait(unsigned char  a_type) //unsigned char
 {
-   unsigned char temp;
-   while( 1 )
-   {
-      temp = inportb( KBD_STAT );
-      if( (  temp & 0x20 ) == 0 )
-         break;
-   }
-}
-
-// checks the mouse
-char CheckMouse()
-{
-   unsigned char temp;
-   temp = inportb( KBD_STAT );
-
-   if( temp & 1 )
-      return 0;
-   else
-      return 1;
-}
-
-// set the ps2 bytes
-void PS2Set()
-{
-   // mouse enabled
-   outportb( KBD_STAT, ENABLE_PS2 );
-   CheckPort();
-}
-
-// waits for the mouse
-void WaitMouse()
-{
-   outportb( KBD_STAT, MOUSE );
-   CheckPort();
-}
-
-// sets the streaming mode
-void StartStream()
-{
-   WaitMouse();
-   outportb( KBD_CMD, MOUSE_STREAM );
-   CheckPort();
-   CheckMouse();
-}
-
-// disables the keyboard
-void DisableKeyboard()
-{
-   outportb( KBD_STAT, DISABLE_KBD );
-   CheckPort();
-}
-
-// enables the keyboard
-void EnableKeyboard()
-{
-   outportb( KBD_STAT, ENABLE_KBD );
-   CheckPort();
-}
-
-// wait for the mouse - this is in the OSFAQ (http://www.osdev.org/osfaq2)
-void MouseWait( char thetype )
-{
-   long timeout = 100000;
-   if( thetype == 0 )
-   {
-      while( timeout-- )
+  unsigned int _time_out=100000; //unsigned int
+  if(a_type==0)
+  {
+    while(_time_out--) //Data
+    {
+      if((inportb(0x64) & 1)==1)
       {
-         if( inportb( 0x64 ) & 1 )
-         {
-            return;
-         }
+        return;
       }
-      return;
-   }
-   if( thetype == 1 )
-   {
-      while( timeout-- )
+    }
+    return;
+  }
+  else
+  {
+    while(_time_out--) //Signal
+    {
+      if((inportb(0x64) & 2)==0)
       {
-         if( ( inportb( 0x64 ) & 2 ) == 0 )
-         {
-            return;
-         }
+        return;
       }
-      return;
-   }
+    }
+    return;
+  }
 }
 
-// get a byte from the port
-char GetByte()
+inline void mouse_write(unsigned char a_write) //unsigned char
 {
-   MouseWait( 0 );
-   char ret = inportb( 0x60 );
-
-   return ret;
+  //Wait to be able to send a command
+  mouse_wait(1);
+  //Tell the mouse we are sending a command
+  outportb(0x64, 0xD4);
+  //Wait for the final part
+  mouse_wait(1);
+  //Finally write
+  outportb(0x60, a_write);
 }
 
-// info
-int readable = 0;
-
-// data pointer
-MOUSEDATA LocalData;
-
-// irq handler for the mouse
-void mouse_irq(void)
+unsigned char mouse_read()
 {
-   DWORD flags;
-   dex32_stopints(&flags);
-
-   LocalData.status = GetByte();
-   LocalData.xcoord = GetByte();
-   LocalData.ycoord = GetByte();
-
-   readable = 1;
-   dex32_restoreints(&flags);
+  //Get's response from mouse
+  mouse_wait(0);
+  return inportb(0x60);
 }
 
-// installs the IRQ
-void InstallMouseIRQ()
+void installmouse()
 {
-   // enable the irq
-   outportb( 0x64, 0x20 );
-   //KeyContWaitReady();
-   unsigned char c = inportb( 0x60 ) | 2;
-   outportb( 0x64, 0x60 );
-   //KeyContWaitReady();
-   outportb( 0x60, c );
+  unsigned char _status;  //unsigned char
 
-   // install the irq handler
-   //irq_install_handler( 12, MouseIRQ );
+  //Enable the auxiliary mouse device
+  mouse_wait(1);
+  outportb(0x64, 0xA8);
+ 
+  //Enable the interrupts
+  mouse_wait(1);
+  outportb(0x64, 0x20);
+  mouse_wait(0);
+  _status=(inportb(0x60) | 2);
+  mouse_wait(1);
+  outportb(0x64, 0x60);
+  mouse_wait(1);
+  outportb(0x60, _status);
+ 
+  //Tell the mouse to use default settings
+  mouse_write(0xF6);
+  mouse_read();  //Acknowledge
+ 
+  //Enable the mouse
+  mouse_write(0xF4);
+  mouse_read();  //Acknowledge
+
 }
 
-// get data from the mouse
-void GetMouseData( MOUSEDATA* data )
+void get_mouse_pos(signed char *x,signed char *y){
+   *x=mouse_x;
+   *y=mouse_y;
+}
+
+
+void init_mouse()
 {
-   // is there data?
-   if( ! readable )
-   {
-      // there's no data yet, so just make no movement
-      data->status = 0;
-      data->xcoord = 0;
-      data->ycoord = 0;
-      
-      // go back to caller
-      return;
-   }
-   
-   // disable interrupts
-   __asm__ __volatile__ ( "cli" );
+   int devid;
+   devmgr_char_desc mymouse;
+   memset(&mymouse,0,sizeof(mymouse));
+   mymouse.hdr.size = sizeof(mymouse);
+   mymouse.hdr.type = DEVMGR_CHAR;
+   strcpy(mymouse.hdr.name,"mouse");
+   strcpy(mymouse.hdr.description,"Default mouse driver 1.00");
+   mymouse.init_device = installmouse;
+   mymouse.ready_put = mouse_write;
+   mymouse.ready_get = mouse_read;
+   mymouse.get_char = 0;
+   mymouse.put_char = 0;
+   mymouse.hdr.sendmessage = 0;
+   mymouse.set_callback_handler=0;
+   mymouse.get_callback_handler=0;
+   devid=devmgr_register((devmgr_char_desc *)&mymouse);
+   memset(&mouse_busywait,0,sizeof(mouse_busywait));
+   irq_addhandler(devid,12,mouse_irq);
 
-   // readable is false now
-   readable = 0;
-
-   // get the important stuff
-   LocalData.leftbut = LocalData.status & 1;
-   LocalData.rightbut = ( LocalData.status & 2 ) >> 1;
-   LocalData.midbut = ( LocalData.status & 4 ) >> 2;
-   LocalData.xsign = ( LocalData.status & 16 ) >> 4;
-   LocalData.ysign = ( LocalData.status & 32 ) >> 5;
-   LocalData.xover = ( LocalData.status & 64 ) >> 6;
-   LocalData.yover = ( LocalData.status & 128 ) >> 7;
-
-   // return the data
-   *data = LocalData;
-   
-   // enable interrupts
-   __asm__ __volatile__ ( "sti" );
 }
 
-// init the mouse
-void InitMouse()
-{
-   PS2Set();
-   //InstallMouseIRQ();
-   StartStream();
-}

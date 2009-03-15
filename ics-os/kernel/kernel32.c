@@ -204,7 +204,7 @@ void main()
     
     /* Enable the keyboard IRQ,Timer IRQ and the Floppy Disk IRQ.As more devices that uses IRQs get
        supported, we should OR more of them here*/
-    program8259(IRQ_TIMER | IRQ_KEYBOARD | IRQ_FDC); 
+    program8259(IRQ_TIMER | IRQ_KEYBOARD | IRQ_FDC | IRQ_MOUSE); 
 
     //sets up the default interrupt handlers, like the PF handler,GPF handler
     setdefaulthandlers();   
@@ -212,7 +212,7 @@ void main()
     /*and some device handlers like the keyboard handler
       initializes the keyboard*/
     installkeyboard(); 
-
+    installmouse();
 
      //obtain the device which booted this operating system         
     kernel_systeminfo.boot_device = mbhdr->boot_device >> 24;
@@ -327,10 +327,6 @@ void dex32_startup()
     ports_init();
     printf("[OK]\n");
 
-    printf("Initializing mouse...");
-    InitMouse();
-    printf("[OK]\n");
-
     //Initialize the PCI bus driver
     printf("Initializing PCI devices...");
     //show_pci();
@@ -345,6 +341,12 @@ void dex32_startup()
     printf("Initializing the process manager...");
     //Initialize the process manager
     process_init();
+    printf("[OK]\n");
+
+    //initialize the keyboard device driver
+    printf("Initializing keyboard and mouse drivers...");
+    init_keyboard();
+    init_mouse();
     printf("[OK]\n");
 
     //process manager is ready, pass execution to the taskswitcher
@@ -379,8 +381,6 @@ void dex_init()
     //More importantly, interrupts are already operational, which means we can now set up
     //devices that require IRQs like the floppy disk driver 
       
-    //initialize the keyboard device driver
-    init_keyboard();
     
     //add some hotkeys to the keyboard
     kb_addhotkey(KEY_F6+CTRL_ALT, 0xFF, fg_next);

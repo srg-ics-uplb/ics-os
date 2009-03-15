@@ -518,6 +518,7 @@ int console_execute(const char *str)
   char temp[512];
   char *u;
   int command_length = 0;
+  signed char mouse_x,mouse_y;
   
   //make a copy so that strtok wouldn't ruin str
   strcpy(temp,str);
@@ -538,6 +539,15 @@ int console_execute(const char *str)
     if (strcmp(u,"fgman")==0)
                 {
                     fg_set_state(1);
+                }
+                else
+    if (strcmp(u,"mouse")==0)
+                {
+                    while(1){
+                        get_mouse_pos(&mouse_x,&mouse_y);
+                        printf("Mouse (x,y): %d %d\n",mouse_x, mouse_y);
+                        delay(100);
+                    }
                 }
                 else
     if (strcmp(u,"shutdown")==0)
