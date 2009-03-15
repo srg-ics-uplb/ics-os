@@ -144,7 +144,6 @@ void  kbd_irq(void)
     };
     
    dex32_restoreints(flags);
-   printf("keyboard irq\n");
 };
 
 static int read_kbd(void)
