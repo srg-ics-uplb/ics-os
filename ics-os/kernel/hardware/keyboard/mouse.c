@@ -11,6 +11,8 @@ signed char mouse_y=0;         //signed char
 //Mouse functions
 void mouse_irq() //struct regs *a_r (not used but just there)
 {
+  DWORD flags;
+  dex32_stopints(&flags);
   switch(mouse_cycle)
   {
     case 0:
@@ -28,6 +30,8 @@ void mouse_irq() //struct regs *a_r (not used but just there)
       mouse_cycle=0;
       break;
   }
+  dex32_restoreints(&flags);
+  printf("Mouse Handler\n");
 }
 
 inline void mouse_wait(unsigned char  a_type) //unsigned char
