@@ -96,12 +96,12 @@ int shouldflush()
 void start_priority()
 {
 disable_taskswitching();
-dex32_irqcntl( IRQ_TIMER | IRQ_FDC);
+dex32_irqcntl( IRQ_TIMER | IRQ_FDC | IRQ_MOUSE);
 };
 
 void stop_priority()
 {
-dex32_irqcntl(IRQ_TIMER | IRQ_KEYBOARD | IRQ_FDC);
+dex32_irqcntl(IRQ_TIMER | IRQ_KEYBOARD | IRQ_FDC | IRQ_MOUSE);
 enable_taskswitching();
 };
 
