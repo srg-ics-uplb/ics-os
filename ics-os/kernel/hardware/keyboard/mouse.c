@@ -126,8 +126,8 @@ void init_mouse()
    mymouse.init_device = installmouse;
    mymouse.ready_put = mouse_write;
    mymouse.ready_get = mouse_read;
-   mymouse.get_char = 0;
-   mymouse.put_char = 0;
+   mymouse.get_char = mouse_write;
+   mymouse.put_char = mouse_read;
    mymouse.hdr.sendmessage = 0;
    mymouse.set_callback_handler=0;
    mymouse.get_callback_handler=0;
