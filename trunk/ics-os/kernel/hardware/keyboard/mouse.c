@@ -11,8 +11,8 @@ signed char mouse_y=0;         //signed char
 //Mouse functions
 void mouse_irq() // (not used but just there)
 {
+  printf("Mouse Handler Called\n");
   DWORD flags;
-  dex32_stopints(&flags);
   switch(mouse_cycle)
   {
     case 0:
@@ -30,8 +30,6 @@ void mouse_irq() // (not used but just there)
       mouse_cycle=0;
       break;
   }
-  dex32_restoreints(&flags);
-  printf("Mouse Handler Called\n");
 }
 
 inline void mouse_wait(unsigned char  a_type) //unsigned char
@@ -112,6 +110,14 @@ void get_mouse_pos(signed char *x,signed char *y){
    *y=mouse_y;
 }
 
+int mouse_detected()
+{
+    unsigned char tmp = mouse_read();
+    if(tmp != 0xFA)
+         return 0; //No mouse
+    else
+         return 1; //Mouse there
+}
 
 void init_mouse()
 {
@@ -133,5 +139,13 @@ void init_mouse()
    mouse_devid=devmgr_register((devmgr_char_desc *)&mymouse);
    memset(&mouse_busywait,0,sizeof(mouse_busywait));
    irq_addhandler(mouse_devid,12,mouse_irq);
+   if (mouse_detected())
+   {
+     printf("Mouse detected!\n");
+   }
+   else
+   {
+     printf("No Mouse detected!\n");
+   }
 }
 
