@@ -27,7 +27,7 @@
 #define IRQ_TIMER 1
 #define IRQ_KEYBOARD 2
 #define IRQ_FDC 64
-#define IRQ_MOUSE 4096  //added by jach
+#define IRQ_MOUSE 16  //added by jach
 
 typedef struct _idtr {
    WORD limit;
@@ -94,6 +94,7 @@ idtr intloc;
 void program8259(unsigned char b)
  {
    unsigned char b1=0xFF;
+   unsigned char b2=0xFF;
 
    //remap the IRQs
    outportb(0x20,0x11);
@@ -105,9 +106,9 @@ void program8259(unsigned char b)
    outportb(0x21,1);
    outportb(0xA1,1);
    b1^=b;
-
    outportb(0x21,b1);
-   outportb(0xA1,0xFF);
+   b2^=IRQ_MOUSE;
+   outportb(0xA1,b2);
  };
 
 
@@ -312,7 +313,10 @@ void irq_activate(int irqnum)
         ptr->irq_handler();
         ptr = ptr->next;
     };
-    
+
+    //EOI for slave 
+    outportb(0xA0, 0x20);
+ 
     //reactive the programmer interrupt controller since it gets
     //temporarily disabled once an IRQ fires
     outportb(0x20,0x20);
