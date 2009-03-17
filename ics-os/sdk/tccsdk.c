@@ -918,6 +918,19 @@ int feof(FILE *f)
   return dexsdk_systemcall(0x52,(int)f,0,0,0,0);
 };
 
+int fstat(FILE *fp,vfs_stat *statbuf)
+{
+    vfs_stat file_info;
+    if (fhandle!=0)
+        if (file_ok(fhandle))
+        {
+            vfs_fillstat(&file_info,fhandle->ptr);
+            memcpy(statbuf,&file_info,sizeof(vfs_stat));
+            return 0;
+        };
+    return -1;
+};
+
 FILE *fopen(const char *filename,const char *s)
  {
    int read=0,write=0,append=0;

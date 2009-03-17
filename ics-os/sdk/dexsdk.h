@@ -151,6 +151,31 @@ extern FILE *stdout, *stdin, *stderr;
 #define VGA_640X480X16    3
 
 
+/**
+ * File stat
+ */
+//derived from stat.h, modified for use with DEX -- returned by fstat to hold info about the file
+typedef struct _vfs_stat
+{
+        int     size;       /*The size of this structure*/
+        int         st_dev;             /* Equivalent to drive number 0=A 1=B ... */
+        int         st_ino;             /* Always zero ? */
+        int         st_mode;    /* See above constants */
+        short       st_nlink;       /* Number of links. */
+        short       st_uid;         /* User: Maybe significant on NT ? */
+        short       st_gid;         /* Group: Ditto */
+        int         st_rdev;    /* Seems useless (not even filled in) */
+        int         st_size;    /* File size in bytes */
+        int         st_atime;   /* Accessed date (always 00:00 hrs local
+                                 * on FAT) */
+        int         st_mtime;   /* Modified time */
+        int         st_ctime;   /* Creation time */
+} vfs_stat;
+
+
+
+
+
 /*POSIX typedefs*/
 typedef unsigned int mode_t,dev_t,gid_t,ino_t,nlink_t,off_t,uid_t,clock_t,size_t;
 typedef long int time_t;
