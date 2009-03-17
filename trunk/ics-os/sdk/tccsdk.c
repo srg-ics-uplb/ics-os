@@ -920,15 +920,7 @@ int feof(FILE *f)
 
 int fstat(FILE *fp,vfs_stat *statbuf)
 {
-    vfs_stat file_info;
-    if (fhandle!=0)
-        if (file_ok(fhandle))
-        {
-            vfs_fillstat(&file_info,fhandle->ptr);
-            memcpy(statbuf,&file_info,sizeof(vfs_stat));
-            return 0;
-        };
-    return -1;
+    return dexsdk_systemcall(0x58,(int)fp,(int)statbuf,0,0,0);
 };
 
 FILE *fopen(const char *filename,const char *s)
