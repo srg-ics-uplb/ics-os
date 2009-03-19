@@ -1,5 +1,10 @@
 #summary User Guide
 
 === Introduction ===
+The primary user interface in ics-os is the command line. After a successful startup, the
+command prompt and you can begin typing commands. 
+{{{
+ics-os%
+}}}
 
 (Coming soon...)
