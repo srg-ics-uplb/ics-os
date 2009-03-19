@@ -1117,6 +1117,8 @@ void write_palette(char r, char g, char b, char index){
     dexsdk_systemcall(0x61,r,g,b,index,0);
 }
 
+
+
 //time
 void delay(unsigned int ms){
     dexsdk_systemcall(0x9B,ms,0,0,0,0);
