@@ -4,12 +4,12 @@
 The primary user interface in ics-os is the command line. After a successful startup, the
 command prompt will appear and you can begin typing commands. 
 {{{
-ics-os%
+/ics-os/%
 }}}
 To enter commands, you must type the name of the command then press enter. For example, 
 to display the list of files in the current directory, use the command {{{ls}}}.
 {{{
-ics-os%ls
+/ics-os/%ls
 }}}
 
 (Coming soon...)
