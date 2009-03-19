@@ -12,6 +12,10 @@ to display the list of files in the current directory, use the command {{{ls}}}.
 /ics-os/%ls
 }}}
 The commands can be categorized into two types namely Internal and Application. Internal 
-commands are "built" into ics-os and {{{ls}}} is an example. Application commands on the other hand are separate programs that perform user specific functions. 
+commands are "built" into ics-os and {{{ls}}} is an example. Application commands on the other hand are separate programs that perform user specific functions. To view the list of 
+internal commands, type {{{help}}} on the prompt then press enter.
+{{{
+/ics-os/%help
+}}}
 
 (In progress...)
