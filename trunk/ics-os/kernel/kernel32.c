@@ -374,7 +374,7 @@ void dex_init()
     printf(" (Build: %s)\n\n",build_id);
     textcolor(WHITE);
     printf("Starting dex_init()...\n");
-    //printf("Press space to skip autoexec.bat processing\n");
+    printf("Press space to skip autoexec.bat processing\n");
 
     //At this point, the kernel has fininshed setting up memory and the process scheduler.
     //More importantly, interrupts are already operational, which means we can now set up
@@ -390,7 +390,7 @@ void dex_init()
     
     /*Now that the timer is active we can now use time based functions.
       Delay for two seconds in order to see previous messages */  
-    /*
+    
     textbackground(GREEN);
     for (i=0 ;i < 79; i++)
       {
@@ -399,7 +399,7 @@ void dex_init()
              if (getch() ==' ') {baremode = 1;break;};        
           delay( delay_val );
       };
-    */
+    
     textbackground(BLACK);
       
     printf("\n");  
@@ -478,8 +478,6 @@ void dex_init()
     /*Supposed to initialize the Advanced Power Management Interface
       so that I could do a "software" shutdown **IN PROGRESS** */
     //dex32apm_init();
-
-    delay(100);
 
     printf("Running foreground manager thread\n");
     
