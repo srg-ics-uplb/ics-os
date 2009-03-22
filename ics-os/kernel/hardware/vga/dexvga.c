@@ -1260,6 +1260,9 @@ static void demo_graphics(void)
 	set_text_mode(0);
 }
 
+/*
+ * Displays a string in graphics mode
+ */
 void write_text(char *str, int x, int y, int color){
   int i=0;
   while (str[i] != '\0'){
@@ -1267,10 +1270,11 @@ void write_text(char *str, int x, int y, int color){
     x+=9;
     i++;
   }
-
 }
 
-
+/**
+ * Draws an 8x8 character
+ */
 void draw_char(unsigned char ch,int x, int y,int color)
 {
    int i,j,k;
