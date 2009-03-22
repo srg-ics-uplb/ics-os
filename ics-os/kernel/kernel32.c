@@ -223,7 +223,7 @@ void main()
        kernel_systeminfo.part[1] =    (mbhdr->boot_device >> 8) & 0xFF;
        kernel_systeminfo.part[2] =    (mbhdr->boot_device & 0xFF);
        int n=kernel_systeminfo.boot_device - 0x80;
-       sprintf(boot_device_name,"hd%dp%d",n,kernel_systeminfo.part[0]);
+       sprintf(boot_device_name,"hdp%dp%d",n,kernel_systeminfo.part[0]);
     }
 
      //obtain information about the memory configuration
@@ -374,7 +374,7 @@ void dex_init()
     printf(" (Build: %s)\n\n",build_id);
     textcolor(WHITE);
     printf("Starting dex_init()...\n");
-    printf("Press space to skip autoexec.bat processing\n");
+    //printf("Press space to skip autoexec.bat processing\n");
 
     //At this point, the kernel has fininshed setting up memory and the process scheduler.
     //More importantly, interrupts are already operational, which means we can now set up
@@ -390,6 +390,7 @@ void dex_init()
     
     /*Now that the timer is active we can now use time based functions.
       Delay for two seconds in order to see previous messages */  
+    /*
     textbackground(GREEN);
     for (i=0 ;i < 79; i++)
       {
@@ -398,6 +399,7 @@ void dex_init()
              if (getch() ==' ') {baremode = 1;break;};        
           delay( delay_val );
       };
+    */
     textbackground(BLACK);
       
     printf("\n");  
@@ -462,13 +464,11 @@ void dex_init()
     iso9660_init();
     printf("[OK]\n");   
 
-    printf("Mounting boot device [%s]", boot_device_name);
-    getch();
+    printf("Mounting boot device %s...", boot_device_name);
  
     //mount the floppy disk drive
     vfs_mount_device("fat",boot_device_name,"icsos");
     printf("[OK]\n");   
-
 
     //setup the initial executable loaders (So we could run .EXEs,.b32,coff and elfs)
     printf("Initializing first module loader(s) [EXE][COFF][ELF][DEX B32]...");
@@ -478,6 +478,8 @@ void dex_init()
     /*Supposed to initialize the Advanced Power Management Interface
       so that I could do a "software" shutdown **IN PROGRESS** */
     //dex32apm_init();
+
+    delay(100);
 
     printf("Running foreground manager thread\n");
     
