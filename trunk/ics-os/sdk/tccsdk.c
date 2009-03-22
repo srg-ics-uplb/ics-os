@@ -490,6 +490,43 @@ int printf(const char *fmt, ...)
 }
 
 
+/*****************************************************************************
+SPRINTF
+*****************************************************************************/
+int vsprintf_help(unsigned c, void **ptr)
+{
+        char *dst;
+
+        dst = *ptr;
+        *dst++ = c;
+        *ptr = dst;
+        return 0 ;
+}
+/*****************************************************************************
+*****************************************************************************/
+int vsprintf(char *buffer, const char *fmt, va_list args)
+{
+        int ret_val;
+
+        ret_val = do_printf(fmt, args, vsprintf_help,NULL,(void*)& buffer);
+        buffer[ret_val] = '\0';
+        return ret_val;
+}
+/*****************************************************************************
+*****************************************************************************/
+int sprintf(char *buffer, const char *fmt, ...)
+{
+        va_list args;
+        int ret_val;
+
+        va_start(args, fmt);
+        ret_val = vsprintf(buffer, fmt, args);
+        buffer[ret_val] = '\0';
+        va_end(args);
+        return ret_val;
+}
+
+
 /********************CRT control functions******************************/
 
 void  clrscr()
