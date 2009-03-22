@@ -180,6 +180,7 @@ void api_init()
      //------------- recently added by jach
      api_addsystemcall(0x9B,delay,0,API_REQUIRE_INTS);
      api_addsystemcall(0x9C,kb_ready,0,0);
+     api_addsystemcall(0x9D,write_text,0,0);
 };
 
 
