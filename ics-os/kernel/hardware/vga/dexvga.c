@@ -1221,7 +1221,7 @@ static void demo_graphics(void)
 	printf("Press a key to continue\n");
 	getch();
         dex32vga_setgmode(DEX32VGA_320X200X256);
-        write_text("ICS OS",10,10,30);
+        write_text("Welcome to ICS OS!",10,10,30);
         getch();
         dex32vga_setgmode(DEX32VGA_TEXT80X25X16);
 /* 4-color */
