@@ -1179,8 +1179,12 @@ static void draw_x(void)
 	getch();
 }
 
+/**
+ * Automatically clear the screen after setting the graphics mode
+ */
 void dex32vga_setgmode(int mode)
  {
+   int x,y;
    if (mode==DEX32VGA_320X200X256)
      {
        write_regs(g_320x200x256);
@@ -1198,6 +1202,9 @@ void dex32vga_setgmode(int mode)
       	g_ht = 480;
       	g_write_pixel = write_pixel4p;
      };
+   for(y = 0; y < g_ht; y++)
+     for(x = 0; x < g_wd; x++)
+       g_write_pixel(x, y, 0);
  };
 
 void dex32vga_writepixel(int x,int y,char color)
@@ -1211,9 +1218,12 @@ void dex32vga_writepixel(int x,int y,char color)
 static void demo_graphics(void)
 {
         int x=0,i=0;
-	printf("Screen-clear in 16-color mode will be VERY SLOW\n"
-		"Press a key to continue\n");
+	printf("Press a key to continue\n");
 	getch();
+        dex32vga_setgmode(DEX32VGA_320X200X256);
+        write_text("ICS OS",10,10,30);
+        getch();
+        dex32vga_setgmode(DEX32VGA_TEXT80X25X16);
 /* 4-color */
 /*
 	write_regs(g_320x200x4);
@@ -1227,21 +1237,16 @@ static void demo_graphics(void)
 	write_regs(g_640x480x16);
 	g_wd = 640;
 	g_ht = 480;
-	g_write_pixel = write_pixel4p;
+
 	draw_x();
 */
 /* 256-color */
-	write_regs(g_320x200x256);
+/*	write_regs(g_320x200x256);
 	g_wd = 320;
 	g_ht = 200;
 	g_write_pixel = write_pixel8;
-        clear_graphics();
-        for (i=0;i<10;i++){
-           draw_char(&g_8x8_font[i*8],x,10,5);
-           x+=10;
-        }
-        getch(); 
-	//draw_x();
+	draw_x();
+*/
 
 /* 256-color Mode-X */
 /*
@@ -1255,27 +1260,26 @@ static void demo_graphics(void)
 	set_text_mode(0);
 }
 
-void clear_graphics(){
-   int i,j;
-
-   for (i=0;i<200;i++)
-     for (j=0;j<320;j++)
-        dex32vga_writepixel(j,i,0);
-
+void write_text(char *str, int x, int y, int color){
+  int i=0;
+  while (str[i] != '\0'){
+    draw_char(str[i],x,y,color);
+    x+=9;
+    i++;
+  }
 
 }
 
 
-void draw_char(unsigned char *char_data,int x, int y,int color)
+void draw_char(unsigned char ch,int x, int y,int color)
 {
    int i,j,k;
    unsigned char d;
-//   unsigned char char_data[8]={0x7E, 0x81, 0xA5, 0x81, 0xBD, 0x99, 0x81, 0x7E};
    unsigned char bit;
 
    for (i=0;i<8;i++)
    {
-     d=char_data[i];
+     d=g_8x8_font[i+(ch * 8)];
      k=0;
      bit=128;
      for (j=0;j<8;j++)
