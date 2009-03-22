@@ -1210,6 +1210,7 @@ void dex32vga_writepixel(int x,int y,char color)
 
 static void demo_graphics(void)
 {
+        int x=0,i=0;
 	printf("Screen-clear in 16-color mode will be VERY SLOW\n"
 		"Press a key to continue\n");
 	getch();
@@ -1234,6 +1235,12 @@ static void demo_graphics(void)
 	g_wd = 320;
 	g_ht = 200;
 	g_write_pixel = write_pixel8;
+        clear_graphics();
+        for (i=0;i<1;i++){
+           draw_char(&g_8x8_font[8],x,10,5);
+           x+=10;
+        }
+        getch(); 
 	//draw_x();
 
 /* 256-color Mode-X */
@@ -1246,6 +1253,41 @@ static void demo_graphics(void)
 */
 /* go back to 80x25 text mode */
 	set_text_mode(0);
+}
+
+void clear_graphics(){
+   int i,j;
+
+   for (i=0;i<200;i++)
+     for (j=0;j<320;j++)
+        dex32vga_writepixel(j,i,0);
+
+
+}
+
+
+void draw_char(unsigned char *char_data,int x, int y,int color)
+{
+   int i,j,k;
+   unsigned char d;
+//   unsigned char char_data[8]={0x7E, 0x81, 0xA5, 0x81, 0xBD, 0x99, 0x81, 0x7E};
+   unsigned char bit;
+
+   for (i=0;i<8;i++)
+   {
+     d=char_data[i];
+     k=0;
+     bit=128;
+     for (j=0;j<8;j++)
+     {
+       if (d & (bit>>(k)))
+       {
+         dex32vga_writepixel(x+k,y,color);
+       }
+       k++; 
+     }
+     y++;
+   }
 }
 
 
