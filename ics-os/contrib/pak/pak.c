@@ -11,21 +11,21 @@
 /*Maximum number of files in a pak*/
 #define MAXPAK 10
 
-struct _pak_header{
+typedef struct __attribute__((packed)) _pak_header{
    char magic[2];  /* 'P' and 'K' */
    long trailer_pos; /* The position of the trailer */
-};
+}pak_header;
 
-struct _pak_entry{
+typedef struct __attribute__((packed)) _pak_entry{
    char fname[30]; /* The filename */
    long pos;    /* Offset of this entry in the pak */
    long size;      /* The size of this entry */
-};
+}pak_entry;
 
-struct _pak_trailer{
+typedef struct __attribute__((packed)) _pak_trailer{
    long num_entries; /* The number of entries */   
-   struct _pak_entry entries[MAXPAK]; /* Entries */
-};
+   pak_entry entries[MAXPAK]; /* Entries */
+}pak_trailer;
 
 #ifdef _DEBUG_PAK_
 void dump_header(struct _pak_header *header){
@@ -57,8 +57,8 @@ void extract(char *pak){
    FILE *fp_pak;
    FILE *fp;
    char *buf;
-   struct _pak_header pak_header;
-   struct _pak_trailer pak_trailer;
+   pak_header pak_header;
+   pak_trailer pak_trailer;
    unsigned int pak_found=0;  
    unsigned int fsize;
    unsigned int i;

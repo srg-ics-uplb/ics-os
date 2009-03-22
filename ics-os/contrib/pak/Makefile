@@ -1,4 +1,4 @@
-CC=tcc
+CC=gcc
 ICSOS_ROOT=../..
 SDK=../../sdk
 CFLAGS=-nostdlib -fno-builtin -static
