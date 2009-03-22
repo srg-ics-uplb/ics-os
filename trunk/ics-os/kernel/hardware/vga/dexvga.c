@@ -1236,8 +1236,8 @@ static void demo_graphics(void)
 	g_ht = 200;
 	g_write_pixel = write_pixel8;
         clear_graphics();
-        for (i=0;i<1;i++){
-           draw_char(&g_8x8_font[8],x,10,5);
+        for (i=0;i<10;i++){
+           draw_char(&g_8x8_font[i*8],x,10,5);
            x+=10;
         }
         getch(); 
