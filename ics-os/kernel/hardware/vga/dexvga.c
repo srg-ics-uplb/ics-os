@@ -1235,8 +1235,6 @@ static void demo_graphics(void)
 	g_ht = 200;
 	g_write_pixel = write_pixel8;
 	//draw_x();
-	write_font("ICS-OS",1);
-        getch();
 
 /* 256-color Mode-X */
 /*
