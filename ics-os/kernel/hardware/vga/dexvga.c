@@ -1214,29 +1214,38 @@ static void demo_graphics(void)
 		"Press a key to continue\n");
 	getch();
 /* 4-color */
+/*
 	write_regs(g_320x200x4);
 	g_wd = 320;
 	g_ht = 200;
 	g_write_pixel = write_pixel2;
 	draw_x();
+*/
 /* 16-color */
+/*
 	write_regs(g_640x480x16);
 	g_wd = 640;
 	g_ht = 480;
 	g_write_pixel = write_pixel4p;
 	draw_x();
+*/
 /* 256-color */
 	write_regs(g_320x200x256);
 	g_wd = 320;
 	g_ht = 200;
 	g_write_pixel = write_pixel8;
-	draw_x();
+	//draw_x();
+	write_font("ICS-OS",1);
+        getch();
+
 /* 256-color Mode-X */
+/*
 	write_regs(g_320x200x256_modex);
 	g_wd = 320;
 	g_ht = 200;
 	g_write_pixel = write_pixel8x;
 	draw_x();
+*/
 /* go back to 80x25 text mode */
 	set_text_mode(0);
 }
