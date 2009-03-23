@@ -181,6 +181,7 @@ typedef unsigned int mode_t,dev_t,gid_t,ino_t,nlink_t,off_t,uid_t,clock_t,size_t
 typedef long int time_t;
 typedef int pid_t,ssize_t;
 typedef int (*fnptr_t)(unsigned c, void **helper,FILE *f);
+typedef int (*sfnptr_t)(unsigned c, void **helper);
 typedef void (*sighandler_t)(int signum);
 
 
