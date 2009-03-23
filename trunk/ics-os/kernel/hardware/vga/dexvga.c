@@ -1202,6 +1202,8 @@ void dex32vga_setgmode(int mode)
       	g_ht = 480;
       	g_write_pixel = write_pixel4p;
      };
+
+   //We clear the screen
    for(y = 0; y < g_ht; y++)
      for(x = 0; x < g_wd; x++)
        g_write_pixel(x, y, 0);
@@ -1275,7 +1277,7 @@ void write_text(char *str, int x, int y, int color){
 /**
  * Draws an 8x8 character
  */
-void draw_char(unsigned char ch,int x, int y,int color)
+void write_char(unsigned char ch,int x, int y,int color)
 {
    int i,j,k;
    unsigned char d;
