@@ -489,7 +489,7 @@ int printf(const char *fmt, ...)
 	return ret_val;
 }
 
-int do_sprintf(const char *fmt, va_list args, fnptr_t fn, void **ptr)
+int do_sprintf(const char *fmt, va_list args, sfnptr_t fn, void **ptr)
 {
 	unsigned state, flags, radix, actual_wd, count, given_wd;
 	unsigned char *where, buf[PR_BUFLEN];
@@ -729,7 +729,7 @@ SPRINTF
 /*
  * FIXME
  */
-int vsprintf_help(unsigned c, void **ptr, FILE *fp)
+int vsprintf_help(unsigned c, void **ptr )
 {
         char *dst;
 
@@ -748,7 +748,7 @@ int vsprintf(char *buffer, const char *fmt, va_list args)
         int ret_val;
 
         //ret_val = do_sprintf(fmt, args, vsprintf_help,NULL,(void*)& buffer);
-        ret_val=do_printf(fmt, args, vsprintf_help,(void*)& buffer);
+        ret_val=do_sprintf(fmt, args, vsprintf_help,(void*)& buffer);
         buffer[ret_val] = '\0';
         return ret_val;
 }
