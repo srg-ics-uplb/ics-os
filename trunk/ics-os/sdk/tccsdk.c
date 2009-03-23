@@ -493,7 +493,7 @@ int printf(const char *fmt, ...)
 /*****************************************************************************
 SPRINTF
 *****************************************************************************/
-int vsprintf_help(unsigned c, void **ptr)
+int vsprintf_help(unsigned c, void **ptr, FILE *fp)
 {
         char *dst;
 
@@ -528,7 +528,7 @@ int sprintf(char *buffer, const char *fmt, ...)
 
 
 /********************CRT control functions******************************/
-
+/* Clear the screen */
 void  clrscr()
 {
     dexsdk_systemcall(8,0,0,0,0,0);
