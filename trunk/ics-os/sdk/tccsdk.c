@@ -1159,6 +1159,10 @@ void write_text(char *str, int x,int y, char color){
     dexsdk_systemcall(0x9D,(int)str,(int)x,(int)y,(char)color,0);
 }
 
+void write_char(unsigned char ch, int x,int y, char color){
+    dexsdk_systemcall(0x9E,ch,(int)x,(int)y,(char)color,0);
+}
+
 void read_palette(char *r, char *g, char *b, char index){
     dexsdk_systemcall(0x62,*r,*g,*b,index,0);
 }
