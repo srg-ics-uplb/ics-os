@@ -1176,6 +1176,7 @@ static void draw_x(void)
 		g_write_pixel((g_wd - g_ht) / 2 + y, y, 1);
 		g_write_pixel((g_ht + g_wd) / 2 - y, y, 2);
 	}
+        write_text("Welcome to ICS OS!",10,10,30);
 	getch();
 }
 
@@ -1198,6 +1199,7 @@ void dex32vga_setgmode(int mode)
      };
    if (mode==DEX32VGA_640X480X16)
      {
+	write_regs(g_640x480x16);
        	g_wd = 640;
       	g_ht = 480;
       	g_write_pixel = write_pixel4p;
@@ -1219,13 +1221,14 @@ void dex32vga_writepixel(int x,int y,char color)
 
 static void demo_graphics(void)
 {
-        int x=0,i=0;
+        int x=0,i=0,y;
 	printf("Press a key to continue\n");
 	getch();
-        dex32vga_setgmode(DEX32VGA_320X200X256);
-        write_text("Welcome to ICS OS!",10,10,30);
-        getch();
-        dex32vga_setgmode(DEX32VGA_TEXT80X25X16);
+        //dex32vga_setgmode(DEX32VGA_640X480X16);
+        //dex32vga_setgmode(DEX32VGA_320X200X256);
+        //write_text("Welcome to ICS OS!",10,10,30);
+        //getch();
+        //dex32vga_setgmode(DEX32VGA_TEXT80X25X16);
 /* 4-color */
 /*
 	write_regs(g_320x200x4);
@@ -1235,13 +1238,13 @@ static void demo_graphics(void)
 	draw_x();
 */
 /* 16-color */
-/*
+
 	write_regs(g_640x480x16);
 	g_wd = 640;
 	g_ht = 480;
-
+      	g_write_pixel = write_pixel4p;
 	draw_x();
-*/
+
 /* 256-color */
 /*	write_regs(g_320x200x256);
 	g_wd = 320;
@@ -1268,7 +1271,7 @@ static void demo_graphics(void)
 void write_text(char *str, int x, int y, int color){
   int i=0;
   while (str[i] != '\0'){
-    draw_char(str[i],x,y,color);
+    write_char(str[i],x,y,color);
     x+=9;
     i++;
   }
