@@ -493,6 +493,9 @@ int printf(const char *fmt, ...)
 /*****************************************************************************
 SPRINTF
 *****************************************************************************/
+/*
+ * FIXME
+ */
 int vsprintf_help(unsigned c, void **ptr, FILE *fp)
 {
         char *dst;
@@ -504,6 +507,9 @@ int vsprintf_help(unsigned c, void **ptr, FILE *fp)
 }
 /*****************************************************************************
 *****************************************************************************/
+/**
+ * FIXME
+ */ 
 int vsprintf(char *buffer, const char *fmt, va_list args)
 {
         int ret_val;
@@ -514,6 +520,9 @@ int vsprintf(char *buffer, const char *fmt, va_list args)
 }
 /*****************************************************************************
 *****************************************************************************/
+/*
+ * FIXME
+ */
 int sprintf(char *buffer, const char *fmt, ...)
 {
         va_list args;
