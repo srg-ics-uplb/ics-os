@@ -1268,10 +1268,10 @@ static void demo_graphics(void)
 /*
  * Displays a string in graphics mode
  */
-void write_text(char *str, int x, int y, int color){
+void write_text(char *str, int x, int y, int color,int size){
   int i=0;
   while (str[i] != '\0'){
-    write_char(str[i],x,y,color);
+    write_char(str[i],x,y,color,size);
     x+=9;
     i++;
   }
@@ -1280,18 +1280,28 @@ void write_text(char *str, int x, int y, int color){
 /**
  * Draws an 8x8 character
  */
-void write_char(unsigned char ch,int x, int y,int color)
+void write_char(unsigned char ch,int x, int y,int color,int size)
 {
    int i,j,k;
    unsigned char d;
    unsigned char bit;
+   int s;
+   unsigned char *font;
 
-   for (i=0;i<8;i++)
+   if (size == 1){
+      s=16;
+      font=&g_8x16_font;
+   }else{
+      s=8;
+      font=&g_8x8_font;
+   }
+
+   for (i=0;i<s;i++)
    {
-     d=g_8x8_font[i+(ch * 8)];
+     d=font[i+(ch * s)];
      k=0;
      bit=128;
-     for (j=0;j<8;j++)
+     for (j=0;j<s;j++)
      {
        if (d & (bit>>(k)))
        {
