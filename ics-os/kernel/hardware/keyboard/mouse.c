@@ -30,6 +30,7 @@ void mouse_irq() // (not used but just there)
       mouse_cycle=0;
       break;
   }
+  printf("%d %d\n", mouse_x, mouse_y);
 }
 
 inline void mouse_wait(unsigned char  a_type) //unsigned char

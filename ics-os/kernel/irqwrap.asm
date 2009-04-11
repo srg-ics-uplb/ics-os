@@ -90,8 +90,7 @@ push ss
 push ds
 pusha
 
-;call kbd_irq
-call mouse_irq
+call kbd_irq
 
 popa
 pop ds
