@@ -411,6 +411,10 @@ void setdefaulthandlers()
    setinterruptvector(0x28,dex_idtbase,0x8E,
    irq8wrapper,SYS_CODE_SEL);
 
+   //mouse wrapper, IRQ12
+   setinterruptvector(0x32,dex_idtbase,0x8E,
+   mousewrapper,SYS_CODE_SEL);
+
 
 
    /************************** Install the CPU exception handlers *****************/
