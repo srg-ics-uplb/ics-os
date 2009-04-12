@@ -317,7 +317,9 @@ void irq_activate(int irqnum)
     };
 
     //EOI for slave 
-    outportb(0xA0, 0x20);
+    if (irqnum > 27){
+      outportb(0xA0, 0x20);
+    }
  
     //reactive the programmer interrupt controller since it gets
     //temporarily disabled once an IRQ fires
