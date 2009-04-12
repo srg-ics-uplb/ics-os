@@ -33,6 +33,9 @@ void mouse_irq() // (not used but just there)
   //ok enable the keyboard
   outportb(0xA0,0x20);
   outportb(0x20,0x20);
+  gotoxy(mouse_x,mouse_y);
+  putc('*');
+
 }
 
 inline void mouse_wait(unsigned char  a_type) //unsigned char
