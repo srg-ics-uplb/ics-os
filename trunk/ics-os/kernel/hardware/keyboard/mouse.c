@@ -11,8 +11,8 @@ signed char mouse_y=0;         //signed char
 //Mouse functions
 void mouse_irq() // (not used but just there)
 {
-  printf("Mouse Handler Called\n");
   DWORD flags;
+
   switch(mouse_cycle)
   {
     case 0:
@@ -30,7 +30,9 @@ void mouse_irq() // (not used but just there)
       mouse_cycle=0;
       break;
   }
-  printf("%d %d\n", mouse_x, mouse_y);
+  //ok enable the keyboard
+  outportb(0xA0,0x20);
+  outportb(0x20,0x20);
 }
 
 inline void mouse_wait(unsigned char  a_type) //unsigned char
