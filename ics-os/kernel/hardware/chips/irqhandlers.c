@@ -25,6 +25,7 @@
 */
 
 #define IRQ_TIMER 1
+#define IRQ_CASCADE 4
 #define IRQ_KEYBOARD 2
 #define IRQ_FDC 64
 #define IRQ_MOUSE 16  //added by jach
@@ -107,8 +108,9 @@ void program8259(unsigned char b)
    outportb(0xA1,1);
    b1^=b;
    outportb(0x21,b1);
-   b2^=IRQ_MOUSE;
-   outportb(0xA1,b2);
+   //b2^=IRQ_MOUSE;
+   //outportb(0xA1,b2);
+   outportb(0xA1, inportb(0xA1) & ~0x10);
  };
 
 

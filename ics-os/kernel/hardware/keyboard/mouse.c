@@ -81,6 +81,7 @@ unsigned char mouse_read()
 
 void installmouse()
 {
+  printf("MOUSE successfully installed!!!");
   unsigned char _status;  //unsigned char
 
   //Enable the auxiliary mouse device
