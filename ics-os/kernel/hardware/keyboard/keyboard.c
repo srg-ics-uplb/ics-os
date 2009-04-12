@@ -214,6 +214,8 @@ static int init_kbd(unsigned ss, unsigned typematic, unsigned xlat)
 	write_kbd_await_ack(0xF5);
 /* disable PS/2 mouse, set SYS bit, and Enable Keyboard Interrupt... */
 	write_kbd(0x64, 0x60);
+/*jach: enable mouse */
+	//write_kbd(0x64, 0xA8);
 /* ...and either disable or enable AT-to-XT keystroke conversion */
 	write_kbd(0x60, xlat ? 0x65 : 0x25);
 /* program desired scancode set */

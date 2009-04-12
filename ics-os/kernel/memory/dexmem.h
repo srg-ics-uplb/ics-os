@@ -182,7 +182,7 @@ DWORD obtainpage();
 extern void refreshpages();
 void setattb(WORD sel,BYTE attb1);
 void setinterruptvector(DWORD index,idtentry *t,unsigned char attr,
-     void *handler, WORD sel);
+     void (*handler)(int irq), WORD sel);
 void dex32_setbase(WORD sel,DWORD addr);
 void *sbrk(int amt);
 void setcallgate(DWORD sel,DWORD funcsel,void *entry,BYTE params,BYTE access);

@@ -564,7 +564,7 @@ void dex32_setbase(WORD sel,DWORD addr)
 
 
 void  setinterruptvector(DWORD index,idtentry *t,unsigned char attr,
-     void *handler, WORD sel)
+     void (*handler)(int irq), WORD sel)
 	{
 
     t[index].lowphy=(WORD)handler; //set the low word

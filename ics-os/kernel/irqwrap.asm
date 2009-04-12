@@ -314,6 +314,102 @@ pop gs
 pop ebp
 iret
 
+global irq9wrapper
+irq9wrapper:
+push ebp
+push gs
+push fs
+push es
+push ss
+push ds
+pusha
+
+push 9
+call irq_activate
+add esp,4
+
+
+popa
+pop ds
+pop ss
+pop es
+pop fs
+pop gs
+pop ebp
+iret
+
+global irq10wrapper
+irq10wrapper:
+push ebp
+push gs
+push fs
+push es
+push ss
+push ds
+pusha
+
+push 10
+call irq_activate
+add esp,4
+
+
+popa
+pop ds
+pop ss
+pop es
+pop fs
+pop gs
+pop ebp
+iret
+
+global irq11wrapper
+irq11wrapper:
+push ebp
+push gs
+push fs
+push es
+push ss
+push ds
+pusha
+
+push 11
+call irq_activate
+add esp,4
+
+
+popa
+pop ds
+pop ss
+pop es
+pop fs
+pop gs
+pop ebp
+iret
+
+global irq12wrapper
+irq12wrapper:
+push ebp
+push gs
+push fs
+push es
+push ss
+push ds
+pusha
+
+push 12
+call irq_activate
+add esp,4
+
+
+popa
+pop ds
+pop ss
+pop es
+pop fs
+pop gs
+pop ebp
+iret
+
 global div_wrapper
 div_wrapper:
 cli 
