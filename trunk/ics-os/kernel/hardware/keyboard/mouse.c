@@ -30,12 +30,9 @@ void mouse_irq() // (not used but just there)
       mouse_cycle=0;
       break;
   }
-  //ok enable the keyboard
+  //ok enable other interrupts
   outportb(0xA0,0x20);
   outportb(0x20,0x20);
-  gotoxy(mouse_x,mouse_y);
-  putc('*');
-
 }
 
 inline void mouse_wait(unsigned char  a_type) //unsigned char
