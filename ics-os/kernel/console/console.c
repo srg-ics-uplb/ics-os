@@ -518,7 +518,7 @@ int console_execute(const char *str)
   char temp[512];
   char *u;
   int command_length = 0;
-  signed char mouse_x,mouse_y;
+  signed char mouse_x,mouse_y,last_mouse_x=0,last_mouse_y=0;
   
   //make a copy so that strtok wouldn't ruin str
   strcpy(temp,str);
@@ -544,11 +544,14 @@ int console_execute(const char *str)
     if (strcmp(u,"mouse")==0)
                 {
                   while (!kb_ready()){
-                   get_mouse_pos(&mouse_x,&mouse_y);
-                   printf("Mouse (x,y): %d %d\n",mouse_x, mouse_y);
-                   gotoxy(mouse_x,mouse_y);
-                   printf("*");
-                   delay(100);
+                    get_mouse_pos(&mouse_x,&mouse_y);
+                    printf("Mouse (x,y): %d %d\n",mouse_x, mouse_y);
+                    while ((last_mouse_x == mouse_x) && (last_mouse_y==mouse_y))
+                    {
+                      get_mouse_pos(&mouse_x,&mouse_y);
+                    }
+                    last_mouse_x=mouse_x;
+                    last_mouse_y=mouse_y; 
                   }
                 }
                 else
