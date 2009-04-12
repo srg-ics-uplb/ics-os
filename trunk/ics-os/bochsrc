@@ -572,7 +572,7 @@ keyboard_paste_delay: 100000
 #   mouse: enabled=1, type=serial
 #   mouse: enabled=0
 #=======================================================================
-mouse: enabled=0
+mouse: enabled=1
 
 #=======================================================================
 # private_colormap: Request that the GUI create and use it's own

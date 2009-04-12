@@ -75,6 +75,10 @@ extern void irq5wrapper(void);
 extern void irq6wrapper(void);
 extern void irq7wrapper(void);
 extern void irq8wrapper(void);
+extern void irq9wrapper(void);
+extern void irq10wrapper(void);
+extern void irq11wrapper(void);
+extern void irq12wrapper(void);
 
 //functions for setting and getting the CR0 register*/
 extern DWORD getCR0();
@@ -130,11 +134,12 @@ void CPUint()
   startints();
  };
 
-void unhandled()
+void unhandled(int irq_num)
  {
    stopints();
    textcolor(RED);
-   println("This interrupt is unhandled....\n",attb);
+   //println("This interrupt is unhandled....\n",attb);
+   printf("This interrupt is unhandled: %d....\n", irq_num);
    while (1) {};
    startints();
  };
@@ -317,7 +322,7 @@ void irq_activate(int irqnum)
     };
 
     //EOI for slave 
-    if (irqnum > 27){
+    if (irqnum > 0x27){
       outportb(0xA0, 0x20);
     }
  
@@ -414,10 +419,19 @@ void setdefaulthandlers()
 
    setinterruptvector(0x28,dex_idtbase,0x8E,
    irq8wrapper,SYS_CODE_SEL);
+   
+   setinterruptvector(0x29,dex_idtbase,0x8E,
+   irq9wrapper,SYS_CODE_SEL);
+
+   setinterruptvector(0x30,dex_idtbase,0x8E,
+   irq10wrapper,SYS_CODE_SEL);
+   
+   setinterruptvector(0x31,dex_idtbase,0x8E,
+   irq11wrapper,SYS_CODE_SEL);
 
    //mouse wrapper, IRQ12
    setinterruptvector(0x32,dex_idtbase,0x8E,
-   mousewrapper,SYS_CODE_SEL);
+   irq12wrapper,SYS_CODE_SEL);
 
 
 

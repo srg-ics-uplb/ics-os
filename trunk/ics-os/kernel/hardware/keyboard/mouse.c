@@ -112,17 +112,6 @@ void get_mouse_pos(signed char *x,signed char *y){
    *y=mouse_y;
 }
 
-int mouse_detected()
-{
-    unsigned char tmp = mouse_read();
-    if(tmp != 0xFA)
-         return 0; //No mouse
-    else
-         return 1; //Mouse there
-}
-
-
-
 void init_mouse()
 {
    int mouse_devid;
@@ -142,14 +131,6 @@ void init_mouse()
    mymouse.get_callback_handler=0;
    mouse_devid=devmgr_register((devmgr_char_desc *)&mymouse);
    memset(&mouse_busywait,0,sizeof(mouse_busywait));
-   irq_addhandler(mouse_devid,1,mouse_irq);
-   if (mouse_detected())
-   {
-     printf("Mouse detected!\n");
-   }
-   else
-   {
-     printf("No Mouse detected!\n");
-   }
+   irq_addhandler(mouse_devid,12,mouse_irq);
 }
 
