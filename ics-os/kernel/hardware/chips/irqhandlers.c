@@ -431,7 +431,7 @@ void setdefaulthandlers()
    irq11wrapper,SYS_CODE_SEL);
 
    //mouse wrapper, IRQ12
-   setinterruptvector(0x2F,dex_idtbase,0x8E,
+   setinterruptvector(0x2C,dex_idtbase,0x8E,
    mousewrapper,SYS_CODE_SEL);
 
 
