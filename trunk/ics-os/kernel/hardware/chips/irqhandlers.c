@@ -387,8 +387,9 @@ void setdefaulthandlers()
   int i;
   for (i=0;i<0x20;i++)
        setinterruptvector(i,dex_idtbase,0x8E,CPUintwrapper,SYS_CODE_SEL);
-  for (i=0x20;i<256;i++)
+  for (i=0x20;i<255;i++)
        setinterruptvector(i,dex_idtbase,0x8E,unhandled,SYS_CODE_SEL);
+
 
   irq_init();
        
@@ -423,15 +424,15 @@ void setdefaulthandlers()
    setinterruptvector(0x29,dex_idtbase,0x8E,
    irq9wrapper,SYS_CODE_SEL);
 
-   setinterruptvector(0x30,dex_idtbase,0x8E,
+   setinterruptvector(0x2A,dex_idtbase,0x8E,
    irq10wrapper,SYS_CODE_SEL);
    
-   setinterruptvector(0x31,dex_idtbase,0x8E,
+   setinterruptvector(0x2B,dex_idtbase,0x8E,
    irq11wrapper,SYS_CODE_SEL);
 
    //mouse wrapper, IRQ12
-   setinterruptvector(0x32,dex_idtbase,0x8E,
-   irq12wrapper,SYS_CODE_SEL);
+   setinterruptvector(0x2F,dex_idtbase,0x8E,
+   mousewrapper,SYS_CODE_SEL);
 
 
 
