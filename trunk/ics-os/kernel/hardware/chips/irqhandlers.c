@@ -25,7 +25,7 @@
 */
 
 #define IRQ_TIMER 1
-#define IRQ_CASCADE 4
+#define IRQ_CASCADE 4   /* FOR SLAVE PIC */
 #define IRQ_KEYBOARD 2
 #define IRQ_FDC 64
 #define IRQ_MOUSE 16  //added by jach
@@ -138,8 +138,7 @@ void unhandled(int irq_num)
  {
    stopints();
    textcolor(RED);
-   //println("This interrupt is unhandled....\n",attb);
-   printf("This interrupt is unhandled: %d....\n", irq_num);
+   println("This interrupt is unhandled....\n",attb);
    while (1) {};
    startints();
  };
