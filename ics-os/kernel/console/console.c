@@ -546,6 +546,8 @@ int console_execute(const char *str)
                   while (!kb_ready()){
                    get_mouse_pos(&mouse_x,&mouse_y);
                    printf("Mouse (x,y): %d %d\n",mouse_x, mouse_y);
+                   gotoxy(mouse_x,mouse_y);
+                   printf("*");
                    delay(100);
                   }
                 }
