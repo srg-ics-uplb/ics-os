@@ -106,6 +106,11 @@ void installmouse()
   //Enable the mouse
   mouse_write(0xF4);
   mouse_read();  //Acknowledge
+ 
+  //set the  handler,mousewrapper (in irqwrap.asm), IRQ12
+  setinterruptvector(0x2C,dex_idtbase,0x8E,mousewrapper,SYS_CODE_SEL);
+
+
   printf("MOUSE successfully installed!!!");
 }
 
