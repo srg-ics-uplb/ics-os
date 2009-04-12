@@ -81,7 +81,6 @@ unsigned char mouse_read()
 
 void installmouse()
 {
-  printf("MOUSE successfully installed!!!");
   unsigned char _status;  //unsigned char
 
   //Enable the auxiliary mouse device
@@ -105,6 +104,7 @@ void installmouse()
   //Enable the mouse
   mouse_write(0xF4);
   mouse_read();  //Acknowledge
+  printf("MOUSE successfully installed!!!");
 }
 
 void get_mouse_pos(signed char *x,signed char *y){
@@ -120,6 +120,8 @@ int mouse_detected()
     else
          return 1; //Mouse there
 }
+
+
 
 void init_mouse()
 {
@@ -140,7 +142,7 @@ void init_mouse()
    mymouse.get_callback_handler=0;
    mouse_devid=devmgr_register((devmgr_char_desc *)&mymouse);
    memset(&mouse_busywait,0,sizeof(mouse_busywait));
-   irq_addhandler(mouse_devid,12,mouse_irq);
+   irq_addhandler(mouse_devid,1,mouse_irq);
    if (mouse_detected())
    {
      printf("Mouse detected!\n");

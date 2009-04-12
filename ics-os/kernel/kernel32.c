@@ -343,9 +343,9 @@ void dex32_startup()
 
     //initialize the keyboard device driver
     printf("Initializing keyboard and mouse drivers...");
+    init_keyboard();
     installmouse();
     init_mouse();
-    init_keyboard();
     printf("[OK]\n");
 
     //process manager is ready, pass execution to the taskswitcher
