@@ -31,8 +31,8 @@ void mouse_irq() // (not used but just there)
       break;
   }
   //ok enable other interrupts
-  outportb(0xA0,0x20);
-  outportb(0x20,0x20);
+//  outportb(0xA0,0x20);
+//  outportb(0x20,0x20);
 }
 
 inline void mouse_wait(unsigned char  a_type) //unsigned char

@@ -405,16 +405,19 @@ void dex_init()
       
     printf("\n");  
 
+    printf("Getting date and time...\n");
     getdatetime(&date);
     getmonthname(date.month,temp);
 
+    printf("Installing floppy driver...\n");
     //Install the built-in floppy disk driver
-    floppy_install("fd0");
+    floppy_install("fd0"); 
     
+    printf("Initializing IDE drivers...");
     /*Install the IDE, ATA-2/4 compliant driver in order to be able to
       use CD-ROMS and harddisks. This will also create logical drives from
       the partition tables if needed.*/
-    ide_init();
+    //ide_init(); --disabled by jach
 
     /*Install the VGA driver*/
     printf("Loading VGA driver...");
