@@ -114,6 +114,11 @@ push ds
 pusha
 
 call mouse_irq
+;needed to renable interrupts
+mov al,0x20
+out 0xA0,al
+out 0x20,al
+
 
 popa
 pop ds
