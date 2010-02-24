@@ -63,9 +63,9 @@ $make
   # Test the distribution floppy image. This does not require root privileges.
 {{{
 $bochs -q
-}}}
+
 or
-{{{
+
 $qemu -fda ics-os-floppy.img
 }}}
 
