@@ -64,6 +64,11 @@ $make
 {{{
 $bochs -q
 }}}
+or
+{{{
+$qemu -fda ics-os-floppy.img
+}}}
+
 
 = 4. Source Code Directory Structure =
 Top level directories.
