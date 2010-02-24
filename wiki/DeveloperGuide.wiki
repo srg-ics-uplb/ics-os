@@ -252,7 +252,7 @@ The file {{{kernel/kernel32.c}}} is the main entry point of the ics-os. The foll
   # Program IRQ lines for timer, keyboard, and floppy [http://code.google.com/p/ics-os/source/browse/trunk/ics-os/kernel/hardware/chips/irqhandlers.c program8259()] 
   # Set up the interrupt descriptor table [http://code.google.com/p/ics-os/source/browse/trunk/ics-os/kernel/hardware/chips/irqhandlers.c setdefaulthandlers()]
   # Obtain boot device and memory information from GRUB
-  # Initialize memory subsystem [http://code.google.com/p/ics-os/source/browse/trunk/ics-os/kernel/memory/dexmem.c mem_init()]
+  # Initialize memory subsystem [http://code.google.com/p/ics-os/source/browse/trunk/ics-os/kernel/memory/dexmem.c mem_detectmemory()]
   # Sets the current process
   # Setup context switch timer
   # Initialize bridge manager
