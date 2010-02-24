@@ -14,7 +14,7 @@ ics-os. The suggested development platform is a linux box with the following too
   * gcc/tcc
   * GNU binutils (ld, strip)
   * mount
-  * bochs
+  * bochs/qemu
   * nasm
   * subversion (optional)
 
@@ -26,6 +26,7 @@ $sudo apt-get update
 $sudo apt-get install build-essential
 $sudo apt-get install nasm
 $sudo apt-get install bochs
+$sudo apt-get install qemu
 $sudo apt-get install tcc
 $sudo apt-get install subversion
 }}}
