@@ -328,7 +328,7 @@ void dex32_startup()
 
     //Initialize the PCI bus driver
     printf("Initializing PCI devices...");
-    //show_pci();
+    show_pci();
     //delay(400/80);
     printf("[OK]\n");
 				
@@ -417,7 +417,7 @@ void dex_init()
     /*Install the IDE, ATA-2/4 compliant driver in order to be able to
       use CD-ROMS and harddisks. This will also create logical drives from
       the partition tables if needed.*/
-    //ide_init(); --disabled by jach
+    ide_init();
 
     /*Install the VGA driver*/
     printf("Loading VGA driver...");

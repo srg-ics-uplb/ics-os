@@ -982,5 +982,5 @@ void ide_init()
     
     //Setup secondary IDE
     ide_setupinterface(1,15,"s");
-   
+    print("ide_init() done..\n"); 
 };
