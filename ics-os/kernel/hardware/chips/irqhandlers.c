@@ -139,7 +139,7 @@ void unhandled(int irq_num)
    stopints();
    textcolor(RED);
    println("This interrupt is unhandled....",attb);
-   while (1) {};
+ //  while (1) {}; //temporarily disabled infinite loop for unhandled interrupts
    startints();
  };
 
