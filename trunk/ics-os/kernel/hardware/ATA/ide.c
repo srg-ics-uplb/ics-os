@@ -814,10 +814,10 @@ void ide_setupinterface(int type,int intnum, const char *interface_str)
     int deviceid;
     int index = 2*type;
     
-    if (type == 0) base = 0x1f0;
-        else
-                   base = 0x170;
-    
+    if (type == 0) 
+       base = 0x1f0;
+    else
+       base = 0x170;
     
     pio_set_iobase_addr(base, base + 0x200 );
 
@@ -832,9 +832,10 @@ void ide_setupinterface(int type,int intnum, const char *interface_str)
     if (reg_config_info[1]==3) cd2 = 1;
     
     if (reg_config_info[0]!=0)
-    reg_reset( 0, 0);
+      reg_reset( 0, 0);
+
     if (reg_config_info[0]!=0)
-    reg_reset( 0, 1);
+      reg_reset( 0, 1);
     
     memset( buffer, 0,512);
     
@@ -982,5 +983,4 @@ void ide_init()
     
     //Setup secondary IDE
     ide_setupinterface(1,15,"s");
-    print("ide_init() done..\n"); 
 };
