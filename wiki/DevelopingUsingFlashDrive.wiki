@@ -4,8 +4,10 @@
 
 <wiki:toc max_depth="1" />
 
-== Introduction ==
+= Introduction =
 
-== Prerequisites ==
+= Prerequisites =
 
-== Preparing your flash drive ==
+= Preparing your flash drive =
+
+= Download and extract source =
