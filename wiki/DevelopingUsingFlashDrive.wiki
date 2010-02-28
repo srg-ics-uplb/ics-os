@@ -1,3 +1,11 @@
 #summary This page describes how to use a flash drive for development (work in progress)
 
+*Table of Contents*
+
+<wiki:toc max_depth="1" />
+
 == Introduction ==
+
+== Prerequisites ==
+
+== Preparing your flash drive ==
