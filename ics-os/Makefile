@@ -26,6 +26,8 @@ install: vmdex
 	umount mnt
 	chmod 666 ics-os-floppy.img
 
-disk: install
+floppy: install
 	dd if=ics-os-floppy.img of=/dev/fd0 bs=1440
 
+cd: install
+  mkisofs -r -b ics-os-floppy.img -o ics-os-live.iso .
