@@ -29,5 +29,7 @@ install: vmdex
 floppy: install
 	dd if=ics-os-floppy.img of=/dev/fd0 bs=1440
 
-cd: install
-  mkisofs -r -b ics-os-floppy.img -o ics-os-live.iso .
+livecd: install
+	mkisofs -r -b ics-os-floppy.img -o ics-os-livecd.iso .
+
+

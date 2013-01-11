@@ -470,7 +470,8 @@ void dex_init()
 
     printf("Mounting boot device %s...", boot_device_name);
     //mount the floppy disk drive
-    vfs_mount_device("fat",boot_device_name,"icsos");
+    //vfs_mount_device("fat",boot_device_name,"icsos");
+    //vfs_mount_device("cdfs",boot_device_name,"icsos");
     printf("[OK]\n");   
 
     //setup the initial executable loaders (So we could run .EXEs,.b32,coff and elfs)
