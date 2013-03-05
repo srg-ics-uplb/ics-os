@@ -1,6 +1,5 @@
 #summary How to run ICS-OS inside Ubuntu 12.04
 
-= DRAFT =
 = How to run ICS-OS inside Ubuntu 12.04 =
 
 I suggest three ways to run ICS-OS inside Ubuntu 12.04 and show you how to do it: Via qemu/KVM, VirtualBox, and Bochs.
