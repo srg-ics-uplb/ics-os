@@ -3,7 +3,7 @@
 = DRAFT =
 = How to run ICS-OS inside Ubuntu 12.04 =
 
-I suggest three ways to run ICS-OS inside Ubuntu 12.04 and show you how to do it: Via KVM/qemu, Virtualbox, and Bochs.
+I suggest three ways to run ICS-OS inside Ubuntu 12.04 and show you how to do it: Via qemu/KVM, VirtualBox, and Bochs.
 
 
 == qemu/kvm ==
@@ -21,7 +21,7 @@ qemu-system-i386 -fda ics-os-floppy.img
 }}}
 
 
-== Virtualbox ==
+== VirtualBox ==
 
 === Installation ===
 {{{
@@ -29,9 +29,28 @@ sudo apt-get install virtualbox-ose
 }}}
 
 === Running ===
-  # Launch the Virtualbox GUI from the Unity Dash.
+  # Launch the VirtualBox GUI from the Unity Dash.
   # Click "New". This should bring up the "New Virtual Machine Wizard".
-  # Put in the Name and OS Type that you wish. Whatever you choose is not important to getting the Virtual Machine running properly, just choose whatever you feel best describes ICS-OS.
+  # Put in the Name and OS Type that you wish. Whatever you choose is not important to getting the Virtual Machine (VM) running properly, just choose whatever you feel best describes ICS-OS.
   # A base memory size of 64MB should be ok.
   # Uncheck the "Start-up Disk" checkbox.
-  # 
+  # You should now see your VM in the list. Right-click on it and select "Settings".
+  # Add a Floppy Disk Drive (FDD) by clicking On the "Storage" option in the list pane, then click on the "Add Controller" symbol on the bottom of the Storage Tree pane. Click on "Add Floppy Controller".
+    http://i.imgur.com/hr8F8pp.png
+  # Click on the plus icon to the right of the new floppy controller and point to the ICS-OS image file.
+  # You may now start the Virtual Machine.
+
+== Bochs ==
+
+=== Installation ===
+The simplest way to install Bochs and whatever other Bochs modules might be needed in the future:
+{{{
+sudo apt-get install bochs*
+}}}
+
+=== Running ===
+Go to the project directory and run
+{{{
+bochs
+}}}
+The bochsrc file included in the project tarball should take care of the bochs configuration needed.
