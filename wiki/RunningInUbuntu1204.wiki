@@ -1,0 +1,25 @@
+#summary How to run ICS-OS inside Ubuntu 12.04
+
+= DRAFT =
+= How to run ICS-OS inside Ubuntu 12.04 =
+
+I suggest three ways to run ICS-OS inside Ubuntu 12.04 and show you how to do it: Via KVM/qemu, Virtualbox, and Bochs.
+
+
+== qemu/kvm ==
+
+Among the three options, KVM should give the fastest hardware emulation, provided you have rather modern hardware.
+
+=== Installation ===
+{{{
+sudo apt-get install qemu-kvm
+}}}
+
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
