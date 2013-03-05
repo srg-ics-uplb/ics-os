@@ -8,18 +8,30 @@ I suggest three ways to run ICS-OS inside Ubuntu 12.04 and show you how to do it
 
 == qemu/kvm ==
 
-Among the three options, KVM should give the fastest hardware emulation, provided you have rather modern hardware.
+Among the three options, KVM should give the fastest hardware emulation, provided you have rather modern hardware. It is also rather simple to get started, when compared with bochs and VBox.
 
 === Installation ===
 {{{
 sudo apt-get install qemu-kvm
 }}}
 
+=== Running ===
+{{{
+qemu-system-i386 -fda ics-os-floppy.img
+}}}
 
 
-= Details =
+== Virtualbox ==
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+=== Installation ===
+{{{
+sudo apt-get install virtualbox-ose
+}}}
+
+=== Running ===
+  # Launch the Virtualbox GUI from the Unity Dash.
+  # Click "New". This should bring up the "New Virtual Machine Wizard".
+  # Put in the Name and OS Type that you wish. Whatever you choose is not important to getting the Virtual Machine running properly, just choose whatever you feel best describes ICS-OS.
+  # A base memory size of 64MB should be ok.
+  # Uncheck the "Start-up Disk" checkbox.
+  # 
