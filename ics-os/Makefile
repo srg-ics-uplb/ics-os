@@ -10,10 +10,10 @@ vmdex:
 clean:
 	rm -f vmdex
 	make -C kernel/ clean
-	rm bochslog
 
 install: vmdex
 	cp grub.img ics-os-floppy.img
+	mkdir mnt
 	mount ics-os-floppy.img mnt -tmsdos -oloop
 	cp -r vmdex mnt
 	cp  base/* mnt
