@@ -1,15 +1,14 @@
-#About
+##About
 
-Modern real-world operating systems are too complex to be taught to undergraduates and other instructional operating systems are not complete and usable and do not work on real hardware. By providing students with a not so complex working operating system to play with, they will be able to appreciate and understand deeper the concepts underlying an operating system.
+Modern real-world operating systems are too complex to be taught to undergraduates and other instructional operating systems are not complete and usable and do not work on real hardware. By providing students with a _not so complex_ working operating system to play with, they will be able to appreciate and understand deeper the concepts underlying an operating system.
 
-Thus, this project aims to develop a simple yet operational instructional operating system for teaching undergraduate operating systems courses. ICS-OS is a fork of DEX-OS by Joseph Dayo.
+Thus, this project aims to develop a simple yet operational instructional operating system for teaching undergraduate operating systems courses. ICS-OS is a fork of <a href='http://sourceforge.net/projects/dex-os'>DEX-OS</a> by Joseph Dayo.
 
-#Downloads
+## Downloads
 
-Latest floppy image: ics-os-floppy.img
+Latest floppy image: <a href='http://ics-os.googlecode.com/svn/trunk/ics-os/ics-os-floppy.img'>ics-os-floppy.img</a>
 
-The source code in .tar.gz format is availabe in the Downloads tab. You can use Bochs to test the image or you can write the image directly to a floppy disk. Here is a sample bochsrc.
+The source code in .tar.gz format is availabe in the Downloads tab. You can use <a href='http://bochs.sourceforge.net/'>Bochs</a> to test the image or you can write the image directly to a floppy disk. Here is a sample <a href='http://ics-os.googlecode.com/svn/trunk/ics-os/bochsrc'>bochsrc</a>.
 
-#Development and Support
-
-This project is maintained and used by the Institute of Computer Science, University of the Philippines Los Banos for CMSC 125. 
+## Development and Support
+This project is maintained and used by the <a href='http://ics.uplb.edu.ph'>Institute of Computer Science</a>, <a href='http://www.uplb.edu.ph'>University of the Philippines Los Banos</a> for <a href='http://ics.uplb.edu.ph/courses/ugrad/cmsc/125'>CMSC 125</a>.
