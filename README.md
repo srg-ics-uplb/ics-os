@@ -13,4 +13,4 @@ The source code in .tar.gz format is availabe in the Downloads tab. You can use 
 ## Development and Support
 This project is maintained and used by the <a href='http://ics.uplb.edu.ph'>Institute of Computer Science</a>, <a href='http://www.uplb.edu.ph'>University of the Philippines Los Banos</a> for <a href='http://ics.uplb.edu.ph/courses/ugrad/cmsc/125'>CMSC 125</a>.
 
-Dont forget to checkout the <a href="http://github.com/srg-ics-uplb/ics-os/wiki">Wiki</a>
+Dont forget to check the <a href="http://github.com/srg-ics-uplb/ics-os/wiki">Wiki</a>.
