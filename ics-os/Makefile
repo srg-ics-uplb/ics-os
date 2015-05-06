@@ -13,6 +13,7 @@ clean:
 
 install: vmdex
 	cp grub.img ics-os-floppy.img
+	rm -fr mnt
 	mkdir mnt
 	mount ics-os-floppy.img mnt -tmsdos -oloop
 	cp -r vmdex mnt
