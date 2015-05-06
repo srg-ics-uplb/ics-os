@@ -8,7 +8,7 @@ Thus, this project aims to develop a simple yet operational instructional operat
 
 Latest floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/ics-os/ics-os-floppy.img'>ics-os-floppy.img</a>
 
-The source code in .tar.gz format is availabe in the <a href='https://github.com/srg-ics-uplb/ics-os/releases'>releases</a>.
+The source code in .tar.gz format is availabe in the <a href='https://github.com/srg-ics-uplb/ics-os/releases'>releases</a> section.
 
 ## Development and Support
 This project is maintained and used by the <a href='http://ics.uplb.edu.ph'>Institute of Computer Science</a>, <a href='http://www.uplb.edu.ph'>University of the Philippines Los Banos</a> for <a href='http://ics.uplb.edu.ph/courses/ugrad/cmsc/125'>CMSC 125</a>.
