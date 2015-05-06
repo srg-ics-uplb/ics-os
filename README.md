@@ -6,7 +6,7 @@ Thus, this project aims to develop a simple yet operational instructional operat
 
 ## Downloads
 
-Latest floppy image: <a href='http://ics-os.googlecode.com/svn/trunk/ics-os/ics-os-floppy.img'>ics-os-floppy.img</a>
+Latest floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/ics-os/ics-os-floppy.img'>ics-os-floppy.img</a>
 
 The source code in .tar.gz format is availabe in the Downloads tab. You can use <a href='http://bochs.sourceforge.net/'>Bochs</a> to test the image or you can write the image directly to a floppy disk. Here is a sample <a href='http://ics-os.googlecode.com/svn/trunk/ics-os/bochsrc'>bochsrc</a>.
 
