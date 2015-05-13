@@ -15,4 +15,4 @@ This project is maintained and used by the <a href='http://ics.uplb.edu.ph'>Inst
 
 Dont forget to check the <a href="http://github.com/srg-ics-uplb/ics-os/wiki">Wiki</a>.
 
-Ask your questions <a href="https://groups.google.com/forum/#!forum/ics-os"></a>
+You can ask questions <a href="https://groups.google.com/forum/#!forum/ics-os">here</a>.
