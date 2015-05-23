@@ -826,7 +826,7 @@ ultoa:
 	ret 
 
 
-global textcolor
+global _textcolor
 
 ;void textcolor(unsigned char c)
 ;_textcolor:
@@ -842,6 +842,7 @@ textcolor:
 	or        byte [attb],al
 	pop       ebp
 	ret 
+
 global _textbackground
 ;_textbackground:
 textbackground:
