@@ -11,24 +11,24 @@
 
 
 /* Stop Interrupts */
-inline void stopints()
+void stopints()
 {
   asm ("cli");
 }
 
 /*start Interrupts */
 
-inline void startints()
+void startints()
 {
   asm("sti");
 };
 
-inline void wbinvd()
+void wbinvd()
 {
   asm ("wbinvd");
 };
 
-inline void hlt()
+void hlt()
 {
   asm ("hlt");
 };

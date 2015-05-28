@@ -315,6 +315,6 @@ void    systemcall();
 void    process_init();
 void 	ps_shutdown();
 void copyprocessmemory(process_mem *memptr,process_mem **destmemptr);
-inline void taskswitch();
+void taskswitch();
 void show_process_stat(int pid);
 #endif
