@@ -292,9 +292,12 @@ void fg_updateinfo(){
                     if(choice < FG_MAXCONSOLE -1) choice++;
                 }
                 else if(c == '\n') {
-                    if(fg_vconsoles[choice] != 0)
-                        if(!fg_vconsoles[choice]->ignore)
+                    if(fg_vconsoles[choice] != 0) {
+
+                        if(!fg_vconsoles[choice]->ignore) {
                             fg_setforeground(choice);
+                        }
+                    }
                 }
             }
         }
