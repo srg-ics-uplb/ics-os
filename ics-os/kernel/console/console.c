@@ -476,20 +476,29 @@ void console_ls(int style, int sortmethod){
 
 }
 
+void save_history(const char *str){
+    FILE *f;
+    
+    f = fopen("history.hs", "a");
+
+    fprintf(f, "%s", str);
+
+    fclose(f);
+}
 
 /* ==================================================================
    console_execute(const char *str):
  * This command is used to execute a console string.
 
  */
+
 int console_execute(const char *str){
     char temp[512];
     char *u;
     int command_length = 0;
     signed char mouse_x, mouse_y, last_mouse_x = 0, last_mouse_y = 0;
 
-    printf("Inputted command: %s\n", str);
-
+    save_history(str);
     //make a copy so that strtok wouldn't ruin str
     strcpy(temp, str);
     u = strtok(temp, " ");
