@@ -29,5 +29,3 @@ char *strtok(char *s, const char *delim);
 long strtol(const char *nptr, char **endptr, int base);
 int strsort(const char *s1, const char *s2);
 int atoi(const char *str);
-
-

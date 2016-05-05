@@ -1,11 +1,11 @@
 /*
-  Name: DEX32 Standard C library function collection
-  Copyright: GPL
-  Author: Code from the GNU C libc sources by DJ Delorie
-  Date: 23/10/03 17:23
-  Description: Provides standard C functions to be used by the OS modules
-*/
-#define unconst(__v, __t) __extension__ ({union { const __t __cp; __t __p; } __q; __q.__cp = __v; __q.__p;})
+   Name: DEX32 Standard C library function collection
+   Copyright: GPL
+   Author: Code from the GNU C libc sources by DJ Delorie
+   Date: 23/10/03 17:23
+   Description: Provides standard C functions to be used by the OS modules
+ */
+#define unconst(__v, __t) __extension__({union { const __t __cp; __t __p; } __q; __q.__cp = __v; __q.__p; })
 
 typedef unsigned int size_t;
 
@@ -26,11 +26,10 @@ char *strrchr(const char *s, int c);
 size_t strspn(const char *s1, const char *s2);
 char *strstr(const char *s, const char *find);
 char *strtok(char *s, const char *delim);
-void *memset (void *dst,int val,unsigned int count);
+void *memset (void *dst, int val, unsigned int count);
 char tolower(char c);
 char toupper(char c);
-void * memcpy (void * dst, const void * src,unsigned int count);
-void *memmove (void *dst, const void *src,unsigned int count);
+void *memcpy (void *dst, const void *src, unsigned int count);
+void *memmove (void *dst, const void *src, unsigned int count);
 char *strupr(char *str);
-char *itoa (int val,char *buf,int radix);
-       
+char *itoa (int val, char *buf, int radix);

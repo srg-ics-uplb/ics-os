@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=-m32 -w -nostdlib -fno-builtin -ffreestanding -c
+CFLAGS=-w  -nostdlib -fno-builtin -ffreestanding -c
 ASM=nasm
-ASMFLAGS=-f elf32
+ASMFLAGS=-f elf
 
 bzImage: all
 	gzip -c -9 Kernel32.bin >  vmdex
@@ -44,7 +44,7 @@ irqwrap.o:
 	$(ASM) $(ASMFLAGS) -o irqwrap.o irqwrap.asm
 	
 Kernel32.bin:
-	ld -melf_i386  -T lscript.txt -Map mapfile.txt
+	ld -T lscript.txt -Map mapfile.txt
 
 clean:
 	rm -f *.o
