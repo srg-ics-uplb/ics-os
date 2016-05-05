@@ -488,6 +488,8 @@ int console_execute(const char *str){
     int command_length = 0;
     signed char mouse_x, mouse_y, last_mouse_x = 0, last_mouse_y = 0;
 
+    printf("Inputted command: %s\n", str);
+
     //make a copy so that strtok wouldn't ruin str
     strcpy(temp, str);
     u = strtok(temp, " ");
