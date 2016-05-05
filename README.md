@@ -1,4 +1,22 @@
-##About
+# CMSC125 project
+
+## Developers:
+[Matthew Marcos](https://github.com/matthewmarcos94)
+[Ma. Alyssa Chelseah Blaquera](https://github.com/alyssachelseah)
+
+## How to run
+1. ```cd ics-os```
+1. ```make && sudo make install```
+1. ```qemu-system-i386 -fda ics-os-floppy.img```
+
+
+## How to edit files:
+```bash
+# Where the console commands go
+/ICS-OS/ics-os/kernel/console/console.c
+```
+
+## About
 
 Modern real-world operating systems are too complex to be taught to undergraduates and other instructional operating systems are not complete and usable and do not work on real hardware. By providing students with a _not so complex_ working operating system to play with, they will be able to appreciate and understand deeper the concepts underlying an operating system.
 
