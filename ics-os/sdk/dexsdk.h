@@ -1,12 +1,12 @@
 /*
-  Name: dex-os tcc C library
-  Copyright: 
-  Author: Joseph Emmanuel DL Dayo
-  Date: 12/04/04 21:23
-  Description: provides standard C functions to dex-os applications
-  compiled using tcc. Some of the functions are based on DJGPP stdlib
-  sources.
-  
+   Name: dex-os tcc C library
+   Copyright:
+   Author: Joseph Emmanuel DL Dayo
+   Date: 12/04/04 21:23
+   Description: provides standard C functions to dex-os applications
+   compiled using tcc. Some of the functions are based on DJGPP stdlib
+   sources.
+
     Copyright (C) 2004 Joseph Dayo
 
     This library is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-*/
+ */
 
 #ifndef _TCCSDK_H
 #define _TCCSDK_H
@@ -61,22 +61,22 @@
 #define FILE_READWRITE 2
 #define FILE_APPEND 3
 
-       /*-----POSIZ Constants-----*/
-#define O_RDONLY	0x0000
-#define O_WRONLY	0x0001
-#define O_RDWR		0x0002
-#define O_ACCMODE	0x0003
+/*-----POSIZ Constants-----*/
+#define O_RDONLY        0x0000
+#define O_WRONLY        0x0001
+#define O_RDWR          0x0002
+#define O_ACCMODE       0x0003
 
-#define O_BINARY	0x0004	/* must fit in char, reserved by dos */
-#define O_TEXT		0x0008	/* must fit in char, reserved by dos */
-#define O_NOINHERIT	0x0080	/* DOS-specific */
+#define O_BINARY        0x0004  /* must fit in char, reserved by dos */
+#define O_TEXT          0x0008  /* must fit in char, reserved by dos */
+#define O_NOINHERIT     0x0080  /* DOS-specific */
 
-#define O_CREAT		0x0100	/* second byte, away from DOS bits */
-#define O_EXCL		0x0200
-#define O_NOCTTY	0x0400
-#define O_TRUNC		0x0800
-#define O_APPEND	0x1000
-#define O_NONBLOCK	0x2000
+#define O_CREAT         0x0100  /* second byte, away from DOS bits */
+#define O_EXCL          0x0200
+#define O_NOCTTY        0x0400
+#define O_TRUNC         0x0800
+#define O_APPEND        0x1000
+#define O_NONBLOCK      0x2000
 
 /*============constants defined in limits.h============*/
 #define CHAR_BIT 8
@@ -130,9 +130,9 @@ enum COLORS {
 /*============files.h constants=========*/
 
 /*ftell, fseek constants*/
-#define SEEK_SET	0
-#define SEEK_CUR	1
-#define SEEK_END	2
+#define SEEK_SET        0
+#define SEEK_CUR        1
+#define SEEK_END        2
 
 #define FILE unsigned int
 #define EOF (-1)                /* End of file indicator */
@@ -155,21 +155,20 @@ extern FILE *stdout, *stdin, *stderr;
  * File stat
  */
 //derived from stat.h, modified for use with DEX -- returned by fstat to hold info about the file
-typedef struct _vfs_stat
-{
-        int     size;       /*The size of this structure*/
-        int         st_dev;             /* Equivalent to drive number 0=A 1=B ... */
-        int         st_ino;             /* Always zero ? */
-        int         st_mode;    /* See above constants */
-        short       st_nlink;       /* Number of links. */
-        short       st_uid;         /* User: Maybe significant on NT ? */
-        short       st_gid;         /* Group: Ditto */
-        int         st_rdev;    /* Seems useless (not even filled in) */
-        int         st_size;    /* File size in bytes */
-        int         st_atime;   /* Accessed date (always 00:00 hrs local
+typedef struct _vfs_stat {
+    int size;               /*The size of this structure*/
+    int st_dev;                         /* Equivalent to drive number 0=A 1=B ... */
+    int st_ino;                         /* Always zero ? */
+    int st_mode;                /* See above constants */
+    short st_nlink;                 /* Number of links. */
+    short st_uid;                   /* User: Maybe significant on NT ? */
+    short st_gid;                   /* Group: Ditto */
+    int st_rdev;                /* Seems useless (not even filled in) */
+    int st_size;                /* File size in bytes */
+    int st_atime;               /* Accessed date (always 00:00 hrs local
                                  * on FAT) */
-        int         st_mtime;   /* Modified time */
-        int         st_ctime;   /* Creation time */
+    int st_mtime;               /* Modified time */
+    int st_ctime;               /* Creation time */
 } vfs_stat;
 
 
@@ -177,11 +176,11 @@ typedef struct _vfs_stat
 
 
 /*POSIX typedefs*/
-typedef unsigned int mode_t,dev_t,gid_t,ino_t,nlink_t,off_t,uid_t,clock_t,size_t;
+typedef unsigned int mode_t, dev_t, gid_t, ino_t, nlink_t, off_t, uid_t, clock_t, size_t;
 typedef long int time_t;
-typedef int pid_t,ssize_t;
-typedef int (*fnptr_t)(unsigned c, void **helper,FILE *f);
-typedef int (*sfnptr_t)(unsigned c, void **helper);
+typedef int pid_t, ssize_t;
+typedef int (*fnptr_t)(unsigned c, void * *helper, FILE *f);
+typedef int (*sfnptr_t)(unsigned c, void * *helper);
 typedef void (*sighandler_t)(int signum);
 
 
@@ -189,21 +188,21 @@ typedef void (*sighandler_t)(int signum);
 typedef void *va_list;
 
 #define __dj_va_rounded_size(T)  \
-  (((sizeof (T) + sizeof (int) - 1) / sizeof (int)) * sizeof (int))
+    (((sizeof(T) + sizeof(int) - 1) / sizeof(int)) * sizeof(int))
 
 #define va_arg(ap, T) \
-    (ap = (va_list) ((char *) (ap) + __dj_va_rounded_size (T)),	\
-     *((T *) (void *) ((char *) (ap) - __dj_va_rounded_size (T))))
+    (ap = (va_list)((char *)(ap) + __dj_va_rounded_size(T)), \
+     *((T *)(void *)((char *)(ap) - __dj_va_rounded_size(T))))
 
 #define va_end(ap)
 
 #define va_start(ap, last_arg) ((void)((ap) = \
-     (va_list)((char *)(&last_arg)+__dj_va_rounded_size(last_arg))))  
-     
-#define unconst(__v, __t) __extension__ ({union { const __t __cp; __t __p; } __q; __q.__cp = __v; __q.__p;})
-     
+                                           (va_list)((char *)(&last_arg)+__dj_va_rounded_size(last_arg))))
+
+#define unconst(__v, __t) __extension__({union { const __t __cp; __t __p; } __q; __q.__cp = __v; __q.__p; })
+
 void  clrscr();
-int do_printf(const char *fmt, va_list args, fnptr_t fn,FILE *f, void *ptr); 
+int do_printf(const char *fmt, va_list args, fnptr_t fn, FILE *f, void *ptr);
 void exit (int status);
 void free(void *ptr);
 int kb_deq(int *code);
@@ -212,15 +211,15 @@ char getch();
 void getparameters(char *buf);
 int getx();
 int gety();
-void gotoxy(int x,int y);
+void gotoxy(int x, int y);
 int printf(const char *fmt, ...);
-unsigned int dexsdk_systemcall(int function_number,int p1,int p2,
-                  int p3,int p4,int p5);
+unsigned int dexsdk_systemcall(int function_number, int p1, int p2,
+                               int p3, int p4, int p5);
 void *malloc(size_t size);
-void *memmove (void *dst, const void *src,unsigned int count);
-void * memset (void *dst,int val,unsigned int count);
+void *memmove (void *dst, const void *src, unsigned int count);
+void *memset (void *dst, int val, unsigned int count);
 void *memchr(const void *s, int c, size_t n);
-void * memcpy (void * dst, const void * src,unsigned int count);
+void *memcpy (void *dst, const void *src, unsigned int count);
 int memcmp(const void *s1, const void *s2, size_t n);
 void *realloc(void *ptr, size_t size);
 char *strcpy(char *to, const char *from);
@@ -243,23 +242,23 @@ char *strtok(char *s, const char *delim);
 void outc(char x);
 void textbackground(char val);
 void textcolor(char val);
-void update_cursor(int x,int y);
+void update_cursor(int x, int y);
 int wherex(void);
 int wherey(void);
 
-FILE *openfile(const char  *filename,int mode);
+FILE *openfile(const char *filename, int mode);
 int feof(FILE *f);
-FILE *fopen(const char *filename,const char *s);
+FILE *fopen(const char *filename, const char *s);
 int fgetc (FILE *stream);
-char *fgets(char *s, int n, FILE* f);
-int fread(const void *buf,int itemsize,int noitems,FILE* fhandle);
-int fwrite(const void *buf,int itemsize,int noitems,FILE* fhandle);
-char fputc(char c,FILE *f);
+char *fgets(char *s, int n, FILE *f);
+int fread(const void *buf, int itemsize, int noitems, FILE *fhandle);
+int fwrite(const void *buf, int itemsize, int noitems, FILE *fhandle);
+char fputc(char c, FILE *f);
 int fclose(FILE *stream);
 int fflush (FILE *stream);
-char *fseek(FILE* f,long x,int y);
+char *fseek(FILE *f, long x, int y);
 long int ftell(FILE *stream);
-int closefile(FILE* fhandle);
+int closefile(FILE *fhandle);
 int remove(char *filename);
 int mkdir (const char *filename, mode_t mode);
 int copyfile(const char *src, const char *dest);
@@ -270,4 +269,4 @@ void writepixel(int x, int y, char color);
 void read_palette(char *r, char *g, char *b, char index);
 void write_palette(char r, char g, char b, char index);
 
-#endif 
+#endif

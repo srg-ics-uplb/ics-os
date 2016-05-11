@@ -1,6 +1,6 @@
 /*
   Name: script.c
-  Copyright: 
+  Copyright:
   Author: Joseph Emmanuel DL Dayo
   Date: 20/01/04 04:51
   Description: An exteremely simple shell script interpreter

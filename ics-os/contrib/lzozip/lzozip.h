@@ -8,9 +8,9 @@
 #include "minilzo.h"
 
 typedef struct __attribute__((packed)) _compress_header {
-	char magic_str[2];
-	DWORD size;
-	DWORD cur_size;
+    char magic_str[2];
+    DWORD size;
+    DWORD cur_size;
 } compress_header;
 
 #endif
