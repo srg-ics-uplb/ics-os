@@ -476,14 +476,20 @@ void console_ls(int style, int sortmethod){
 
 }
 
+// dexio.c and .h for io stuff
+
 void save_history(const char *str){
-    FILE *f;
-    
-    f = fopen("history.hs", "a");
 
-    fprintf(f, "%s", str);
+    // vfs_core.c
+    char filename[7] = "history";
+    file_PCB *history_file = openfilex(filename, FILE_APPEND);
 
-    fclose(f);
+    fwrite(str, strlen(str), 1, history_file);
+
+
+
+    fclose(history_file);
+
 }
 
 /* ==================================================================
