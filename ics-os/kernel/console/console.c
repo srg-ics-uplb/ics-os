@@ -476,8 +476,6 @@ void console_ls(int style, int sortmethod){
 
 }
 
-// dexio.c and .h for io stuff
-
 void save_history(const char *str){
 
     // vfs_core.c
@@ -486,10 +484,20 @@ void save_history(const char *str){
 
     fwrite(str, strlen(str), 1, history_file);
 
+    fclose(history_file);
+
+}
+
+char** view_history() {
+    char **f;
+    char filename[7] = "history";
+    char command;
+    file_PCB *history_file = openfilex(filename, FILE_READ);
 
 
     fclose(history_file);
 
+    return f;
 }
 
 /* ==================================================================
@@ -818,6 +826,10 @@ int console_execute(const char *str){
     }
     else if(strcmp(u, "demo_graphics") == 0) {
         demo_graphics();
+    }
+    else if(!strcmp(u, "clear")) {
+        int i;
+        clrscr();
     }
     else if(u[0] == '$') {
         int i, devid;
