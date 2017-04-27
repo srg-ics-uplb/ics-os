@@ -24,14 +24,14 @@ BYTE  *portstatus; //the statuses of the ports are used here
 DWORD *portinfo;   //the driver ID of the driver using this port
 
 
-inline unsigned char inportb(unsigned int port)
+unsigned char inportb(unsigned int port)
 {
    unsigned char ret;
    asm volatile ("inb %%dx,%%al":"=a" (ret):"d" (port));
    return ret;
 };
 
-inline DWORD inportl(unsigned int port)
+DWORD inportl(unsigned int port)
 {
    unsigned char ret;
    asm volatile ("inl %%dx,%%eax":"=a" (ret):"d" (port));
@@ -39,19 +39,19 @@ inline DWORD inportl(unsigned int port)
 };
 
 
-inline void outportl(unsigned int port,unsigned int value)
+void outportl(unsigned int port,unsigned int value)
 {
   asm volatile ("outl %%eax,%%dx": :"d" (port), "a" (value));
 };
 
 /* Output a word to a port */
 /* July 6, 2001 added space between :: to make code compatible with gpp */
-inline void outportw(unsigned int port,unsigned int value)
+void outportw(unsigned int port,unsigned int value)
 {
    asm volatile ("outw %%ax,%%dx": :"d" (port), "a" (value));
 };
 
-inline unsigned int inportw(unsigned int port)
+unsigned int inportw(unsigned int port)
 {
    unsigned int ret;
 
@@ -61,7 +61,7 @@ inline unsigned int inportw(unsigned int port)
 
 /* Output a byte to a port */
 /* July 6, 2001 added space between :: to make code compatible with gpp */
-inline void outportb(unsigned int port,unsigned char value)
+void outportb(unsigned int port,unsigned char value)
 {
    asm volatile ("outb %%al,%%dx": :"d" (port), "a" (value));
 };

@@ -35,7 +35,7 @@ void mouse_irq() // (not used but just there)
 //  outportb(0x20,0x20);
 }
 
-inline void mouse_wait(unsigned char  a_type) //unsigned char
+void mouse_wait(unsigned char  a_type) //unsigned char
 {
   unsigned int _time_out=100000; //unsigned int
   if(a_type==0)
@@ -62,7 +62,7 @@ inline void mouse_wait(unsigned char  a_type) //unsigned char
   }
 }
 
-inline void mouse_write(unsigned char a_write) //unsigned char
+void mouse_write(unsigned char a_write) //unsigned char
 {
   //Wait to be able to send a command
   mouse_wait(1);

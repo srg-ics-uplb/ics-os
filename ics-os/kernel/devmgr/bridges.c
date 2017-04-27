@@ -30,7 +30,7 @@
 */
 
 //A bridge to the current scheduler
-inline PCB386 *bridges_ps_scheduler(PCB386 *prev)
+PCB386 *bridges_ps_scheduler(PCB386 *prev)
 {
 PCB386 *returnval;
 devmgr_scheduler_extension *sched = extension_table[CURRENT_SCHEDULER].iface;
@@ -40,7 +40,7 @@ sched->exthdr.busywait = 0;
 return returnval;
 };
 
-inline PCB386 *bridges_ps_findprocess(int pid)
+PCB386 *bridges_ps_findprocess(int pid)
 {
 PCB386 *returnval;
 devmgr_scheduler_extension *sched = extension_table[CURRENT_SCHEDULER].iface;

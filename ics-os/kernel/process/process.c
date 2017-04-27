@@ -1075,7 +1075,7 @@ void ps_switchto(PCB386 *process)
 };
 
 /*Calls the timer interrupt which calls the taskswitcher*/
-inline void taskswitch()
+void taskswitch()
 {
    //Tell the taskswitcher not to increment the time
    ps_notimeincrement = 1; 
