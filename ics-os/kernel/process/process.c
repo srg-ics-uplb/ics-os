@@ -94,11 +94,13 @@ DWORD createthread(void *ptr,void *stack,DWORD stacksize)
     int pages;
     DWORD flags;
     
+    //create new PCB
     PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
     memset(temp,0,sizeof(PCB386));
 
     totalprocesses++;
-    
+   
+    //save flags 
     dex32_stopints(&flags);
     
     temp->size=sizeof(PCB386);
@@ -142,6 +144,7 @@ DWORD createthread(void *ptr,void *stack,DWORD stacksize)
     //Tell the scheduler to add it to the process queue
     ps_enqueue(temp);
     
+    //restore flags
     dex32_restoreints(flags);
 
     return temp->processid;

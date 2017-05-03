@@ -4,17 +4,18 @@
 
 void *f();
 
+unsigned int stk;
 
 int main() 
 {
-	int *stk=malloc(100);
-	dexsdk_systemcall(0xB,(int)&f,(int)&stk,(int)20,0,0);
+	dexsdk_systemcall(0xB,(unsigned int)&f,(unsigned int)&stk,(unsigned int)20,0,0);
 }
 
 void *f(){
+/*
 	FILE *fp=fopen("threads.txt","w");
 	fputs(fp,"hello");
 	fclose(fp);
-
+*/
 }
 
