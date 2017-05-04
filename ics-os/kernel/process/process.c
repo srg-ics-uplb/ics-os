@@ -85,7 +85,7 @@ DWORD getprocessid()
 DWORD getpprocessid()
 {
     return current_process->owner;
-}; 
+}
 
 /*creates a USER thread (In DEX this is process which shares the same memory space as its parent
   process, but has its own stack pointer)*/
