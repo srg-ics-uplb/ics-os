@@ -122,8 +122,16 @@ DWORD createthread(void *ptr,void *stack,DWORD stacksize)
     /*Set up initial contents of the CPU registers*/
     memset(temp,0,sizeof(saveregs));
     temp->regs.EIP    = (DWORD)ptr;
+
+    /*code from createkthread
+    temp->stackptr    = malloc(stacksize);
+    temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+    temp->stackptr    = (void*)temp->regs.ESP;
+    */
+
     temp->regs.ESP    = (DWORD)(stack+stacksize-4);
     temp->stackptr    = (void*)temp->regs.ESP;
+
     temp->regs.CR3    = (DWORD)current_process->pagedirloc;
     temp->regs.ES     = USER_DATA;
     temp->regs.SS     = USER_DATA;
