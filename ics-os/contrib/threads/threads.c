@@ -2,21 +2,19 @@
 #include "../../sdk/dexsdk.h"
 
 
-#define SSIZE 16
+#define SSIZE 200000
 
 void *f();
 
-unsigned char stk;
 
 int main() 
 {
-    stk=malloc(SSIZE);
     printf("Creating and starting thread...");
-	dexsdk_systemcall(0xB,(void *)f,&stk,SSIZE,0,0);
+    return thread_create(&f);
 }
 
 void *f(){
-    printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    printf("Thread!");
     
 /*
 	FILE *fp=fopen("threads.txt","w");
