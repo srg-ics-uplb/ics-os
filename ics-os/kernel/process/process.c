@@ -123,12 +123,6 @@ DWORD createthread(void *ptr,void *stack,DWORD stacksize)
     memset(temp,0,sizeof(saveregs));
     temp->regs.EIP    = (DWORD)ptr;
 
-    /*code from createkthread
-    temp->stackptr    = malloc(stacksize);
-    temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
-    temp->stackptr    = (void*)temp->regs.ESP;
-    */
-
     temp->regs.ESP    = (DWORD)(stack+stacksize-4);
     temp->stackptr    = (void*)temp->regs.ESP;
 

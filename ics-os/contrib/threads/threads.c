@@ -2,24 +2,22 @@
 #include "../../sdk/dexsdk.h"
 
 
-#define SSIZE 200000
 
-void *f();
+int f();
 
+int i=10;
 
 int main() 
 {
-    printf("Creating and starting thread...");
-    return thread_create(&f);
+    printf("i=%d\n",i);
+    printf("Creating and starting thread...\n");
+    thread_create(&f);
+    printf("i=%d\n",i);
+   
 }
 
-void *f(){
-    printf("Thread!");
-    
-/*
-	FILE *fp=fopen("threads.txt","w");
-	fputs(fp,"hello");
-	fclose(fp);
-*/
+int f(){
+   i++; 
+   return 0;
 }
 

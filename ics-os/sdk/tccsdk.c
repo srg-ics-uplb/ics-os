@@ -1457,8 +1457,8 @@ int execp(char *fname,unsigned short mode, char *params){
 /* Creates and starts a thread. returns thread id (jach) */
 int thread_create(void *f){
     unsigned char *stack;
-    int ssize=10000;
 
-    stack=malloc(ssize);
-    return dexsdk_systemcall(0xB,(void *)f,stack,ssize,0,0);
+    stack=(unsigned char *)malloc(20000);
+
+    return dexsdk_systemcall(0xB,&f,stack,20000,0,0);
 }
