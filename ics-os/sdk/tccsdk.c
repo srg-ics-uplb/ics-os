@@ -1458,7 +1458,7 @@ int execp(char *fname,unsigned short mode, char *params){
 int thread_create(void *f){
     unsigned char *stack;
 
-    stack=(unsigned char *)malloc(20000);
+    stack=(unsigned char *)malloc(1000000);
 
-    return dexsdk_systemcall(0xB,&f,stack,20000,0,0);
+    return dexsdk_systemcall(0xB,&f,stack,100000,0,0);
 }
