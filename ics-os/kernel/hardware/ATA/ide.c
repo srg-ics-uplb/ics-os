@@ -865,7 +865,8 @@ void ide_setupinterface(int type,int intnum, const char *interface_str)
     
     ide_drivelist[index].atapi = 0;
     ide_drivelist[index].mydeviceid = deviceid;
-    ide_drivelist[index].read_only = 1;
+    //set drive to read/write (jach)
+    ide_drivelist[index].read_only = 0;
     ide_drivelist[index].dev = 0;
     ide_drivelist[index].interface = type;
     ide_interpret_config(buffer,&ide_drivelist[index]);
@@ -898,7 +899,8 @@ void ide_setupinterface(int type,int intnum, const char *interface_str)
     
     ide_drivelist[1 + index].atapi = 0;
     ide_drivelist[1 + index].mydeviceid = deviceid;
-    ide_drivelist[1 + index].read_only = 1;
+    // set to read/write (jach)
+    ide_drivelist[1 + index].read_only = 0;
     ide_drivelist[1 + index].dev = 1;
     ide_drivelist[1 + index].interface = type;
     ide_interpret_config(buffer,&ide_drivelist[1+index]);
@@ -980,7 +982,9 @@ void ide_init()
     
     //setup primary IDE
     ide_setupinterface(0,14,"p");
-    
+
+    ide_sendmessage(DEVMGR_MESSAGESTR,"0 -write_enable");   
+
     //Setup secondary IDE
     ide_setupinterface(1,15,"s");
 };
