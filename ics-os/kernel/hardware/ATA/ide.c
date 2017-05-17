@@ -983,8 +983,6 @@ void ide_init()
     //setup primary IDE
     ide_setupinterface(0,14,"p");
 
-    ide_sendmessage(DEVMGR_MESSAGESTR,"0 -write_enable");   
-
     //Setup secondary IDE
     ide_setupinterface(1,15,"s");
 };
