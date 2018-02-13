@@ -36,18 +36,17 @@ inline void hlt()
 extern void refreshpages();
 
 /*Displays memory information provided by the GRUB bootloader*/
-void mem_interpretmemory(mmap *map,int size)
-{
-int i;
-for (i=0;i<size / sizeof(mmap) ; i++)
-  {
-   DWORD base = map[i].base_addr_low;
-   DWORD base_end = base + map[i].length_low;
-   printf("region: 0x%x - 0x%x .",base,base_end);
-   if (map[i].type==1) printf("free\n");
+void mem_interpretmemory(mmap *map,int size){
+   int i;
+   for (i=0; i <(size/sizeof(mmap)); i++){
+      DWORD base = map[i].base_addr_low;
+      DWORD base_end = base + map[i].length_low;
+      printf("region: 0x%X - 0x%X . ", base, base_end);
+      if (map[i].type==1) 
+         printf("FREE\n");
       else
-      printf("reserved.\n");
-  }; 
+         printf("RESERVED.\n");
+   }; 
 };
 
 /*using the memory map provided by grub, create the stack of physical frames*/

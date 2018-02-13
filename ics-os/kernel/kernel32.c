@@ -169,7 +169,7 @@ void dex_init();
 #include "memory/dexmalloc.c"
 #include "vmm/vmm.c"
 
-void dex32_startup(); //start up the operating system
+void dex32_startup(); 
 extern startup();
 
 fg_processinfo *fg_kernel = 0;
@@ -187,7 +187,7 @@ char boot_device_name[255]="";
   * Protected Mode is enabled
   * paging is disabled
   * interrupts are disabled
-  * The CS,DS,SS,ESP must already be set up, meaning that the GDT should already be present
+  * The CS,DS,SS,ESP must already be set up, meaning that the GDT should already be present, see startup.asm
   
   ORDER is important when starting up the kernel modules!!*/
 
