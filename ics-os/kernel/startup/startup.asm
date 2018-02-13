@@ -22,7 +22,7 @@ MULTIBOOT_MEM_INFO equ 1 << 1
 
 MULTIBOOT_FLAGS equ MULTIBOOT_PAGE_ALIGN | MULTIBOOT_MEM_INFO
 
-global startup
+global startup       ;export the startup function
 extern main          ;defined in kernel32.c, the entry point for ics-os      
 extern edata
 extern end
@@ -44,22 +44,21 @@ mb_checksum      dd - (MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)  ;compute checksum
 mb_header_end:
 
 multiboot:
-;Multi boot compliant code 
+   ;Multi boot compliant code 
    mov [multiboothdr], ebx   ;record the location of the multiboot information
                              ;structure
    mov byte [0xb8000],'.'    ;output a dot to show progress
 
    ;setup protected mode data
-
    ;the null descriptor	
    mov word  [gdt],0		
    mov word  [gdt+2],0	
    mov dword [gdt+4],0	
 
    ;the linear selector
-   mov word [gdt1],0xFFFF    ; limit 0xFFFFF
-   mov word [gdt1+2],0	     ; base 0
-   mov byte [gdt1+4],0
+   mov word [gdt1],0xFFFF    ; segment limit 0xFFFFF (64KB)
+   mov word [gdt1+2],0	     ; base address is 0
+   mov byte [gdt1+4],0       ; base middle address is 0
    mov byte [gdt1+5],0x92    ; present, ring 0, data, expand-up, writable
    mov byte [gdt1+6],0xCF    ; page-granular, 32-bit
    mov byte [gdt1+7],0
@@ -247,16 +246,18 @@ reset_gdtr:
 lgdt [gdtr]                     ;gdtr should have a valid value
 ret
 
-SECTION .data
+section .data
 
-global multiboothdr        
-multiboothdr dd 0; If this was loaded by a multiboot compliant system,
-                 ; this should point to the multiboot structure.
+global multiboothdr ;make this global        
+multiboothdr dd 0 ; If this was loaded by a multiboot compliant system,
+                  ; this should point to the multiboot structure.
 
+;the gdt
 gdtr:	
-   dw 2047                	; GDT limit of 256 descriptors
+   dw 2047                	; GDT limit of 256 descriptors (2048 minus 1)
 	dd 0x01000              ; (GDT located at 0x01000)
 
+;GDT selectors 
 NULL_SEL        equ         0b 
 LINEAR_SEL	    equ	    1000b
 SYS_CODE_SEL2   equ     10000b
@@ -271,7 +272,7 @@ APM16_CODE_SEL  equ   1001000b
 APMDATA_SEL     equ   1010000b
 TS_STACK_SEL    equ   1011000b
  
-
+;offsets
 gdt             equ     0x01000         ;start address of the gdt
 gdt1            equ     0x01000+8
 gdt2            equ     0x01000+16
