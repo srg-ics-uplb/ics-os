@@ -89,7 +89,7 @@ Kernel source directories.
 
 
 # 5. A Hello World Example
-This section describes an example on how to modify ics-os, specifically the kernel by adding a `hello` command which displays a message. After extracting the sources, open the file on a text editor `kernel/console/console.c` from the top level directory of the extracted source. Locate the function
+This section describes an example on how to modify ics-os, specifically the kernel by adding a `hello` command which displays a message. After extracting the sources, open the file `kernel/console/console.c` on a text editor from the top level directory of the extracted source. Locate the function
 `int console_execute(const char *str)`. Find the code fragment before the START comment line in the code fragment below. Then insert the code fragment between the START and END comment lines on the location as shown below. Note that the code fragment between the START and END comment lines is not present on the original body of the function.
 
 ```
@@ -115,7 +115,7 @@ This section describes an example on how to modify ics-os, specifically the kern
 
 ```
 
-Perform steps 3-5 of Section 3 to build the source. You should see something similar to the figure below after typing `hello` on the command prompt and pressing enter.
+Perform steps 2-4 of Section 3 to build the source. You should see something similar to the figure below after typing `hello` on the command prompt and pressing enter.
 
 ![http://ics-os.googlecode.com/svn/trunk/ics-os/kernel/docs/figure01.png](http://ics-os.googlecode.com/svn/trunk/ics-os/kernel/docs/figure01.png)
 
