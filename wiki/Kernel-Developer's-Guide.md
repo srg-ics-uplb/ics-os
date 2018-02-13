@@ -234,6 +234,7 @@ The file [`kernel/startup/startup.asm`](https://github.com/srg-ics-uplb/ics-os/b
 
 # 8. kernel32.c
 The file  [`kernel/kernel32.c`](https://github.com/srg-ics-uplb/ics-os/blob/devel/ics-os/kernel/kernel32.c) is the main entry point of the ics-os. The following steps are performed in `main()`
+
   1. Program IRQ lines for timer, keyboard, and floppy 
   1. Set up the interrupt descriptor table 
   1. Obtain boot device and memory information from GRUB
