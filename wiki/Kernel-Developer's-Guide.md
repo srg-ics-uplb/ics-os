@@ -233,7 +233,7 @@ The final kernel image `Kernel32.bin` is then gzipped into `vmdex` to conserve s
 The file `kernel/startup/startup.asm` enables the 32-bit protected mode of x86, enables the A20 line, and transfers control to the `main()` function in `kernel32.c`.
 
 # 8. kernel32.c
-The file [https://github.com/srg-ics-uplb/ics-os/blob/devel/ics-os/kernel/kernel32.c `kernel/kernel32.c`] is the main entry point of the ics-os. The following steps are performed in `main()`
+The file  [`kernel/kernel32.c`](https://github.com/srg-ics-uplb/ics-os/blob/devel/ics-os/kernel/kernel32.c) is the main entry point of the ics-os. The following steps are performed in `main()`
   1. Program IRQ lines for timer, keyboard, and floppy [program8259()](https://github.com/srg-ics-uplb/ics-os/blob/2fded9cb5280ba7688d145195b98142772b785cf/ics-os/kernel/hardware/chips/irqhandlers.c#L99)
   1. Set up the interrupt descriptor table [setdefaulthandlers()](https://github.com/srg-ics-uplb/ics-os/blob/2fded9cb5280ba7688d145195b98142772b785cf/ics-os/kernel/hardware/chips/irqhandlers.c#L384)
   1. Obtain boot device and memory information from GRUB
