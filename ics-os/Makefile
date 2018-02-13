@@ -12,7 +12,7 @@ clean:
 	make -C kernel/ clean
 
 install: vmdex
-	cp grub.img ics-os-floppy.img
+	cp grub.img ics-os-floppy.img                #copy an image with grub
 	rm -fr mnt
 	mkdir mnt
 	mount ics-os-floppy.img mnt -tmsdos -oloop
