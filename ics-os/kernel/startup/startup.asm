@@ -23,7 +23,7 @@ MULTIBOOT_MEM_INFO equ 1 << 1
 MULTIBOOT_FLAGS equ MULTIBOOT_PAGE_ALIGN | MULTIBOOT_MEM_INFO
 
 global startup
-extern main
+extern main          ;defined in kernel32.c, the entry point for ics-os      
 extern edata
 extern end
 global reset_gdtr
@@ -68,7 +68,7 @@ multiboot:
    mov ebx,0x0000000
    mov eax,ebx
 
-   ;the system Code selector
+   ;the system code selector
    mov word [gdt2],0xFFFF    ; limit 0xFFFFF
    mov word [gdt2+2],ax	     ; base 0
    shr eax,16
@@ -102,6 +102,7 @@ multiboot:
    lgdt [gdtr]               ;gdtr should have a valid value
 
 jmp  SYS_CODE_SEL2:not_multiboot
+
 not_multiboot:
    mov byte [0xb8004],'.' 
    mov ax,LINEAR_SEL
@@ -110,6 +111,7 @@ not_multiboot:
    mov ds,ax
    mov gs,ax
    mov fs,ax
+   
    ;the linear code selector
    mov eax,0x00000000
    mov word [es:gdt7],0xFFFF ; 1MB kernel memory length
@@ -117,11 +119,11 @@ not_multiboot:
    shr eax,16
    mov byte [es:gdt7+4],al       
       
-   mov byte [es:gdt7+5],0x9A		; present, ring 0, data, expand-up, writable
-   mov byte [es:gdt7+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt7+5],0x9A ; present, ring 0, data, expand-up, writable
+   mov byte [es:gdt7+6],0xCF ; page-granular, 32-bit
    mov byte [es:gdt7+7],ah     
 
-   ;refresh the Code Segment selector since we are now going to go into
+   ;refresh the code segment selector since we are now going to go into
    ;linear mode
 
    ;the linear stack selector                       
@@ -131,7 +133,7 @@ not_multiboot:
    mov byte [es:gdt3+4],al       
    mov word [es:gdt3],0xFFFF		; limit 0xFFFFF
    mov byte [es:gdt3+5],0x92		; present, ring 0, data, expand-up, writable
-   mov byte [es:gdt3+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt3+6],0xCF     ; page-granular, 32-bit
    mov byte [es:gdt3+7],ah
 
    ;set up the data segment selector which is also linear in nature       
@@ -141,7 +143,7 @@ not_multiboot:
    mov byte [es:gdt4+4],al       
    mov word [es:gdt4],0xFFFF		; limit 0xFFFFF
    mov byte [es:gdt4+5],0x92		; present, ring 0, data, expand-up, writable
-   mov byte [es:gdt4+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt4+6],0xCF     ; page-granular, 32-bit
    mov byte [es:gdt4+7],ah
 
    ;Set up a video memory selector
@@ -151,7 +153,7 @@ not_multiboot:
    mov byte [es:gdt5+4],al       
    mov word [es:gdt5],0xFFFF		; limit 0xFFFFF
    mov byte [es:gdt5+5],0x92		; present, ring 0, data, expand-up, writable
-   mov byte [es:gdt5+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt5+6],0xCF     ; page-granular, 32-bit
    mov byte [es:gdt5+7],ah
         
    mov eax,0x01000000
@@ -161,16 +163,19 @@ not_multiboot:
       
    mov byte [es:gdt6+4],al       
    mov byte [es:gdt6+5],0x92		; present, ring 0, data, expand-up, writable
-   mov byte [es:gdt6+6],0xCF               ; page-granular, 32-bit
+   mov byte [es:gdt6+6],0xCF     ; page-granular, 32-bit
    mov byte [es:gdt6+7],ah     
 
    mov byte [0xb8006],'.'
+
    ;Set the PE bit to get into protected mode
    mov eax,cr0
    or  al,1
    mov cr0,eax
-        
+
+   ;perform a jmp to be in 32-bit protected mode        
 jmp SYS_CODE_SEL:linearcode
+
 linearcode:
    xor eax,eax
    mov ax,SYS_STACK_SEL
@@ -180,7 +185,10 @@ linearcode:
    mov ax,SYS_DATA_SEL 
    mov ds,ax
     
+   ;enable A20 line
 call enable_A20
+
+   ;jump to the kernel
 call main
 
 
@@ -245,11 +253,12 @@ global multiboothdr
 multiboothdr dd 0; If this was loaded by a multiboot compliant system,
                  ; this should point to the multiboot structure.
 
-gdtr:	dw 2047                	; GDT limit of 256 descriptors
+gdtr:	
+   dw 2047                	; GDT limit of 256 descriptors
 	dd 0x01000              ; (GDT located at 0x01000)
 
 NULL_SEL        equ         0b 
-LINEAR_SEL	equ	 1000b
+LINEAR_SEL	    equ	    1000b
 SYS_CODE_SEL2   equ     10000b
 SYS_STACK_SEL   equ     11000b
 SYS_DATA_SEL    equ    100000b

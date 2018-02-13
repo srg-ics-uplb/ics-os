@@ -234,12 +234,12 @@ The file `kernel/startup/startup.asm` enables the 32-bit protected mode of x86, 
 
 # 8. kernel32.c
 The file  [`kernel/kernel32.c`](https://github.com/srg-ics-uplb/ics-os/blob/devel/ics-os/kernel/kernel32.c) is the main entry point of the ics-os. The following steps are performed in `main()`
-  1. Program IRQ lines for timer, keyboard, and floppy [program8259()](https://github.com/srg-ics-uplb/ics-os/blob/2fded9cb5280ba7688d145195b98142772b785cf/ics-os/kernel/hardware/chips/irqhandlers.c#L99)
-  1. Set up the interrupt descriptor table [setdefaulthandlers()](https://github.com/srg-ics-uplb/ics-os/blob/2fded9cb5280ba7688d145195b98142772b785cf/ics-os/kernel/hardware/chips/irqhandlers.c#L384)
+  1. Program IRQ lines for timer, keyboard, and floppy 
+  1. Set up the interrupt descriptor table 
   1. Obtain boot device and memory information from GRUB
-  1. Initialize memory subsystem [mem\_init()](https://github.com/srg-ics-uplb/ics-os/blob/2fded9cb5280ba7688d145195b98142772b785cf/ics-os/kernel/memory/dexmem.c#L895)
+  1. Initialize memory subsystem 
   1. Sets the current process to the kernel process `_sPCB_`. This structure will be initialized at a later stage
-  1. Setup context switch timer [dex32\_set\_timer()](https://github.com/srg-ics-uplb/ics-os/blob/2fded9cb5280ba7688d145195b98142772b785cf/ics-os/kernel/stdlib/time.c#L204)
+  1. Setup context switch timer 
   1. Initialize bridge manager
   1. Initialize virtual console manager
   1. Initialize kernel virtual console for kernel messages
