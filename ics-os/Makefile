@@ -32,4 +32,5 @@ floppy: install
 
 livecd: install
 
-
+run-qemu:
+	qemu-system-i386 -fda ics-os-floppy.img -boot a
