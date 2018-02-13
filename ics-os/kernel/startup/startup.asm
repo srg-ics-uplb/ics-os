@@ -272,7 +272,7 @@ APMDATA_SEL     equ   1010000b
 TS_STACK_SEL    equ   1011000b
  
 
-gdt             equ     0x01000
+gdt             equ     0x01000         ;start address of the gdt
 gdt1            equ     0x01000+8
 gdt2            equ     0x01000+16
 gdt3            equ     0x01000+24 
