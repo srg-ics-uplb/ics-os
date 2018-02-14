@@ -370,213 +370,208 @@ DWORD createprocess(
    return temp->processid;
 };
 
-DWORD dex32_asyncproc(saveregs *r,void *entrypoint,char *name,DWORD stacksize)
-{
-    PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
 
-    temp->before=current_process;
-    strcpy(temp->name,name);
-    totalprocesses++;
-    temp->processid=nextprocessid++;
-    temp->accesslevel=ACCESS_SYS;
-    temp->owner=1;
-    temp->knext=knext;
-    temp->pagedirloc=pagedir1;
-    memset(temp,0,sizeof(saveregs));
-    temp->regs.EIP=(DWORD)entrypoint;
-    temp->stackptr=malloc(stacksize);
-    temp->regs.ESP=(DWORD)(temp->stackptr+stacksize-4);
-    temp->stackptr=(void*)temp->regs.ESP;
-    temp->regs.CR3=(DWORD)pagedir1;
-    temp->regs.EAX=r->EAX;
-    temp->regs.EBX=r->EBX;
-    temp->regs.ECX=r->ECX;
-    temp->regs.EDX=r->EDX;
-    temp->regs.ESI=r->ESI;
-    temp->regs.EDI=r->EDI;
-    temp->regs.ES=r->ES;
-    temp->regs.SS=r->SS;
-    temp->regs.CS=r->CS;
-    temp->regs.DS=r->DS;
-    temp->regs.FS=r->FS;
-    temp->regs.GS=r->GS;
-    temp->regs.EFLAGS=0x200;
+DWORD dex32_asyncproc(saveregs *r,void *entrypoint,char *name,DWORD stacksize){
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
 
-    sync_entercrit(&processmgr_busy);
-    //add to the list
-    ps_enqueue(temp);
-    sync_leavecrit(&processmgr_busy);
+   temp->before=current_process;
+   strcpy(temp->name,name);
+   totalprocesses++;
+   temp->processid=nextprocessid++;
+   temp->accesslevel=ACCESS_SYS;
+   temp->owner=1;
+   temp->knext=knext;
+   temp->pagedirloc=pagedir1;
+   memset(temp,0,sizeof(saveregs));
+   temp->regs.EIP=(DWORD)entrypoint;
+   temp->stackptr=malloc(stacksize);
+   temp->regs.ESP=(DWORD)(temp->stackptr+stacksize-4);
+   temp->stackptr=(void*)temp->regs.ESP;
+   temp->regs.CR3=(DWORD)pagedir1;
+   temp->regs.EAX=r->EAX;
+   temp->regs.EBX=r->EBX;
+   temp->regs.ECX=r->ECX;
+   temp->regs.EDX=r->EDX;
+   temp->regs.ESI=r->ESI;
+   temp->regs.EDI=r->EDI;
+   temp->regs.ES=r->ES;
+   temp->regs.SS=r->SS;
+   temp->regs.CS=r->CS;
+   temp->regs.DS=r->DS;
+   temp->regs.FS=r->FS;
+   temp->regs.GS=r->GS;
+   temp->regs.EFLAGS=0x200;
+
+   sync_entercrit(&processmgr_busy);
+   //add to the list
+   ps_enqueue(temp);
+   sync_leavecrit(&processmgr_busy);
 };
 
-void ps_seterror(int error)
-{
-    current_process->lasterror =  error;
+void ps_seterror(int error){
+   current_process->lasterror =  error;
 };
 
-int ps_geterror()
-{
-    return current_process->lasterror;
+int ps_geterror(){
+   return current_process->lasterror;
 };
 
 //sends a message to all active processes
-int broadcastmessage(DWORD sender,DWORD mes,DWORD data)
-{
-    PCB386 *ptr;
-    int total,i;
+int broadcastmessage(DWORD sender,DWORD mes,DWORD data){
+   PCB386 *ptr;
+   int total,i;
     
-    total = get_processlist(&ptr);
+   total = get_processlist(&ptr);
     
-    for (i=0; i < total ; i++)
-    {
-        sendmessageEX(sender,ptr[i].processid,mes,data);
-    } ;
-    free(ptr);
-    return 1;
-
+   for (i=0; i < total ; i++){
+      sendmessageEX(sender,ptr[i].processid,mes,data);
+   } ;
+   free(ptr);
+   return 1;
 };
 
-
-int sendmessage(DWORD pid,DWORD mes,DWORD data)
-{
-    return sendmessageEX(current_process->processid,pid,mes,data);
+int sendmessage(DWORD pid,DWORD mes,DWORD data){
+   return sendmessageEX(current_process->processid,pid,mes,data);
 };
 
 //sends a message to another process
-int sendmessageEX(DWORD source,DWORD pid,DWORD mes,DWORD data)
-{
-    DWORD cpuflags;
-    PCB386 *ptr=(PCB386*)ps_findprocess(pid);
-    if (ptr!=-1)
-    {
-        int index=ptr->meshead;
+int sendmessageEX(DWORD source, DWORD pid, DWORD mes, DWORD data){
+   DWORD cpuflags;
+   PCB386 *ptr = (PCB386*)ps_findprocess(pid);
 
-        if (ptr->mestotal>=MAX_MESSAGE-1) return IPCSTAT_FULL;
-        
-        dex32_stopints(&cpuflags);
-        
-        ptr->mesq[index].message=mes;
-        ptr->mesq[index].data=data;
-        ptr->mesq[index].sender=source;
-        ptr->mesq[index].receiver=pid;
+   if (ptr!=-1){
 
-        ptr->mestotal++;
-        ptr->meshead++;
-        if (ptr->meshead>=MAX_MESSAGE) ptr->meshead=0;
+      int index = ptr->meshead;
+
+      if (ptr->mestotal >= MAX_MESSAGE-1) 
+         return IPCSTAT_FULL;
         
-        dex32_restoreints(cpuflags);
+      dex32_stopints(&cpuflags);
         
-        return IPCSTAT_OK;
-    };
-    return IPCSTAT_ERROR;
+      ptr->mesq[index].message = mes;
+      ptr->mesq[index].data = data;
+      ptr->mesq[index].sender = source;
+      ptr->mesq[index].receiver = pid;
+
+      ptr->mestotal++;
+      ptr->meshead++;
+
+      if (ptr->meshead >= MAX_MESSAGE) 
+         ptr->meshead=0;
+        
+      dex32_restoreints(cpuflags);
+        
+      return IPCSTAT_OK;
+   };
+   return IPCSTAT_ERROR;
 };
 
-
-int getmessage(DWORD *source,DWORD *mes,DWORD *data)
-{
-    PCB386 *ptr=current_process;
-    DWORD cpuflags;
+//gets a message
+int getmessage(DWORD *source, DWORD *mes, DWORD *data){
+   PCB386 *ptr=current_process;
+   DWORD cpuflags;
     
-    int index=ptr->curmes;
-    if (ptr->mestotal<=0) return 0;
+   int index=ptr->curmes;
+   if (ptr->mestotal<=0) 
+      return 0;
 
-    dex32_stopints(&cpuflags);
+   dex32_stopints(&cpuflags);
 
-    *source=ptr->mesq[index].sender;
-    *mes=ptr->mesq[index].message;
-    *data=ptr->mesq[index].data;
-    ptr->curmes++;
-    ptr->mestotal--;
-    if (ptr->mestotal<0) ptr->mestotal=0;
-    if (ptr->curmes>=MAX_MESSAGE) ptr->curmes=0;
+   *source = ptr->mesq[index].sender;
+   *mes=ptr->mesq[index].message;
+   *data=ptr->mesq[index].data;
+   ptr->curmes++;
+   ptr->mestotal--;
+   if (ptr->mestotal<0) 
+      ptr->mestotal=0;
+   
+   if (ptr->curmes>=MAX_MESSAGE) 
+      ptr->curmes=0;
     
-    dex32_restoreints(cpuflags);
+   dex32_restoreints(cpuflags);
     
-    return 1;
+   return 1;
 };
 
 /*creates a kernel thread*/
-DWORD createkthread(void *ptr,char *name,DWORD stacksize)
-{
-    PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
-    DWORD cpuflags;
+DWORD createkthread(void *ptr,char *name,DWORD stacksize){
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
+   DWORD cpuflags;
     
-    memset(temp,0,sizeof(PCB386));
-    temp->before=current_process;
-    strcpy(temp->name,name);
-    totalprocesses++;
-    temp->size        = sizeof(PCB386);
-    temp->processid   = nextprocessid++;
-    temp->accesslevel = ACCESS_SYS;
-    temp->owner       = getprocessid();
-    temp->status     |= PS_ATTB_THREAD; 
-    temp->knext       = knext;
-    temp->pagedirloc  = pagedir1;
-    temp->workdir     = current_process->workdir;
+   memset(temp,0,sizeof(PCB386));
+   temp->before=current_process;
+   strcpy(temp->name,name);
+   totalprocesses++;
+   temp->size        = sizeof(PCB386);
+   temp->processid   = nextprocessid++;
+   temp->accesslevel = ACCESS_SYS;
+   temp->owner       = getprocessid();
+   temp->status     |= PS_ATTB_THREAD; 
+   temp->knext       = knext;
+   temp->pagedirloc  = pagedir1;
+   temp->workdir     = current_process->workdir;
 
-    //set up the initial values of the CPU registers for this process
-    memset(temp,0,sizeof(saveregs));
-    temp->regs.EIP    = (DWORD)ptr;
-    temp->stackptr    = malloc(stacksize);
-    temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
-    temp->stackptr    = (void*)temp->regs.ESP;
-    temp->regs.CR3    = (DWORD)pagedir1;
-    temp->regs.ES     = SYS_DATA_SEL;
-    temp->regs.SS     = SYS_STACK_SEL;
-    temp->regs.CS     = SYS_CODE_SEL;
-    temp->regs.DS     = SYS_DATA_SEL;
-    temp->regs.FS     = SYS_DATA_SEL;
-    temp->regs.GS     = SYS_DATA_SEL;
-    temp->regs.EFLAGS = 0x200;
+   //set up the initial values of the CPU registers for this process
+   memset(temp,0,sizeof(saveregs));
+   temp->regs.EIP    = (DWORD)ptr;
+   temp->stackptr    = malloc(stacksize);
+   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   temp->stackptr    = (void*)temp->regs.ESP;
+   temp->regs.CR3    = (DWORD)pagedir1;
+   temp->regs.ES     = SYS_DATA_SEL;
+   temp->regs.SS     = SYS_STACK_SEL;
+   temp->regs.CS     = SYS_CODE_SEL;
+   temp->regs.DS     = SYS_DATA_SEL;
+   temp->regs.FS     = SYS_DATA_SEL;
+   temp->regs.GS     = SYS_DATA_SEL;
+   temp->regs.EFLAGS = 0x200;
 
-    temp->arrivaltime = getprecisetime(); 
-    temp->stdin       = current_process->stdin;
+   temp->arrivaltime = getprecisetime(); 
+   temp->stdin       = current_process->stdin;
 
-    /*critical section...*/
-    sync_entercrit(&processmgr_busy);
-    dex32_stopints(&cpuflags);
+   /*critical section...*/
+   sync_entercrit(&processmgr_busy);
+   dex32_stopints(&cpuflags);
     
-    //add to the process list
-    ps_enqueue(temp);
+   //add to the process list
+   ps_enqueue(temp);
 
-    dex32_restoreints(cpuflags);
+   dex32_restoreints(cpuflags);
     
-    //end of critical section
-    sync_leavecrit(&processmgr_busy);
+   //end of critical section
+   sync_leavecrit(&processmgr_busy);
     
-    return temp->processid;
-    ;
+   return temp->processid;
 };
 
-int ps_changename(const char *name,int pid)
-{
-    PCB386 *ptr;
-    sync_entercrit(&processmgr_busy);
+//change the name of a process
+int ps_changename(const char *name, int pid){
+   PCB386 *ptr;
+   sync_entercrit(&processmgr_busy);
 
-    ptr=ps_findprocess(pid);
-    if (ptr!=-1) strcpy(ptr->name,name);
+   ptr=ps_findprocess(pid);
+   if (ptr!=-1) 
+      strcpy(ptr->name,name);
 
-    sync_entercrit(&processmgr_busy);
+   sync_entercrit(&processmgr_busy);
 };
 
 //decrements the wait status of the parent
 //used for creating services
-DWORD dex32_setservice()
-{
-    PCB386 *ptr;
-    sync_entercrit(&processmgr_busy);
-    ptr=ps_findprocess(current_process->owner);
-    if (ptr!=-1)
-    {
-        ptr->childwait=0;
-    };
-    sync_leavecrit(&processmgr_busy); 
+DWORD dex32_setservice(){
+   PCB386 *ptr;
+   sync_entercrit(&processmgr_busy);
+   ptr=ps_findprocess(current_process->owner);
+   if (ptr!=-1){
+      ptr->childwait=0;
+   };
+   sync_leavecrit(&processmgr_busy); 
 };
 
-DWORD dex32_exitprocess(DWORD ret_value)
-{
-    dex32_killkthread(current_process->processid);
-    while (1);
-    ;
+DWORD dex32_exitprocess(DWORD ret_value){
+   dex32_killkthread(current_process->processid);
+   while (1);
+      ;
 };
 
 //used to kill kernel(Ring0) threads only!!!
