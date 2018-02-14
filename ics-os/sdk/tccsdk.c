@@ -1452,8 +1452,9 @@ int execp(char *fname,unsigned short mode, char *params){
    return dexsdk_systemcall(0x5B,(int)fname,mode,(int)params,0,0);     
 }
 
+//not working yet
 int sleep(unsigned int ms){
-   return dexsdk_systemcall(0x54,(unsigned int)ms,0,0,0,0);     
+   return dexsdk_systemcall(0xF,(unsigned int)ms,0,0,0,0);     
 }
 
 /* User thread function (not yet working) */

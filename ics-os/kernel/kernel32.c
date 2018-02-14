@@ -383,8 +383,11 @@ void dex_init()
       
     
     //add some hotkeys to the keyboard
-    kb_addhotkey(KEY_F6+CTRL_ALT, 0xFF, fg_next);
-    kb_addhotkey(KEY_F5+CTRL_ALT, 0xFF, fg_prev);
+    //kb_addhotkey(KEY_F6+CTRL_ALT, 0xFF, fg_next);
+    //kb_addhotkey(KEY_F5+CTRL_ALT, 0xFF, fg_prev);
+    //kb_addhotkey('\t', KBD_META_ALT, fg_toggle);
+    kb_addhotkey(KEY_F12, 0xFF, fg_next);
+    kb_addhotkey(KEY_F11, 0xFF, fg_prev);
     kb_addhotkey('\t', KBD_META_ALT, fg_toggle);
     
     keyboardflush();
