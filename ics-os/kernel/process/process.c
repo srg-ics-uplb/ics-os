@@ -175,7 +175,7 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    return temp->processid;
 };
 
-//Tells the scheduler to queue a process
+//Tells the scheduler to queue a process, uses aspect-oriented programming
 DWORD ps_enqueue(PCB386 *process){
    devmgr_scheduler_extension *cursched = extension_table[CURRENT_SCHEDULER].iface;
    bridges_link((devmgr_generic*)cursched,
@@ -183,7 +183,7 @@ DWORD ps_enqueue(PCB386 *process){
                   process,0,0,0,0,0);
 };
 
-//Tells the scheduler to dequeue a process
+//Tells the scheduler to dequeue a process, uses aspect-oriented programming
 DWORD ps_dequeue(PCB386 *process){
    devmgr_scheduler_extension *cursched = extension_table[CURRENT_SCHEDULER].iface;
    bridges_link((devmgr_generic*)cursched,
@@ -193,66 +193,65 @@ DWORD ps_dequeue(PCB386 *process){
 
 
 //duplicates a process using COPY_ON_WRITE methods *NOT YET WORKING!!*
-DWORD forkprocess(PCB386 *parent)
-{
-    int pages;
-    DWORD *pagedir,pg,flags;
-    DWORD parentpd = parent->pagedirloc;
-    PCB386 *pcb = (PCB386*) malloc(sizeof(PCB386));
+DWORD forkprocess(PCB386 *parent){
+   int pages;
+   DWORD *pagedir,pg,flags;
+   DWORD parentpd = parent->pagedirloc;
+   PCB386 *pcb = (PCB386*) malloc(sizeof(PCB386));
     
 #ifdef DEBUG_FORK
-    printf("fork process has been called.\n");
+   printf("fork process has been called.\n");
 #endif
 
-    dex32_stopints(&flags);
-    memcpy(pcb,parent,sizeof(PCB386));
-    strcat(pcb->name,".fork");
-    totalprocesses++;
-    pcb->size       = sizeof(PCB386);
-    pcb->processid  = nextprocessid++;
-    pcb->owner      = parent->processid;
+   dex32_stopints(&flags);
+   memcpy(pcb,parent,sizeof(PCB386));
+   strcat(pcb->name,".fork");
+   totalprocesses++;
+   pcb->size       = sizeof(PCB386);
+   pcb->processid  = nextprocessid++;
+   pcb->owner      = parent->processid;
 
-    /*Allocate a new page directory*/
-    pagedir=(DWORD*)mempop(); //obtain a physical address from the memory manager
-    pg=(DWORD*)getvirtaddress((DWORD)pagedir); //convert physical address to a virtual address
-    //initialize the new pagedirectory
-    memset(pg,0,0x1000);
+   /*Allocate a new page directory*/
+   pagedir=(DWORD*)mempop(); //obtain a physical address from the memory manager
+   pg=(DWORD*)getvirtaddress((DWORD)pagedir); //convert physical address to a virtual address
+   //initialize the new pagedirectory
+   memset(pg,0,0x1000);
 
-    pcb->regs.CR3   = pagedir;
-    pcb->pagedirloc = pagedir;
+   pcb->regs.CR3   = pagedir;
+   pcb->pagedirloc = pagedir;
 
 #ifdef DEBUG_FORK
-    printf("copying memory..\n");
+   printf("copying memory..\n");
 #endif
 
-    disablepaging();
-    dex32_copy_pg(pagedir,parentpd);
-    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR_VIR,(DWORD)pagedir    /*,stackbase*/,1);
-    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR2_VIR,
-    (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
-    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR3_VIR,
-    (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
-    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_KERPDIR_VIR,(DWORD)pagedir1    /*,stackbase*/,1);
-    enablepaging();
+   disablepaging();
+   dex32_copy_pg(pagedir,parentpd);
+   maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR_VIR,(DWORD)pagedir    /*,stackbase*/,1);
+   maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR2_VIR,
+   (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+   maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR3_VIR,
+   (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+   maplineartophysical((DWORD*)pagedir,(DWORD)SYS_KERPDIR_VIR,(DWORD)pagedir1    /*,stackbase*/,1);
+   enablepaging();
     
 #ifdef DEBUG_FORK
-    printf("done. adding to process queue\n");
+   printf("done. adding to process queue\n");
 #endif
 
-    //copies the memory allocation information of the parent to the child
-    //(forked processes have the same virtual memory map at time of fork)
-    copyprocessmemory(parent->meminfo,&pcb->meminfo);
+   //copies the memory allocation information of the parent to the child
+   //(forked processes have the same virtual memory map at time of fork)
+   copyprocessmemory(parent->meminfo,&pcb->meminfo);
 
-    //add to the process list
-    ps_enqueue(pcb);
+   //add to the process list
+   ps_enqueue(pcb);
 
-    dex32_restoreints(flags);
+   dex32_restoreints(flags);
     
 #ifdef DEBUG_FORK
-    printf("fork done.\n");
+   printf("fork done.\n");
 #endif
 
-    return pcb->processid;
+   return pcb->processid;
 };
 
 
