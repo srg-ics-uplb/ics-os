@@ -1,5 +1,6 @@
 Run the following commands:
 
+$./install-deps.sh
 $make clean
 $make
 $sudo make install
