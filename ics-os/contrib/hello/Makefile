@@ -1,7 +1,7 @@
 CC=gcc
 ICSOS_ROOT=../..
 SDK=../../sdk
-CFLAGS=-nostdlib -fno-builtin -static
+CFLAGS=-m32 -nostdlib -fno-builtin -static
 LIBS=$(SDK)/tccsdk.c $(SDK)/libtcc1.c $(SDK)/crt1.c 
 EXE=hello.exe
 

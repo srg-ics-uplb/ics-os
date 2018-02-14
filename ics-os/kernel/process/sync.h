@@ -8,10 +8,12 @@
 #ifndef SYNC_H
 #define SYNC_H
 
+//a synchronized shared variable for 
+//synchronization
 typedef struct _sync_sharedvar {
-    int busy;
-    int ready;
-    int wait;
+   int busy;
+   int ready;
+   int wait;
 } sync_sharedvar;
 
 void sync_entercrit(sync_sharedvar *var);

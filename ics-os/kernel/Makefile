@@ -44,7 +44,7 @@ irqwrap.o:
 	$(ASM) $(ASMFLAGS) -o irqwrap.o irqwrap.asm
 	
 Kernel32.bin:
-	ld -melf_i386  -T lscript.txt -Map mapfile.txt
+	ld -melf_i386  -T lscript.ld -Map mapfile.txt
 
 clean:
 	rm -f *.o

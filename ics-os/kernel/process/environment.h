@@ -11,15 +11,18 @@
 #ifndef __ENVIRONMENT_H__
 #define __ENVIRONMENT_H__
 
-typedef struct _env_strings {
-char *name;
-char *value;
-struct _env_strings *next;
-struct _env_strings *prev; 
-} env_strings;
 
-int env_busywait = 0;
-env_strings *env_head = 0;
+//A node in the environment variables data structure
+//which is a doubly-linked list
+typedef struct _env_strings {
+   char *name;                   //name of the variable 
+   char *value;                  //value of the variable
+   struct _env_strings *next;    //pointer to the next node
+   struct _env_strings *prev;    //pointer to the previous node
+} env_strings;          
+
+int env_busywait = 0;            //used for synchronization
+env_strings *env_head = 0;       //head of the list
 
 /* function prototypes*/
 void env_showenv();
