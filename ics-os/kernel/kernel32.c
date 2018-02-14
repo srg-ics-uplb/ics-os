@@ -175,7 +175,7 @@ void dex_init();
 #include "memory/dexmalloc.c"
 #include "vmm/vmm.c"
 
-
+//another set of forward declarations
 void dex32_startup(); 
 extern startup();
 
@@ -200,88 +200,88 @@ char boot_device_name[255]="";
 
 multiboot_header *mbhdr = 0;
 
-void main()
-{
 
-    char temp[255];
+//here we go!
+void main(){
+   char temp[255];
     
-    /*obtain the multiboot information structure from GRUB which contains info about memory
+   /*obtain the multiboot information structure from GRUB which contains info about memory
       and the device that booted this kernel*/
-    mbhdr =(multiboot_header*)multiboothdr;
+   mbhdr =(multiboot_header*)multiboothdr;
     
-    /* Enable the keyboard IRQ,Timer IRQ and the Floppy Disk IRQ.As more devices that uses IRQs get supported, we should OR more of them here*/
-    //program8259(IRQ_TIMER | IRQ_KEYBOARD | IRQ_FDC | IRQ_MOUSE | IRQ_CASCADE); 
-    program8259(IRQ_TIMER | IRQ_KEYBOARD | IRQ_FDC | IRQ_CASCADE); 
+   /* Enable the keyboard IRQ,Timer IRQ and the Floppy Disk IRQ.As more devices that uses IRQs get supported, we should OR more of them here*/
+   //program8259(IRQ_TIMER | IRQ_KEYBOARD | IRQ_FDC | IRQ_MOUSE | IRQ_CASCADE); 
+   program8259(IRQ_TIMER | IRQ_KEYBOARD | IRQ_FDC | IRQ_CASCADE); 
 
-    //sets up the default interrupt handlers, like the PF handler,GPF handler
-    setdefaulthandlers();   
+   //sets up the default interrupt handlers, like the PF handler,GPF handler
+   setdefaulthandlers();   
     
-    /*and some device handlers like the keyboard handler
-      initializes the keyboard*/
-    installkeyboard(); 
+   /*and some device handlers like the keyboard handler
+     initializes the keyboard*/
+   installkeyboard(); 
 
-     //obtain the device which booted this operating system         
-    kernel_systeminfo.boot_device = mbhdr->boot_device >> 24;
-    if (kernel_systeminfo.boot_device == 0)
-    {  //floppy
-       strcpy(boot_device_name,"fd0");
-    }else{ //hard disk
-       kernel_systeminfo.part[0] =    (mbhdr->boot_device >> 16) & 0xFF;
-       kernel_systeminfo.part[1] =    (mbhdr->boot_device >> 8) & 0xFF;
-       kernel_systeminfo.part[2] =    (mbhdr->boot_device & 0xFF);
-       int n=kernel_systeminfo.boot_device - 0x80;
-       sprintf(boot_device_name,"hdp%dp%d",n,kernel_systeminfo.part[0]);
-    }
+    //obtain the device which booted this operating system         
+   kernel_systeminfo.boot_device = mbhdr->boot_device >> 24;
+   if (kernel_systeminfo.boot_device == 0){  
+      //floppy
+      strcpy(boot_device_name,"fd0");
+   }else{ //hard disk
+      kernel_systeminfo.part[0] =    (mbhdr->boot_device >> 16) & 0xFF;
+      kernel_systeminfo.part[1] =    (mbhdr->boot_device >> 8) & 0xFF;
+      kernel_systeminfo.part[2] =    (mbhdr->boot_device & 0xFF);
+      int n=kernel_systeminfo.boot_device - 0x80;
+      sprintf(boot_device_name,"hdp%dp%d",n,kernel_systeminfo.part[0]);
+   }
 
-     //obtain information about the memory configuration
-    memory_map = mbhdr->mmap_addr;
-    map_length = mbhdr->mmap_length;
+   //obtain information about the memory configuration
+   memory_map = mbhdr->mmap_addr;
+   map_length = mbhdr->mmap_length;
         
    
-     /*
-      DEX stores the free physical pages as a stack of free pages, therefore
-      when a physical page of memory is needed, DEX just pops it off the stack.
-      If DEX recovers used memory, it is pushed to the stack.
-      The createstack() function creates the physical pages stack.
-      See dexmem.c for details*/
+   /*
+    DEX stores the free physical pages as a stack of free pages, therefore
+    when a physical page of memory is needed, DEX just pops it off the stack.
+    If DEX recovers used memory, it is pushed to the stack.
+    The createstack() function creates the physical pages stack.
+    See dexmem.c for details*/
     
-    memamount = mem_detectmemory(memory_map, map_length);
+   memamount = mem_detectmemory(memory_map, map_length);
 
     
-    /*The mem_init() function first sets up the page table/directories which
-      is used by the MMU of the CPU to map vitual memory locations to physical 
-      memory locations. Basically the first 3MB of physical memory is mapped
-      one-to-one (meaning virtual memory location = physical memory location.
-      Finally it assigns the the location of the page directory to the CR3
-      register and then enables paging.
+   /*The mem_init() function first sets up the page table/directories which
+     is used by the MMU of the CPU to map vitual memory locations to physical 
+     memory locations. Basically the first 3MB of physical memory is mapped
+     one-to-one (meaning virtual memory location = physical memory location.
+     Finally it assigns the the location of the page directory to the CR3
+     register and then enables paging.
       
-      NOtE: DEX uses the flat memory model and all segment registers used by
-      DEX has a base equal to zero*/
-    mem_init(); 
+     NOtE: DEX uses the flat memory model and all segment registers used by
+     DEX has a base equal to zero*/
+   mem_init(); 
     
-    /*The default values of the current_process variable, which is the kernel
-      PCB*/
-    current_process = &sPCB;
+   /*The default values of the current_process variable, which is the kernel
+     PCB*/
+   current_process = &sPCB;
 
-    //Program the Timer to context switch n times a second	
-    dex32_set_timer(context_switch_rate);
+   //Program the Timer to context switch n times a second	
+   dex32_set_timer(context_switch_rate);
 
-    //initialize the bridge manager, see bridges.c for details
-    bridges_init();
+   //initialize the bridge manager, see bridges.c for details
+   bridges_init();
     
-    //initialize the virtual console manager
-    fg_init();
+   //initialize the virtual console manager
+   fg_init();
     
-    //Create a virtual console that the kernel will send its output to
-    consoleDDL=Dex32CreateDDL();
-    fg_kernel = fg_register(consoleDDL,0);
-    fg_setforeground(fg_kernel);
+   //Create a virtual console that the kernel will send its output to
+   consoleDDL=Dex32CreateDDL();
+   fg_kernel = fg_register(consoleDDL,0);
+   fg_setforeground(fg_kernel);
     
-    /* Preliminary initializaation complete, start up the operating system*/
-    dex32_startup(); 
+   /* Preliminary initializaation complete, start up the operating system*/
+   dex32_startup(); 
 };
 
-
+//next stage
 void dex32_startup()
 {
 

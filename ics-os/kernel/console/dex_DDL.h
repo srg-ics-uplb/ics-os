@@ -17,26 +17,29 @@
 #include "../dextypes.h"
 
 typedef struct _dex32_direct_device_hdl {
-DWORD size;           //defines the size of this structure
-DWORD type;           //reserved, only the text display is supported for now  
-DWORD handle;         //a unique identifier
+   DWORD size;             //defines the size of this structure
+   DWORD type;             //reserved, only the text display is supported for now  
+   DWORD handle;           //a unique identifier
 
-DWORD pid;            //contains the pid of the process that created this
-DWORD buf_size;       //defines the size of the write buffer
-DWORD locked;         //determines if the device is locked   
-DWORD active;         //dtermines if this DDL is active (Writing on buf_ptr writes on the screen)
-DWORD bufmode;        //determines if this DDL is in buffer mode  
-char *buf_ptr;        //contains a pointer to the write buffer
-char *mem_ptr;        //contains a pointer to the memory buffer
-char *hdw_ptr;        //contains a pointer to the hardware buffer
-char attb;
-DWORD curx,cury,lines;
-int scroll;
-//added 2/2/2004, support for ANSI escape codes
-char ansi_command_ptr;
-char ansi_cmd[20];
-char ansi_x,ansi_y;
-} DEX32_DDL_INFO;
+   DWORD pid;              //contains the pid of the process that created this
+   DWORD buf_size;         //defines the size of the write buffer
+   DWORD locked;           //determines if the device is locked   
+   DWORD active;           //dtermines if this DDL is active (Writing on buf_ptr writes on the screen)
+   DWORD bufmode;          //determines if this DDL is in buffer mode  
+   char *buf_ptr;          //contains a pointer to the write buffer
+   char *mem_ptr;          //contains a pointer to the memory buffer
+   char *hdw_ptr;          //contains a pointer to the hardware buffer
+   char attb;              //attributes  
+   DWORD curx;             //cursor x
+   DWORD cury;             //cursor y
+   DWORD lines;            //the number of lines
+   int scroll;
+   
+   //added 2/2/2004, support for ANSI escape codes
+   char ansi_command_ptr;
+   char ansi_cmd[20];
+   char ansi_x,ansi_y;
+}DEX32_DDL_INFO;
 
 
 
