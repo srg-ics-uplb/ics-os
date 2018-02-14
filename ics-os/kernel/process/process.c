@@ -1,4 +1,3 @@
-
 /*
  *   Name: DEX32 Process Management Module
  *   Copyright: 
@@ -26,6 +25,7 @@
 
 #include "process.h"
 
+//the global list of semaphores
 semaphore *semaphore_head;
 
 /* The next process to be created will use this process ID
@@ -35,22 +35,40 @@ DWORD nextprocessid = 0x10;
 //used for the busy waiting loops of the process manager.    
 sync_sharedvar processmgr_busy;
 
+
+//total number of process, initially set to 0
 int totalprocesses=0;
 
 //global vriables used for triggering taskswitcher events.
-DWORD sigpriority=0; //set this to the process ID of the process that requires immediate attention
-DWORD sigterm=0; //set this to the process ID of the process you wish to terminate
-DWORD sigwait=0; /*set this to the process ID of the process which is not
+DWORD sigpriority = 0; //set this to the process ID of the process that requires immediate attention
+DWORD sigterm = 0; //set this to the process ID of the process you wish to terminate
+DWORD sigwait = 0; /*set this to the process ID of the process which is not
                    supposed to be interrupted*/
-DWORD sigshutdown=0;
-DWORD pfoccured=0; /*set this to reset the pf_handler PCB, usually set by
+DWORD sigshutdown = 0; //not implemented yet
+DWORD pfoccured = 0; /*set this to reset the pf_handler PCB, usually set by
                      the pf handler when a page fault has occured so that
                     its curent state does not get changed*/
-DWORD sched_sysmes[3]={0,0,0}; //[0] = pid, [1] = mes, [2] = data
+
+DWORD sched_sysmes[3]={0,0,0}; //scheduler system messages [0] = pid, [1] = mes, [2] = data
+
 int ps_notimeincrement = 0;
-PCB386 *schedp,*plast,*current_process=0,*next_process=0,curp;
-PCB386 kernelPCB,schedpPCB;
-PCB386 sPCB,pfPCB,pfPCB_copy,keyPCB,mousePCB;
+
+//pointer to initial processes in the kernel
+PCB386   *schedp;                         //pointer to scheduler process
+PCB386   *plast;                          //pointer to last process
+PCB386   *current_process=0;              //pointer to current process
+PCB386   *next_process=0;                 //pointer to next process
+PCB386   curp;                            //???
+
+PCB386   kernelPCB;                       //actual PCB for kernel
+PCB386   schedpPCB;                       //actual process structure for scheduler
+
+PCB386   sPCB;                            //actual PCB for kernel
+PCB386   pfPCB;                           //page fault PCB
+PCB386   pfPCB_copy;                      //copy of page fault PCB
+PCB386   keyPCB;                          //keyboard PCB
+PCB386   mousePCB;                        //mouse PCB                   
+
 FPUregs ps_fpustate,ps_kernelfpustate;
 
 
