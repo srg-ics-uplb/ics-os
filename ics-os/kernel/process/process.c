@@ -903,168 +903,174 @@ int dex32_waitpid(int pid,int status){
 };
 
 
-void *findsemaphore(DWORD handle)
-{
-    semaphore *ptr=semaphore_head;
-    do
-    {
-        if (ptr->handle==handle)
-        {
-            return (void*)ptr;
-            ;
-        };
-        ptr=ptr->next;
-    } 
-    while (ptr!=semaphore_head);
-    return 0;
-    ;
+//---------------------- start ofsemaphore related stuff ------------------
+
+//Returns a pointer to a semaphore object given a handle
+void *findsemaphore(DWORD handle){
+   semaphore *ptr=semaphore_head;
+   do{
+      if (ptr->handle==handle){
+         return (void*)ptr;
+      };
+      ptr=ptr->next;
+   } 
+  
+   //find the head?? 
+   while (ptr!=semaphore_head)
+      ;
+   
+   return 0;
 };
 
 //gets the value stored in a semaphore
-DWORD get_semaphore(DWORD handle)
-{
-    //search semaphores for a match
-    semaphore *ptr;
-    while (suspendsem);
-    semactive=1;
-    ptr=(semaphore*)findsemaphore(handle);
-    if (ptr==0) {
-        semactive=0;
-        return 0;
-    };
-    semactive=0;
-    return ptr->data;
-    ;
+DWORD get_semaphore(DWORD handle){
+   //search semaphores for a match
+   semaphore *ptr;
+   while (suspendsem)
+      ;
+   
+   semactive=1;
+   ptr=(semaphore*)findsemaphore(handle);
+
+   if (ptr==0){
+      semactive=0;
+      return 0;
+   };
+
+   semactive=0;
+
+   return ptr->data;
+   ;
 };
 
 //sets a value stored in a semaphore
-DWORD set_semaphore(DWORD handle,DWORD val)
-{
-    semaphore *ptr;
-    while (suspendsem);
-    semactive=1;
-    ptr=(semaphore*)findsemaphore(handle);
-    if (ptr==0) {
-        semactive=0;
-        return 0;
-    };
-    semactive=0;
-    return (ptr->data=val);
+DWORD set_semaphore(DWORD handle, DWORD val){
+   semaphore *ptr;
+   while (suspendsem)
+      ;
+
+   semactive=1;
+   ptr=(semaphore*)findsemaphore(handle);
+   if (ptr==0) {
+      semactive=0;
+      return 0;
+   };
+   semactive=0;
+   return (ptr->data=val);
     ;
 };
 
-DWORD free_semaphore(DWORD handle)
-{
-    semaphore *ptr;
-    while (suspendsem);
-    semactive=1;
-    ptr=(semaphore*)findsemaphore(handle);
-    if (ptr==0) {
-        semactive=0;
-        return 0;
-    };
-    semactive=0;
-    //reconnect the missing pieces
-    ptr->prev->next=ptr->next;
-    ptr->next->prev=ptr->prev;
-    free(ptr);
-    return 1;
+//destroy a semaphore
+DWORD free_semaphore(DWORD handle){
+   semaphore *ptr;
+   
+   while (suspendsem)
+      ;
+   
+   semactive=1;
+   ptr=(semaphore*)findsemaphore(handle);
+   if (ptr == 0) {
+      semactive=0;
+      return 0;
+   };
+   semactive=0;
+
+   //reconnect the missing pieces
+   ptr->prev->next=ptr->next;
+   ptr->next->prev=ptr->prev;
+   free(ptr);
+
+   return 1;
     ;
 };
 
+//---------------------- end semaphore related stuff ------------------
 
 
-
-DWORD dex32_killkthread_name(char *processname)
-{
-    PCB386 *ptr;
-    int total, processid , i;
-    total = get_processlist(&ptr);
+//kill a kernel thread
+DWORD dex32_killkthread_name(char *processname){
+   PCB386 *ptr;
+   int total, processid , i;
+   total = get_processlist(&ptr);
     
-    for (i=0; i < total; i++)
-    {
-        if (strcmp(ptr[i].name, processname) == 0 && !(ptr[i].status&PS_ATTB_UNLOADABLE) )
-        {
-                sigterm=ptr[i].processid;
-                free(ptr);
-                return 1;
-        };
-    };
+   for (i=0; i < total; i++){
+      if (strcmp(ptr[i].name, processname) == 0 && !(ptr[i].status & PS_ATTB_UNLOADABLE) ){
+         sigterm = ptr[i].processid;
+         free(ptr);
+         return 1;
+      };
+   };
     
-    //maybe the paramater given was a pid?
-    processid = atoi(processname);
+   //maybe the paramater given was a pid?? (fallback)
+   processid = atoi(processname);
 
-    for (i=0; i < total; i++)
-    {
-        if ( (ptr[i].processid == processid) && !(ptr[i].status&PS_ATTB_UNLOADABLE) )
-        {
-                sigterm=ptr[i].processid;
-                free(ptr);
-                return 1;
-        };
-    };
+   for (i=0; i < total; i++){
+      if ( (ptr[i].processid == processid) && !(ptr[i].status&PS_ATTB_UNLOADABLE) ){
+         sigterm=ptr[i].processid;
+         free(ptr);
+         return 1;
+      };
+   };
 
-    return 0;
+   return 0;
 }
 
 //adds memory usage to a processes memory descriptor
-void addmemusage(process_mem **memptr,DWORD vaddr,DWORD pages)
-{
-    process_mem *ptr=(process_mem*)malloc(sizeof(process_mem));
-    ptr->next=*memptr;
-    *memptr=ptr;
-    ptr->vaddr=vaddr;
-    ptr->pages=pages;
+void addmemusage(process_mem **memptr, DWORD vaddr, DWORD pages){
+   process_mem *ptr = (process_mem*)malloc(sizeof(process_mem));
+   ptr->next = *memptr;
+   *memptr = ptr;
+   ptr->vaddr = vaddr;
+   ptr->pages = pages;
 };
 
 /*This function determines the amount of memory a process
- *   is currently using*/
-DWORD getprocessmemory(process_mem *memptr,DWORD *pagedir)
-{
-    DWORD total_memory=0;
-    process_mem *tmpr=memptr; //point to the head
-    while (tmpr->vaddr!=0&&tmpr!=0)
-    {
-        process_mem *tmpr2=tmpr->next;
-        total_memory+=getmultiple((void*)tmpr->vaddr,pagedir,tmpr->pages);
-        tmpr=tmpr2;
-    };
-    return total_memory;
+ *is currently using*/
+DWORD getprocessmemory(process_mem *memptr,DWORD *pagedir){
+   DWORD total_memory=0;
+   process_mem *tmpr = memptr; //point to the head of list of mem used
+   
+   while (tmpr->vaddr != 0 && tmpr != 0){
+      process_mem *tmpr2 = tmpr->next;
+      total_memory += getmultiple((void*)tmpr->vaddr, pagedir, tmpr->pages);
+      tmpr = tmpr2;
+   };
+   return total_memory;
 };
 
-void freeprocessmemory(process_mem *memptr,DWORD *pagedir)
-{
-    process_mem *tmpr=memptr;//point to the head
+/* Free process memory 
+ */
+void freeprocessmemory(process_mem *memptr, DWORD *pagedir){
+   process_mem *tmpr = memptr;//point to the head
+
 #ifdef MEM_LEAK_CHECK
-    printf("freeprocessmemory called.\n");
+   printf("freeprocessmemory called.\n");
 #endif
-    do
-    {
-        process_mem *tmpr2=tmpr->next;
-        freemultiple((void*)tmpr->vaddr,pagedir,tmpr->pages);
-        free(tmpr);
-        tmpr=tmpr2;
-    }
-    while (tmpr!=0);
+   do{
+      process_mem *tmpr2=tmpr->next;
+      freemultiple((void*)tmpr->vaddr,pagedir,tmpr->pages);
+      free(tmpr);
+      tmpr=tmpr2;
+   }
+   while (tmpr!=0);
+
 #ifdef MEM_LEAK_CHECK
-    printf("freeprocessmemory ended.\n");
+   printf("freeprocessmemory ended.\n");
 #endif
 };
 
 /*Copies memory usage information. Used by the fork() command*/
-void copyprocessmemory(process_mem *memptr,process_mem **destmemptr)
-{
-    process_mem *tmpr=memptr;//point to the head
-    while (tmpr->vaddr!=0&&tmpr!=0)
-    {
-        process_mem *tmpr2=tmpr->next;
-        addmemusage(destmemptr, tmpr->vaddr,tmpr->pages);
-        tmpr=tmpr2;
-    };
+void copyprocessmemory(process_mem *memptr, process_mem **destmemptr){
+   process_mem *tmpr = memptr; //point to the head
+   while (tmpr->vaddr!=0&&tmpr!=0){
+      process_mem *tmpr2=tmpr->next;
+      addmemusage(destmemptr, tmpr->vaddr,tmpr->pages);
+      tmpr=tmpr2;
+   };
 };
 
-void halt()
-{
+//
+void halt(){
     while (1);
 };
 
@@ -1072,36 +1078,33 @@ void halt()
 //switched to another process using the TSS switching method
 // 1/25/2004: Also added the capability to save the FPU registers to prevent
 //            applications that use the FPU from doing unexpected things
-void ps_switchto(PCB386 *process)
-{
-    //set the state of the floating point unit from the PCB of the
-    //process to switch to
-    memcpy(&ps_fpustate,&process->regs2,sizeof(FPUregs));
-    asm volatile ("frstor ps_fpustate");
+void ps_switchto(PCB386 *process){
 
-    //switch to a user process
-    if (process->accesslevel==ACCESS_USER)
-    {
-        dex32_setbase(USER_TSS,process);
-        switchuserprocess();
-        setattb(USER_TSS,0xE9); //run a user process
-    }
-    else
-        //switch to a kernel mode process
-    {
-        dex32_setbase(SYS_TSS,process);
-        switchprocess();
-        setattb(SYS_TSS,0x89); //run a kernel process
-    };
+   //set the state of the floating point unit from the PCB of the
+   //process to switch to
+   memcpy(&ps_fpustate,&process->regs2,sizeof(FPUregs));
+   asm volatile ("frstor ps_fpustate");
 
-    //save the state of the floating point unit
-    asm volatile ("fnsave ps_fpustate");
-    memcpy(&process->regs2,&ps_fpustate,sizeof(FPUregs));
+   //switch to a user process
+   if (process->accesslevel==ACCESS_USER){
+      dex32_setbase(USER_TSS, process);
+      switchuserprocess();
+      setattb(USER_TSS,0xE9); //run a user process
+   }else{
+      //switch to a kernel mode process
+      dex32_setbase(SYS_TSS, process);
+      switchprocess();
+      setattb(SYS_TSS,0x89); //run a kernel process
+   };
+
+   //save the state of the floating point unit
+   asm volatile ("fnsave ps_fpustate");
+
+   memcpy(&process->regs2, &ps_fpustate, sizeof(FPUregs));
 };
 
 /*Calls the timer interrupt which calls the taskswitcher*/
-inline void taskswitch()
-{
+inline void taskswitch(){
    //Tell the taskswitcher not to increment the time
    ps_notimeincrement = 1; 
    asm volatile ("int $0x20");
@@ -1109,129 +1112,113 @@ inline void taskswitch()
 
 //The taskswitcher is basically the program that runs all the time.
 //It is  responsible for switching ro various processes and terminating them.
-void taskswitcher()
-{
-    char temp[255];
-    DWORD cputime=0;
-    PCB386 *readyprocess;
-    do
-    {
-        stopints();
-        //fetch a ready process from the ready queue
+void taskswitcher(){
+   char temp[255];
+   DWORD cputime=0;
+   PCB386 *readyprocess;
 
-        do {
-            if (!sigwait)
-                {
-                //if the wait register is not set, switch to
-                //another process, the wait is used to prevent
-                //other processes from taking control during
-                //a critical section, sigwait should be
-                //returned to its original state after the critical
-                //section is over
+   do{
+      stopints(); //disable interrupts first
+      //fetch a ready process from the ready queue
 
-                //obtain next job from the scheduler
-                //readyprocess=extension_current->ps_scheduler->scheduler(&kernelPCB);
-                devmgr_scheduler_extension *cursched = (devmgr_scheduler_extension*)extension_table[CURRENT_SCHEDULER].iface;
-                readyprocess = (PCB386*)bridges_link((devmgr_generic*)cursched,&cursched->scheduler,
-                current_process,0,0,0,0,0);
-                };
-                //readyprocess=bridges_ps_scheduler(current_process);
+      do{
+         if (!sigwait){
+            //if the wait register is not set, switch to
+            //another process, the wait is used to prevent
+            //other processes from taking control during
+            //a critical section, sigwait should be
+            //returned to its original state after the critical
+            //section is over
+
+            //obtain next job from the scheduler
+            //readyprocess=extension_current->ps_scheduler->scheduler(&kernelPCB);
+            devmgr_scheduler_extension *cursched = (devmgr_scheduler_extension*)extension_table[CURRENT_SCHEDULER].iface;
+            readyprocess = (PCB386*)bridges_link((devmgr_generic*)cursched,&cursched->scheduler,
+                                                   current_process,0,0,0,0,0);
+         };
+         //readyprocess=bridges_ps_scheduler(current_process);
             
-            current_process=readyprocess;
+         current_process=readyprocess;
 
-            //tell the cpu to give control to <readyprocess>
-            ps_switchto(readyprocess);
+         //tell the cpu to give control to <readyprocess>
+         ps_switchto(readyprocess);
 
-            /*Make sure the taskwitcher was really called by the timer, since
-              another way of calling the taskswithcer is through taskswitch().
-              In that case we must not call time_handler in order to make
-              the time as accurate as possible*/
+         /*Make sure the taskwitcher was really called by the timer, since
+            another way of calling the taskswithcer is through taskswitch().
+            In that case we must not call time_handler in order to make
+            the time as accurate as possible*/
             
             
-            if (!ps_notimeincrement)
-            {
-                //Increment system time... etc.
-                time_handler();
-            }
-                else
+         if (!ps_notimeincrement){
+            //Increment system time... etc.
+            time_handler();
+         }else{
             ps_notimeincrement = 0;
+         }
             
-            //record the number of milleseconds the process used
-            readyprocess->totalcputime++;
+         //record the number of milleseconds the process used
+         readyprocess->totalcputime++;
             
-            //A process wants to get immediate control, usually set by
-            //device drivers that are hooked to IRQs
-            if (sigpriority)
-            {
-                PCB386 *priorityprocess = ps_findprocess(sigpriority);
-                if (priorityprocess!=-1)
-                {
-                    //give the process to the CPU       
-                    ps_switchto(priorityprocess);       
-                };
-                sigpriority = 0;
+         //A process wants to get immediate control, usually set by
+         //device drivers that are hooked to IRQs
+         if (sigpriority){
+            PCB386 *priorityprocess = ps_findprocess(sigpriority);
+            if (priorityprocess!=-1){
+               //give the process to the CPU       
+               ps_switchto(priorityprocess);       
             };
+            sigpriority = 0;
+         };
+      }while(sigwait);
 
-        } 
-        while (sigwait);
+      //check the registers, and act if necessary
+      
+      //page fault
+      if (pfoccured){
+         setattb(PF_TSS,0x89);
+         memcpy(&pfPCB.regs, &pfPCB_copy.regs, sizeof(pfPCB.regs));
+         pfoccured=0;
+      };
 
-        //check the registers, and act if necessary
-
-        if (pfoccured)
-        {
-            setattb(PF_TSS,0x89);
-            memcpy(&pfPCB.regs,&pfPCB_copy.regs,sizeof(pfPCB.regs));
-            pfoccured=0;
-        };
-
-        if (sigterm&&!flushing)
-        {
-            flushok=0;
-            kill_process(sigterm);
-            flushok=1;
-            sigterm=0;
+      if (sigterm && !flushing){
+         flushok=0;
+         kill_process(sigterm);
+         flushok=1;
+         sigterm=0;
             ;
-        };
+      };
 
-        if (sched_sysmes[0])
-        {
-            sendmessage(sched_sysmes[0],sched_sysmes[1],sched_sysmes[2]);
-            sched_sysmes[0]=0;
+      if (sched_sysmes[0]){
+         sendmessage(sched_sysmes[0],sched_sysmes[1],sched_sysmes[2]);
+         sched_sysmes[0]=0;
             ;
-        };
+      };
 
-        if (sigshutdown)
-        {
-            broadcastmessage(1,SIG_KILL,0);
+      if (sigshutdown){
+         broadcastmessage(1, SIG_KILL, 0);
             ;
-        };
-
-    } 
-    while (1);
-
-    ;
+      };
+    }while (1);
 };
 
 
-void show_process_stat(int pid)
-{
-    int total,i;
-    PCB386* ptr;
-    char temp[20],temp1[20],temp2[20],temp3[20];
-    total = get_processlist(&ptr);    
-    for (i=0;i<total;i++)
-       {
-              if (pid ==  ptr[i].processid)
-                 {
-                         printf("=========================================================\n");
-                         printf("Name:%s", ptr[i].name);
-                         printf("Parent:%d", ptr[i].owner);
-                         printf("EIP=0x%s\n",itoa(ptr[i].regs.EIP,temp,16));
-                         printf("EAX=0x%s EBX=0x%s ECX=0x%s EDX=0x%s\n",itoa(ptr[i].regs.EAX,temp,16),
-                         itoa(ptr[i].regs.EBX,temp1,16),itoa(ptr[i].regs.ECX,temp2,16),
-                         itoa(ptr[i].regs.EDX,temp3,16));
+//Show register values for process
+void show_process_stat(int pid){
+   int total,i;
+   PCB386* ptr;
+   char temp[20],temp1[20],temp2[20],temp3[20];
+   total = get_processlist(&ptr);    
+   for (i=0;i<total;i++){
+      if (pid ==  ptr[i].processid){
+         printf("=========================================================\n");
+         printf("Name:%s", ptr[i].name);
+         printf("Parent:%d", ptr[i].owner);
+         printf("EIP=0x%s\n",itoa(ptr[i].regs.EIP,temp,16));
+         printf("EAX=0x%s EBX=0x%s ECX=0x%s EDX=0x%s\n",itoa(ptr[i].regs.EAX,temp,16),
+         itoa(ptr[i].regs.EBX,temp1,16),itoa(ptr[i].regs.ECX,temp2,16),
+         itoa(ptr[i].regs.EDX,temp3,16));
 
-                         printf("EDI=0x%s ESI=0x%s ESP=0x%s Flags=0x%s\n",itoa(ptr[i].regs.EDI,temp,16),
+         printf("EDI=0x%s ESI=0x%s ESP=0x%s Flags=0x%s\n",itoa(ptr[i].regs.EDI,temp,16),
                          itoa(ptr[i].regs.ESI,temp1,16),itoa(ptr[i].regs.ESP,temp2,16),
                          itoa(ptr[i].regs.EFLAGS,temp3,16));
                          
@@ -1239,49 +1226,49 @@ void show_process_stat(int pid)
                          printf("last system calls:(1) : 0x%s ,(2-last): 0x%s\n",
                          itoa(ptr[i].cursyscall[0],temp2,16),itoa(ptr[i].cursyscall[1],temp,16));
 
-                 };
-       };
+      };
+   };
 };
 
 /*An auxillary function for qsort for comparing two elements*/
-int process_pid_sorter(PCB386 *n1,PCB386 *n2)
-{
-    if (n1->processid > n2->processid) return 1;
-    if (n2->processid > n1->processid) return -1;
-    return 0;
+int process_pid_sorter(PCB386 *n1, PCB386 *n2){
+   if (n1->processid > n2->processid) 
+      return 1;
+   if (n2->processid > n1->processid) 
+      return -1;
+   return 0;
 };
 
 
 //displays the list of processes
-void show_process()
-{
-    int total=0,i;
-    DWORD totalsize=0 , grandtotalcputime = 0;
-    PCB386* ptr;
-    char levelstr[13];
+void show_process(){
+   int total=0,i;
+   DWORD totalsize=0 , grandtotalcputime = 0;
+   PCB386* ptr;
+   char levelstr[13];
         
-    textbackground(BLUE);
-    printf("dex32_scheduler  v1.00\n");
-    textbackground(BLACK);
-    printf("Processes in memory:\n\n");
-    textcolor(MAGENTA);
-    printf("%-5s %-17s %-10s %-17s %6s %5s %10s\n","ID","Name","User Level","Owner","Size","AT","CT");
-    textcolor(WHITE);
+   textbackground(BLUE);
+   printf("dex32_scheduler  v1.00\n");
+   textbackground(BLACK);
+   printf("Processes in memory:\n\n");
+   textcolor(MAGENTA);
+   printf("%-5s %-17s %-10s %-17s %6s %5s %10s\n","ID","Name","User Level","Owner","Size","AT","CT");
+   textcolor(WHITE);
 
     
    
     /*Tell the scheduler to give us an array of PCBs which contain the PCBs of the processes
       running in the system*/  
-    total = get_processlist(&ptr);
+   total = get_processlist(&ptr);
     
-    qsort(ptr,total,sizeof(PCB386),process_pid_sorter);
+   qsort(ptr,total,sizeof(PCB386),process_pid_sorter);
     /*first we obtain the total cputime of all the processes, this is computed by
       the summation of the delta cputimes*/
       
-    for (i=0; i<total; i++) grandtotalcputime += ( ptr[i].totalcputime - ptr[i].lastcputime );
+   for (i=0; i<total; i++) grandtotalcputime += ( ptr[i].totalcputime - ptr[i].lastcputime );
 
     
-    for (i=0; i<total; i++)
+   for (i=0; i<total; i++)
     {
         char temp[255];
         PCB386 *ps;
