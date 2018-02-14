@@ -478,8 +478,8 @@ int getmessage(DWORD *source, DWORD *mes, DWORD *data){
    dex32_stopints(&cpuflags);
 
    *source = ptr->mesq[index].sender;
-   *mes=ptr->mesq[index].message;
-   *data=ptr->mesq[index].data;
+   *mes = ptr->mesq[index].message;
+   *data = ptr->mesq[index].data;
    ptr->curmes++;
    ptr->mestotal--;
    if (ptr->mestotal<0) 
@@ -561,13 +561,14 @@ int ps_changename(const char *name, int pid){
 DWORD dex32_setservice(){
    PCB386 *ptr;
    sync_entercrit(&processmgr_busy);
-   ptr=ps_findprocess(current_process->owner);
-   if (ptr!=-1){
-      ptr->childwait=0;
+   ptr = ps_findprocess(current_process->owner);
+   if (ptr != -1){
+      ptr->childwait = 0;
    };
    sync_leavecrit(&processmgr_busy); 
 };
 
+//exit process
 DWORD dex32_exitprocess(DWORD ret_value){
    dex32_killkthread(current_process->processid);
    while (1);
@@ -575,185 +576,168 @@ DWORD dex32_exitprocess(DWORD ret_value){
 };
 
 //used to kill kernel(Ring0) threads only!!!
-DWORD dex32_killkthread(DWORD processid)
-{
+DWORD dex32_killkthread(DWORD processid){
+   PCB386 *ptr;
+   PCB386 *end;
+   DWORD flags;
+   sync_entercrit(&processmgr_busy);
 
-    PCB386 *ptr;
-    PCB386 *end;
-    DWORD flags;
-    sync_entercrit(&processmgr_busy);
+   ptr = bridges_ps_findprocess(processid);
 
-    ptr = bridges_ps_findprocess(processid);
-
-    dex32_stopints(&flags);
-    if (ptr != -1)
-    {
-        if (!ptr->status&PS_ATTB_UNLOADABLE)
-        {
-            PCB386 *parent;
-            if (ptr->accesslevel == ACCESS_SYS)
-                free(ptr->stackptr);
+   dex32_stopints(&flags);
+   if (ptr != -1){
+      if (!ptr->status&PS_ATTB_UNLOADABLE){
+         PCB386 *parent;
+         if (ptr->accesslevel == ACCESS_SYS)
+            free(ptr->stackptr);
                 
-            if (ptr->semhandle != 0)
-                set_semaphore(ptr->semhandle,SIG_TERM);
+         if (ptr->semhandle != 0)
+            set_semaphore(ptr->semhandle,SIG_TERM);
                 
-            ps_dequeue(ptr);
-            free(ptr);
-            dex32_restoreints(flags);
+         ps_dequeue(ptr);
+         free(ptr);
+         dex32_restoreints(flags);
 
-            sync_leavecrit(&processmgr_busy);
-            return 1;
-        };
-    };
+         sync_leavecrit(&processmgr_busy);
+         return 1;
+      };
+   };
 
-    dex32_restoreints(flags);
-    sync_leavecrit(&processmgr_busy);
-    return 0;
+   dex32_restoreints(flags);
+   sync_leavecrit(&processmgr_busy);
+   return 0;
 }
 
 /*puts the current process to sleep for a desired amount of time
   in milliseconds*/
-void sleep(DWORD val)
-{
+void sleep(DWORD val){
     current_process->waiting = val;
 };
 
 /*called when another process wants to kill another.
   Also performs garbage collection (reclaims memory 
   used by the application).*/
-DWORD kill_process(DWORD processid)
-{
-    PCB386 *ptr,*parentptr=0;
-    sync_entercrit(&processmgr_busy);
-    ptr = bridges_ps_findprocess(processid);
-    if (ptr!=-1)
-    {
+DWORD kill_process(DWORD processid){
+   PCB386 *ptr,*parentptr=0;
+   sync_entercrit(&processmgr_busy);
+   ptr = bridges_ps_findprocess(processid);
+   if (ptr!=-1){
+      if (! (ptr->status&PS_ATTB_UNLOADABLE) ){
+         PCB386 *parent;
+         kill_children(processid); //kill child processes first
 
-        if (! (ptr->status&PS_ATTB_UNLOADABLE) )
-        {
-            PCB386 *parent;
-            kill_children(processid); //kill child processes first
-
-            if (ptr->accesslevel == ACCESS_SYS) //a kernel thread?
-            {
-                dex32_killkthread(ptr);
-                sync_leavecrit(&processmgr_busy);
-                return 1;
-            };
-
-            if ( ptr->status&PS_ATTB_THREAD ) //a thread process? If yes then redirect to another procedure
-            {
-                kill_thread(ptr);
-                sync_leavecrit(&processmgr_busy);
-                return 1;
-            };
-
-            while (closeallfiles(ptr->processid)==1);
-
-            parent=ps_findprocess(ptr->owner);
-            if (parent!=-1)
-            {
-                parent->childwait=0;
-            };
-
-
-            //locate the parent process and decrement its waiting
-            //status...important for the dex32_wait() function
-
-            if (ptr->accesslevel == ACCESS_SYS)
-                free(ptr->stackptr);
-            
-            /*Perform memory garbage collection if necessary*/
-            if (ptr->meminfo!=0)
-                freeprocessmemory(ptr->meminfo,(DWORD*)ptr->pagedirloc);
-
-            if (!(ptr->status&PS_ATTB_THREAD) && (ptr->accesslevel != ACCESS_SYS) )
-            {
-                //free the page tables used by the application
-                dex32_freeuserpagetable((DWORD*)ptr->pagedirloc);
-#ifdef MEM_LEAK_CHECK
-                printf("1 page freed (page directory).\n");
-#endif
-                mempush(ptr->pagedirloc);
-            };
-            
-            if (ptr->parameters!=0) free(ptr->parameters);
-
-            if (ptr->stdout!=0) {
-                free(ptr->stdout);
-            };
-
-            //Tell the scheduler to remove this process from the queue
-            ps_dequeue(ptr);
-            free(ptr);
+         if (ptr->accesslevel == ACCESS_SYS){   //a kernel thread?
+            dex32_killkthread(ptr);
             sync_leavecrit(&processmgr_busy);
             return 1;
-        };
-    }; 
-    sync_leavecrit(&processmgr_busy);
-    return 0;
+         };
 
+         if ( ptr->status&PS_ATTB_THREAD ){ //a thread process? If yes then redirect to another procedure
+            kill_thread(ptr);
+            sync_leavecrit(&processmgr_busy);
+            return 1;
+         };
+
+         while (closeallfiles(ptr->processid)==1)
+            ;
+
+         parent=ps_findprocess(ptr->owner);
+         if (parent!=-1){
+            parent->childwait=0;
+         };
+
+
+         //locate the parent process and decrement its waiting
+         //status...important for the dex32_wait() function
+
+         if (ptr->accesslevel == ACCESS_SYS)
+            free(ptr->stackptr);
+            
+         /*Perform memory garbage collection if necessary*/
+         if (ptr->meminfo!=0)
+            freeprocessmemory(ptr->meminfo,(DWORD*)ptr->pagedirloc);
+
+         if (!(ptr->status&PS_ATTB_THREAD) && (ptr->accesslevel != ACCESS_SYS) ) {
+            //free the page tables used by the application
+            dex32_freeuserpagetable((DWORD*)ptr->pagedirloc);
+#ifdef MEM_LEAK_CHECK
+            printf("1 page freed (page directory).\n");
+#endif
+            mempush(ptr->pagedirloc);
+         };
+            
+         if (ptr->parameters!=0) 
+            free(ptr->parameters);
+
+         if (ptr->stdout!=0) {
+                free(ptr->stdout);
+         };
+
+         //Tell the scheduler to remove this process from the queue
+         ps_dequeue(ptr);
+         free(ptr);
+         sync_leavecrit(&processmgr_busy);
+         return 1;
+      };
+   }; 
+   sync_leavecrit(&processmgr_busy);
+   return 0;
 };
 
 
 //used to kill kernel threads
-DWORD kill_thread(PCB386 *ptr)
-{
-    DWORD flags;
-    dex32_stopints(&flags);
+DWORD kill_thread(PCB386 *ptr){
+   DWORD flags;
+   dex32_stopints(&flags);
 
-    kill_children(ptr->processid); //kill the children of this thread first!!
+   kill_children(ptr->processid); //kill the children of this thread first!!cascade kill
     
-    //Tell the scheduler to remove this process from the process queue
-    ps_dequeue(ptr);
+   //Tell the scheduler to remove this process from the process queue
+   ps_dequeue(ptr);
 
-    if (ptr->stackptr0!=0)
+   if (ptr->stackptr0!=0)
         free(ptr->stackptr0);
-    free(ptr);
-    dex32_restoreints(flags);
-    return 1;
-    ;
+
+   free(ptr);
+   dex32_restoreints(flags);
+   return 1;
+   ;
 };
 
 //called when another process wants to kill another
-DWORD kill_children(DWORD processid)
-{
-    PCB386 *ptr;
-    sync_entercrit(&processmgr_busy);
+DWORD kill_children(DWORD processid){
+   PCB386 *ptr;
+   sync_entercrit(&processmgr_busy);
 
-    ptr = bridges_ps_findprocess(processid);
-    if (ptr!=-1)
-    {
-    if (ptr->owner==processid && !( ptr->status&PS_ATTB_UNLOADABLE ) )
-        {
-            kill_thread(ptr);
-            sync_leavecrit(&processmgr_busy);
-            return 1;
-        };
-     };
+   ptr = bridges_ps_findprocess(processid);
+   if (ptr!=-1){
+      if (ptr->owner==processid && !( ptr->status&PS_ATTB_UNLOADABLE ) ){
+         kill_thread(ptr);
+         sync_leavecrit(&processmgr_busy);
+         return 1;
+      };
+   };
 
-    sync_leavecrit(&processmgr_busy); 
-    return 0;
-
+   sync_leavecrit(&processmgr_busy); 
+   return 0;
 };
 
 //called when a process wishes to terminate itself
-DWORD exit(DWORD val)
-{
-    DWORD flags;
+DWORD exit(DWORD val){
+   DWORD flags;
 
-    //close all files the process has opened
-    closeallfiles(current_process->processid);
+   //close all files the process has opened
+   closeallfiles(current_process->processid);
     
-    /* tell the task switcher to kill this process by setting
-       the sigterm global varaible to the current pid. If sigeterm is non-zero
-       the taskswitcher terminates the process with pid equal to sigterm*/
-    sigterm=current_process->processid;
+   /* tell the task switcher to kill this process by setting
+      the sigterm global varaible to the current pid. If sigeterm is non-zero
+      the taskswitcher terminates the process with pid equal to sigterm*/
+   sigterm=current_process->processid;
     
-    taskswitch();
-    while (1);
-    return 0;
-    
+   taskswitch();
+   while (1)
+      ;
+   return 0;
 };
 
 /*kills a process with the specified pid, leaves all files
