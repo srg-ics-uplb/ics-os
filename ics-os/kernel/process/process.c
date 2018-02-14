@@ -256,10 +256,19 @@ DWORD forkprocess(PCB386 *parent){
 
 
 //The main procedure that is responsible for spawning all processes
-DWORD createprocess(void *ptr,char *name, DWORD *pagedir, process_mem *pmem,
-void *stack, DWORD stacksize, DWORD syscallsize, void *dex32_signal,
-char *params, char *workdir, PCB386 *parent)
-{
+DWORD createprocess(
+                     void *ptr,
+                     char *name, 
+                     DWORD *pagedir,
+                     process_mem *pmem,
+                     void *stack, 
+                     DWORD stacksize, 
+                     DWORD syscallsize, 
+                     void *dex32_signal,
+                     char *params, 
+                     char *workdir, 
+                     PCB386 *parent
+                  ){
     int pages;
     DWORD flags , *pg;
     PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
