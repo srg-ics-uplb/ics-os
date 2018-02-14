@@ -115,7 +115,7 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    int pages;
    DWORD flags;
     
-   //create new PCB
+   //create new PCB for the thread
    PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
    memset(temp,0,sizeof(PCB386));
 
@@ -130,7 +130,7 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    sprintf(temp->name,"%s.thread",current_process->name);
    temp->processid   = nextprocessid++;
    temp->accesslevel = ACCESS_USER;
-   temp->status     |= PS_ATTB_THREAD;
+   temp->status      |= PS_ATTB_THREAD;
 
    current_process->childwait++;
 
@@ -166,7 +166,7 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    //initialize the current FPU state
    memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
     
-   //Tell the scheduler to add it to the process queue
+   //Tell the scheduler to add it to the process queue, ready queue
    ps_enqueue(temp);
     
    //restore flags
@@ -176,19 +176,19 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
 };
 
 //Tells the scheduler to queue a process
-DWORD ps_enqueue(PCB386 *process)
-{
-    devmgr_scheduler_extension *cursched = extension_table[CURRENT_SCHEDULER].iface;
-    bridges_link((devmgr_generic*)cursched,&cursched->ps_enqueue,
-    process,0,0,0,0,0);
+DWORD ps_enqueue(PCB386 *process){
+   devmgr_scheduler_extension *cursched = extension_table[CURRENT_SCHEDULER].iface;
+   bridges_link((devmgr_generic*)cursched,
+                  &cursched->ps_enqueue,
+                  process,0,0,0,0,0);
 };
 
 //Tells the scheduler to dequeue a process
-DWORD ps_dequeue(PCB386 *process)
-{
-    devmgr_scheduler_extension *cursched = extension_table[CURRENT_SCHEDULER].iface;
-    bridges_link((devmgr_generic*)cursched,&cursched->ps_dequeue,
-    process,0,0,0,0,0);
+DWORD ps_dequeue(PCB386 *process){
+   devmgr_scheduler_extension *cursched = extension_table[CURRENT_SCHEDULER].iface;
+   bridges_link((devmgr_generic*)cursched,
+                  &cursched->ps_dequeue,
+                  process,0,0,0,0,0);
 };
 
 
