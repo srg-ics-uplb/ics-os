@@ -735,158 +735,171 @@ DWORD exit(DWORD val){
    sigterm=current_process->processid;
     
    taskswitch();
+
+   //should not reach this point
    while (1)
       ;
+
    return 0;
 };
 
 /*kills a process with the specified pid, leaves all files
   open*/
-void ps_user_kill(int pid)
-{
-    if (ps_findprocess(pid)!=-1)
-        {
-              sigterm = pid;
-              taskswitch();  
-        };
+void ps_user_kill(int pid){
+   if (ps_findprocess(pid) != -1){
+      sigterm = pid;
+      taskswitch();  
+   };
 };
 
-DWORD suspendsem=0,semactive=0;
+
+DWORD suspendsem=0;        //global flag to suspend semaphore for busy waiting
+DWORD semactive=0;         //global glag wether semaphore is active for busy waiting
 
 //creates a semaphore to be used by the system
-DWORD create_semaphore(DWORD val)
-{
-    semaphore *sem=(DWORD*)malloc(sizeof(semaphore));
-    //generate a handle value for the semaphore, the semaphores
-    //location in memory should suffice
-    sem->handle=(DWORD)sem;
-    //insert the sempahore into memory
-    sem->owner=current_process->processid;
-    sem->data=val;
-    //This is a critical section so we must stop other processes
-    //from creating their own semaphores in the middle of
-    //creating this semaphore!
-    while (semactive);
-    while (suspendsem);
-    suspendsem=1;
-    sem->next=semaphore_head->next;
-    semaphore_head->next->prev=sem;
-    semaphore_head->next=sem;
-    sem->prev=semaphore_head;
-    suspendsem=0;
-    ;
+DWORD create_semaphore(DWORD val){
+
+   semaphore *sem=(DWORD*)malloc(sizeof(semaphore));
+   //generate a handle value for the semaphore, the semaphores
+   //location in memory should suffice
+   sem->handle=(DWORD)sem;
+   //insert the sempahore into memory
+   sem->owner=current_process->processid;
+   sem->data=val;
+
+   //This is a critical section so we must stop other processes
+   //from creating their own semaphores in the middle of
+   //creating this semaphore!
+   while (semactive)
+      ;
+   
+   while (suspendsem)
+      ;
+
+   suspendsem=1;
+   sem->next=semaphore_head->next;
+   semaphore_head->next->prev=sem;
+   semaphore_head->next=sem;
+   sem->prev=semaphore_head;
+   suspendsem=0;
+   ;
 };
 
-/*====================================================================
-int get_processlist(PCB386 **buf)
-
+/*
 * places the list of processes to buf, get_processlist is responsible
 * for allocating the necessary size required to store the list 
 * Returns: The total nubmer of processes in buf
 */
-int get_processlist(PCB386 **buf)
-{
-    int total;
-    devmgr_scheduler_extension *cursched;
+int get_processlist(PCB386 **buf){
+   int total;
+   devmgr_scheduler_extension *cursched;
         
-    cursched = (devmgr_scheduler_extension*)extension_table[CURRENT_SCHEDULER].iface;
+   cursched = (devmgr_scheduler_extension*)extension_table[CURRENT_SCHEDULER].iface;
    
-    if (cursched->ps_listprocess == 0)
-    {
-        printf("ERROR: schduler extension module does not support ps_listprocess()..\n");
-        return 0;
-    };
-    //begin mutual exclusion
-    sync_entercrit(&processmgr_busy);
+   if (cursched->ps_listprocess == 0){
+      printf("ERROR: schduler extension module does not support ps_listprocess()..\n");
+      return 0;
+   };
+
+   //begin mutual exclusion
+   sync_entercrit(&processmgr_busy);
     
-    total = bridges_call((devmgr_generic*)cursched,&cursched->ps_listprocess,0,0,0);
-    *buf = (PCB386*) malloc( sizeof(PCB386) * total );
+   total = bridges_call((devmgr_generic*)cursched,&cursched->ps_listprocess,0,0,0);
+   *buf = (PCB386*) malloc( sizeof(PCB386) * total );
     
-    //make an intermodule call to the scheduler
-    bridges_call((devmgr_generic*)cursched,&cursched->ps_listprocess,*buf,sizeof(PCB386),total);
+   //make an intermodule call to the scheduler
+   bridges_call((devmgr_generic*)cursched,&cursched->ps_listprocess, *buf, sizeof(PCB386), total);
     
-    sync_leavecrit(&processmgr_busy);
+   sync_leavecrit(&processmgr_busy);
     
-    return total;
+   return total;
 };
 
 //returns the processid of a process based on its name
-int findprocessname(const char *name)
-{
-    PCB386 *ptr;
-    int total, i,retval = -1;
+int findprocessname(const char *name){
+   PCB386 *ptr;
+   int total, i, retval = -1;
     
-    total = get_processlist(&ptr);
+   total = get_processlist(&ptr);
+  
+   //Access to process list must be synchronized since a lot of 
+   //other process are accessing it also
+  
+   sync_entercrit(&processmgr_busy);
+
+   //the critical section    
+   for (i = 0; i < total ; i++){
+      if ( strcmp(ptr[i].name,name) == 0 ){
+         retval = ptr[i].processid;       
+         break;
+      };    
+   };
     
-    sync_entercrit(&processmgr_busy);
+   sync_leavecrit(&processmgr_busy);
     
-    for (i = 0; i < total ; i++)
-    {
-        if ( strcmp(ptr[i].name,name) == 0 )
-            {
-                 retval = ptr[i].processid;       
-                 break;
-            };    
-    };
-    
-    sync_leavecrit(&processmgr_busy);
-    
-    free(ptr);
-    return retval;
+   free(ptr);
+   return retval;
 };
 
 //returns the PCB386 structure of a process based on its process id
-PCB386 *ps_findprocess(DWORD processid)
-{
-    PCB386 *ptr;
-    PCB386 *end;
-    DWORD flags;
-    int total,i;
-    sync_justwait(&processmgr_busy);
-    return bridges_ps_findprocess(processid);
-    return (PCB386*)-1;
-    ;
+PCB386 *ps_findprocess(DWORD processid){
+   PCB386 *ptr;
+   PCB386 *end;
+   DWORD flags;
+   int total,i;
+   
+   sync_justwait(&processmgr_busy);
+   
+   return bridges_ps_findprocess(processid);
+   return (PCB386*)-1;  //will this ever be called??
 };
 
-int dex32_getname(DWORD processid,int bufsize,char *s)
-{
-    PCB386 *ptr;
-    sync_justwait(&processmgr_busy);
+//returns the name of a process given a process id
+int dex32_getname(DWORD processid, int bufsize, char *s){
+   PCB386 *ptr;
 
-    ptr = ps_findprocess(processid);
-    if (ptr!=-1)
-    {
-        int i;
-        //copy the name of the process to s
-        for (i=0;i<bufsize&&ptr->name[i];i++)
-            s[i]=ptr->name[i];
-        s[i]=0;
-        return 1;
-    };
+   sync_justwait(&processmgr_busy);
 
-    return 0;
+   ptr = ps_findprocess(processid);
+   
+   if (ptr != -1){
+      int i;
+
+      //copy the name of the process to s, character by character
+      for (i=0;i < bufsize&&ptr->name[i]; i++){
+         s[i]=ptr->name[i];
+      }
+      s[i]=0;
+      return 1;
+   };
+   return 0;
 };
+
 //copies the parameters passed to a program into a user buffer
-void dex32_getparametersinfo(char *buf)
-{
-    if (current_process->parameters!=0)
-        strcpy(buf,current_process->parameters);
-    else
-        strcpy(buf,"");
+void dex32_getparametersinfo(char *buf){
+   if (current_process->parameters != 0)
+      strcpy(buf, current_process->parameters);
+   else
+      strcpy(buf,"");
 };
 
 //waits till a child process terminates
-int dex32_wait()
-{
-    int waitval;
-    if (current_process->childwait==0) return 1;
-    waitval=current_process->childwait;
-    while (current_process->childwait>=waitval&&current_process->childwait!=0);
+int dex32_wait(){
+   int waitval;
+   if (current_process->childwait==0) 
+      return 1;
+   
+   waitval=current_process->childwait;
+   
+   while (current_process->childwait >= waitval && current_process->childwait != 0)
+      ;
 };
 
-int dex32_waitpid(int pid,int status)
-{
-    while (ps_findprocess(pid) != -1);  
+
+//wait for a given process given its id
+int dex32_waitpid(int pid,int status){
+   while (ps_findprocess(pid) != -1)
+      ;  
 };
 
 
