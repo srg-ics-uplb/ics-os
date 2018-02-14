@@ -56,16 +56,19 @@
 
 
 
-//timer set to switch to new task 200 times per second. (see time.h or time.c)
+//timer set to switch to new task (see time.h or time.c)
 int context_switch_rate=100; 
+
+//pointer to vga mem
 char *scr_debug = (char*)0xb8000;
 
 int op_success;
 
 //points to the location of the multiboot header defined in startup.asm
 extern int multiboothdr; 
-extern void textcolor(unsigned char c);
 
+//defined in asmlib.asm
+extern void textcolor(unsigned char c);
 
 
 //order is important for some include files, DO NOT CHANGE!
@@ -114,8 +117,9 @@ extern void textcolor(unsigned char c);
 #include "vfs/vfs_aux.h"
 #include "iomgr/iosched.h"
 
+//structure to hold the boot info
 typedef struct _kernel_sysinfo {
-	int boot_device;
+   int boot_device;
 	int part[3];
 } kernel_sysinfo;
 
@@ -124,11 +128,13 @@ kernel_sysinfo kernel_systeminfo;
 //This stores the current virtual console the kernel will use
 DEX32_DDL_INFO *consoleDDL;
 
+//forward declarations.needed in process.c so must be here first 
 void dex_init();
 
 /*I know there are some disadvantages to directly including files
   in the source code instead of using object files, but it simplifies
   compilation without the use of a makefile*/
+
 #include "console/dex_DDL.c"
 #include "hardware/dexapm.c"
 #include "hardware/chips/irqhandlers.c"
@@ -168,6 +174,7 @@ void dex_init();
 #include "memory/dexmem.c"
 #include "memory/dexmalloc.c"
 #include "vmm/vmm.c"
+
 
 void dex32_startup(); 
 extern startup();

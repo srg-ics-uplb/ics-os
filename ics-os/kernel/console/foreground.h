@@ -1,5 +1,5 @@
 /*
-  Name: foreground.c
+  Name: foreground.h
   Copyright: 
   Author: Joseph Emmanuel DL Dayo
   Date: 05/01/04 04:39
@@ -23,23 +23,28 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
 */
+
 #include "dex_DDL.h"
 #define FG_MAXCONSOLE 20
 
 
 typedef struct _fg_processinfo {
-int size;
-int id;
-int noswitch; // *NOT YET DONE* set to true to prevent CTRL+ALT+F5 and F6 to switch to this screen
-DEX32_DDL_INFO *screen;
-int keyboardfocus;
-int ignore;
-int pid; //process id of process that created this foreground info
-struct _fg_processinfo *next,*prev;
+   int size;
+   int id;
+   int noswitch; // *NOT YET DONE* set to true to prevent CTRL+ALT+F5 and F6 to switch to this screen
+   DEX32_DDL_INFO *screen;
+   int keyboardfocus;
+   int ignore;
+   int pid; //process id of process that created this foreground info
+   struct _fg_processinfo *next;
+   struct _fg_processinfo *prev;
 } fg_processinfo;
 
+
 fg_processinfo *fg_vconsoles[FG_MAXCONSOLE];
+
 int fg_current = 0,fg_myslot = 0;
+
 int fg_pid;
 
 sync_sharedvar fg_busywait;
