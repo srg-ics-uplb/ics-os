@@ -269,108 +269,105 @@ DWORD createprocess(
                      char *workdir, 
                      PCB386 *parent
                   ){
-    int pages;
-    DWORD flags , *pg;
-    PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
-    memset(temp,0,sizeof(PCB386));
-    temp->before=current_process;
-    strcpy(temp->name,name);
-    totalprocesses++;
-    temp->size         = sizeof(PCB386);
-    temp->processid    = nextprocessid++;
-    temp->accesslevel  = ACCESS_USER;
-    temp->meminfo      = pmem;
-    temp->owner        = parent->processid;
-    temp->dex32_signal = dex32_signal;
-    temp->op_success   = 1; 
-    temp->arrivaltime  = getprecisetime(); 
-    temp->stdin        = parent->stdin;
-    memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
+   int pages;
+   DWORD flags , *pg;
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
+   memset(temp,0,sizeof(PCB386));
+   temp->before=current_process;
+   strcpy(temp->name,name);
+   totalprocesses++;
+   temp->size         = sizeof(PCB386);
+   temp->processid    = nextprocessid++;
+   temp->accesslevel  = ACCESS_USER;
+   temp->meminfo      = pmem;
+   temp->owner        = parent->processid;
+   temp->dex32_signal = dex32_signal;
+   temp->op_success   = 1; 
+   temp->arrivaltime  = getprecisetime(); 
+   temp->stdin        = parent->stdin;
+   memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
 
-    //get the working directory of this process
-    if (workdir==0)
-        temp->workdir  = parent->workdir;
-    else
-    {
-        temp->workdir  = vfs_searchname(workdir);
+   //get the working directory of this process
+   if (workdir==0){
+      temp->workdir  = parent->workdir;
+   }else{
+      temp->workdir  = vfs_searchname(workdir);
         
-        //validate workdir
-        if (temp->workdir == 0) temp->workdir =parent->workdir;
-    };
-    //use the same screen as the one who called
-    temp->outdev=parent->outdev;
+      //validate workdir
+      if (temp->workdir == 0) 
+         temp->workdir =parent->workdir;
+   };
+   //use the same screen as the one who called
+   temp->outdev=parent->outdev;
 
-    //find the parent process and increment it's waiting state
-    parent->childwait++;
+   //find the parent process and increment it's waiting state
+   parent->childwait++;
 
-    temp->knext       = userheap; //set up the programs' initial break
-    temp->pagedirloc  = pagedir;
+   temp->knext       = userheap; //set up the programs' initial break
+   temp->pagedirloc  = pagedir;
     
-    /*Set up the CPU registers*/
-    memset(temp,0,sizeof(saveregs));
-    temp->regs.EIP    = (DWORD)ptr;
-    temp->regs.ESP    = (DWORD)stack;
-    temp->stackptr    = (void*)temp->regs.ESP;
-    temp->regs.CR3    = (DWORD)pagedir;
-    temp->regs.ES     = USER_DATA;
-    temp->regs.SS     = USER_DATA;
-    temp->regs.CS     = USER_CODE;
-    temp->regs.DS     = USER_DATA;
-    temp->regs.FS     = USER_DATA;
-    temp->regs.GS     = USER_DATA;
-    temp->regs.SS0    = SYS_STACK_SEL;
-    temp->syscallsize=syscallsize;
-    //set up the program parameters
-    if (params!=0)
-    {
-        temp->parameters=(char*)malloc(512);
-        strcpy(temp->parameters,params);
-    }
-    else
-        temp->parameters=0;
+   /*Set up the CPU registers*/
+   memset(temp,0,sizeof(saveregs));
+   temp->regs.EIP    = (DWORD)ptr;
+   temp->regs.ESP    = (DWORD)stack;
+   temp->stackptr    = (void*)temp->regs.ESP;
+   temp->regs.CR3    = (DWORD)pagedir;
+   temp->regs.ES     = USER_DATA;
+   temp->regs.SS     = USER_DATA;
+   temp->regs.CS     = USER_CODE;
+   temp->regs.DS     = USER_DATA;
+   temp->regs.FS     = USER_DATA;
+   temp->regs.GS     = USER_DATA;
+   temp->regs.SS0    = SYS_STACK_SEL;
+   temp->syscallsize=syscallsize;
+   
+   //set up the program parameters
+   if (params!=0){
+      temp->parameters=(char*)malloc(512);
+      strcpy(temp->parameters,params);
+   }else{
+      temp->parameters=0;
+   }
 
+   sync_entercrit(&processmgr_busy);	
+   dex32_stopints(&flags);  
 
-    sync_entercrit(&processmgr_busy);	
-    dex32_stopints(&flags);  
+   //allocate memory for the system call stack
+   dex32_commitblock((DWORD)syscallstack,syscallsize,&pages,pagedir,PG_WR);
+   addmemusage(&(temp->meminfo),syscallstack,pages);
+   //set up the initial stack pointer
+   temp->regs.ESP0=(syscallstack+syscallsize-4);
+   //  temp->regs.ESP0=0x9FFFE;
+   temp->regs.EFLAGS=0x200;
+   temp->semhandle=0;
 
-    //allocate memory for the system call stack
-    dex32_commitblock((DWORD)syscallstack,syscallsize,&pages,pagedir,PG_WR);
-    addmemusage(&(temp->meminfo),syscallstack,pages);
-    //set up the initial stack pointer
-    temp->regs.ESP0=(syscallstack+syscallsize-4);
-    //  temp->regs.ESP0=0x9FFFE;
-    temp->regs.EFLAGS=0x200;
-    temp->semhandle=0;
+   //some functions that a character device uses
 
-
-
-    //some functions that a character device uses
-
-    disablepaging();
-    dex32_copy_pagedirU(pagedir,pagedir1);
-    enablepaging();
+   disablepaging();
+   dex32_copy_pagedirU(pagedir,pagedir1);
+   enablepaging();
         
-    pg = (DWORD*)getvirtaddress((DWORD)pagedir); /*convert to a virtual address so that
+   pg = (DWORD*)getvirtaddress((DWORD)pagedir); /*convert to a virtual address so that
                                                  we could use it here without disabling
                                                  the paging mechanism of the 386*/
 
-    maplineartophysical2((DWORD*)pg, (DWORD)SYS_PAGEDIR_VIR,(DWORD)pagedir    /*,stackbase*/,1);
+   maplineartophysical2((DWORD*)pg, (DWORD)SYS_PAGEDIR_VIR,(DWORD)pagedir    /*,stackbase*/,1);
     
-    maplineartophysical2((DWORD*)pg, (DWORD)SYS_PAGEDIR2_VIR,
-    (DWORD)pg[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+   maplineartophysical2((DWORD*)pg, (DWORD)SYS_PAGEDIR2_VIR,
+                        (DWORD)pg[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
     
-    maplineartophysical2((DWORD*)pg, (DWORD)SYS_PAGEDIR3_VIR,
-    (DWORD)pg[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+   maplineartophysical2((DWORD*)pg, (DWORD)SYS_PAGEDIR3_VIR,
+                        (DWORD)pg[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
     
-    maplineartophysical2((DWORD*)pg, (DWORD)SYS_KERPDIR_VIR,(DWORD)pagedir1    /*,stackbase*/,1);
+   maplineartophysical2((DWORD*)pg, (DWORD)SYS_KERPDIR_VIR,(DWORD)pagedir1    /*,stackbase*/,1);
 
-    //add to the list
-    ps_enqueue(temp);
+   //add to the list
+   ps_enqueue(temp);
 
-    dex32_restoreints(flags);
-    sync_leavecrit(&processmgr_busy);
+   dex32_restoreints(flags);
+   sync_leavecrit(&processmgr_busy);
 
-    return temp->processid;
+   return temp->processid;
 };
 
 DWORD dex32_asyncproc(saveregs *r,void *entrypoint,char *name,DWORD stacksize)
