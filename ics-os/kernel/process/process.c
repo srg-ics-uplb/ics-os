@@ -1069,9 +1069,10 @@ void copyprocessmemory(process_mem *memptr, process_mem **destmemptr){
    };
 };
 
-//
+//does nothing
 void halt(){
-    while (1);
+    while (1)
+      ;
 };
 
 

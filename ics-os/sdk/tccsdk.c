@@ -1452,6 +1452,10 @@ int execp(char *fname,unsigned short mode, char *params){
    return dexsdk_systemcall(0x5B,(int)fname,mode,(int)params,0,0);     
 }
 
+int sleep(unsigned int ms){
+   return dexsdk_systemcall(0x54,(unsigned int)ms,0,0,0,0);     
+}
+
 /* User thread function (not yet working) */
 
 /* Creates and starts a thread. returns thread id (jach) */
@@ -1462,3 +1466,5 @@ int thread_create(void *f){
 
     return dexsdk_systemcall(0xB,&f,stack,100000,0,0);
 }
+
+
