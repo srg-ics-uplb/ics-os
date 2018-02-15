@@ -54,7 +54,7 @@ pci_finddevice:
    mov ecx,[ebp+8]
    mov edx,[ebp+12]
    mov esi,[ebp+16]
-	
+
    call far [pcibios]
 
    mov ecx, [ebp+20]	
