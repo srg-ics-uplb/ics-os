@@ -42,14 +42,14 @@ SECTION .text
 global pci_finddevice
 pci_finddevice:
    push ebp
-	mov ebp,esp
+   mov ebp,esp
 
-	push ecx
-	push edx
-	push esi
-	push ebx
+   push ecx
+   push edx
+   push esi
+   push ebx
 
-	mov ah, 0xB1
+   mov ah, 0xB1
 	mov al, 2
 	mov ecx,[ebp+8]
 	mov edx,[ebp+12]
