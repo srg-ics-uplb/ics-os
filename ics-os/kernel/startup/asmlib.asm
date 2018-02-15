@@ -50,27 +50,27 @@ pci_finddevice:
    push ebx
 
    mov ah, 0xB1
-	mov al, 2
-	mov ecx,[ebp+8]
-	mov edx,[ebp+12]
-	mov esi,[ebp+16]
+   mov al, 2
+   mov ecx,[ebp+8]
+   mov edx,[ebp+12]
+   mov esi,[ebp+16]
 	
-	call far [pcibios]
+   call far [pcibios]
 
-	mov ecx, [ebp+20]	
-	mov [ecx],bh
-	mov ecx, [ebp+24]
-	mov [ecx],bl
+   mov ecx, [ebp+20]	
+   mov [ecx],bh
+   mov ecx, [ebp+24]
+   mov [ecx],bl
 
-	shr eax, 8
-	and eax, 0xf
+   shr eax, 8
+   and eax, 0xf
 
-	pop ebx	
-	pop esi
-	pop edx
-	pop ecx
-	pop ebp
-	ret
+   pop ebx	
+   pop esi
+   pop edx
+   pop ecx
+   pop ebp
+   ret
 
 ;int pci_findclass(WORD classcode, WORD index,char 
 ;*busnumber, WORD *devnumber)
