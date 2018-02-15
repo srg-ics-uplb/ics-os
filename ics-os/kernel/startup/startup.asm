@@ -258,19 +258,19 @@ gdtr:
 	dd 0x01000              ; (GDT located at 0x01000)
 
 ;GDT selectors 
-NULL_SEL        equ         0b 
-LINEAR_SEL	    equ	    1000b
+NULL_SEL        equ     0b 
+LINEAR_SEL	    equ	   1000b
 SYS_CODE_SEL2   equ     10000b
 SYS_STACK_SEL   equ     11000b
-SYS_DATA_SEL    equ    100000b
-TEXT_VIDEO_SEL  equ    101000b 
-KERNEL_MEM_SEL  equ    110000b
-SYS_CODE_SEL    equ    111000b
+SYS_DATA_SEL    equ     100000b
+TEXT_VIDEO_SEL  equ     101000b 
+KERNEL_MEM_SEL  equ     110000b
+SYS_CODE_SEL    equ     111000b
 
-APM32_CODE_SEL  equ   1000000b
-APM16_CODE_SEL  equ   1001000b
-APMDATA_SEL     equ   1010000b
-TS_STACK_SEL    equ   1011000b
+APM32_CODE_SEL  equ     1000000b
+APM16_CODE_SEL  equ     1001000b
+APMDATA_SEL     equ     1010000b
+TS_STACK_SEL    equ     1011000b
  
 ;offsets
 gdt             equ     0x01000         ;start address of the gdt
