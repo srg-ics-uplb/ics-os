@@ -35,14 +35,13 @@ extern tlb_address
 extern pcibiosentry
 extern pcibios
 
-
 SECTION .text
 
 ;int pci_finddevice(WORD deviceid,WORD vendorid, WORD index,char ;*busnumber, WORD *devnumber)
 
 global pci_finddevice
 pci_finddevice:
-	push ebp
+   push ebp
 	mov ebp,esp
 
 	push ecx
@@ -75,11 +74,10 @@ pci_finddevice:
 
 ;int pci_findclass(WORD classcode, WORD index,char 
 ;*busnumber, WORD *devnumber)
-
 global pci_findclass
 pci_findclass:
-	push ebp
-	mov ebp,esp
+   push ebp
+   mov ebp,esp
 
 	push ecx
 	push edx
@@ -308,7 +306,6 @@ pcibios_call:
 	ret
 
 
-
 global invtlb
 invtlb:
 	INVLPG [tlb_address]
@@ -316,98 +313,98 @@ ret
 
 global repinword
 repinword:
-	push      ebp
-	mov       ebp,esp
-	push      edi
-	push	  eax
-	push	  ecx
-	push	  edx
-	mov	  ax,word   [ebp+8]
-	mov	  es,ax
-	mov	  edi,dword [ebp+12]
-	mov	  ecx,dword [ebp+16]
-	mov	  dx, word  [ebp+20]
+	push ebp
+	mov ebp,esp
+	push edi
+	push eax
+	push ecx
+	push edx
+	mov ax,word   [ebp+8]
+	mov es,ax
+	mov edi,dword [ebp+12]
+	mov ecx,dword [ebp+16]
+	mov dx, word  [ebp+20]
 	cld	
-	rep   insw	
-	pop	  edx
-	pop	  ecx
-	pop	  eax
-	pop       edi
-	pop       ebp
+	rep insw	
+	pop edx
+	pop ecx
+	pop eax
+	pop edi
+	pop ebp
 	ret 
 
 global repindword
 repindword:
-	push      ebp
-	mov       ebp,esp
-	push      edi
-	push	  eax
-	push	  ecx
-	push	  edx
-	mov	  ax,word   [ebp+8]
-	mov	  es,ax
-	mov	  edi,dword [ebp+12]
-	mov	  ecx,dword [ebp+16]
-	mov	  dx, word  [ebp+20]
+	push ebp
+	mov ebp,esp
+	push edi
+	push eax
+	push ecx
+	push edx
+	mov ax,word[ebp+8]
+	mov es,ax
+	mov edi,dword[ebp+12]
+	mov ecx,dword [ebp+16]
+	mov dx, word  [ebp+20]
 	cld	
-	rep       insd	
-	pop	  edx
-	pop	  ecx
-	pop	  eax
-	pop       edi
-	pop       ebp
+	rep insd	
+	pop edx
+	pop ecx
+	pop eax
+	pop edi
+	pop ebp
 	ret 
 
 global repoutdword
 repoutdword:
-	push      ebp
-	mov       ebp,esp
-	push      esi
-   	push	  eax
-   	push	  ecx
-   	push	  edx
-   	push	  esi
-   	push	  ds
-   	mov	  ax,word [ebp+8]
-   	mov	  ds,ax
-   	mov	  esi,dword [ebp+12]
-   	mov	  ecx,dword  [ebp+16]
-   	mov	  dx,word [ebp+20]
-   	cld	
-   	rep       outsd	
-   	pop	  ds
-   	pop	  esi
-   	pop	  edx
-   	pop	  ecx
-   	pop	  eax
-	pop       esi
-	pop       ebp
+	push ebp
+	mov ebp,esp
+	push esi
+   push eax
+   push ecx
+   push edx
+   push esi
+   push ds
+   mov ax,word [ebp+8]
+   mov ds,ax
+   mov esi,dword [ebp+12]
+   mov ecx,dword  [ebp+16]
+   mov dx,word [ebp+20]
+   cld	
+   rep outsd	
+   pop ds
+   pop esi
+   pop edx
+   pop ecx
+   pop eax
+	pop esi
+	pop ebp
 	ret 
 
 global repoutword
 repoutword:
-	push      ebp
-	mov       ebp,esp
-	push      esi
-   	push	  eax
-   	push	  ecx
-   	push	  edx
-   	push	  esi
-   	push	  ds
-   	mov	  ax,word [ebp+8]
-   	mov	  ds,ax
-   	mov	  esi,dword [ebp+12]
-   	mov	  ecx,dword  [ebp+16]
-   	mov	  dx,word [ebp+20]
-   	cld	
-   	rep       outsw	
-   	pop	  ds
-   	pop	  esi
-   	pop	  edx
-   	pop	  ecx
-   	pop	  eax
-	pop       esi
-	pop       ebp
+	push ebp
+	mov ebp,esp
+	push esi
+   push eax
+   push ecx
+   push edx
+   push esi
+   push ds
+   mov ax,word [ebp+8]
+   mov ds,ax
+   mov esi,dword [ebp+12]
+   mov ecx,dword  [ebp+16]
+   mov dx,word [ebp+20]
+   cld	
+   rep outsw	
+   pop ds
+   pop esi
+   pop edx
+   pop ecx
+   pop eax
+	pop esi
+	pop ebp
 	ret 
 
 
@@ -416,28 +413,28 @@ repoutbyte:
    ;	
    ;	void repoutbyte(unsigned short int bufSeg, unsigned int bufOff,
    ;	
-	push      ebp
-	mov       ebp,esp
-	push      esi
-   	push	  eax
-   	push	  ecx
-   	push	  edx
-   	push	  esi
-   	push	  ds
-   	mov	  ax,word [ebp+8]
-   	mov	  ds,ax
-   	mov	  esi,dword [ebp+12]
-   	mov	  ecx,dword  [ebp+16]
-   	mov	  dx,word [ebp+20]
-   	cld	
-   	rep       outsb	
-   	pop	  ds
-   	pop	  esi
-   	pop	  edx
-   	pop	  ecx
-   	pop	  eax
-	pop       esi
-	pop       ebp
+	push ebp
+	mov ebp,esp
+	push esi
+   push eax
+   push ecx
+   push edx
+   push esi
+   push ds
+   mov ax,word [ebp+8]
+   mov ds,ax
+   mov esi,dword [ebp+12]
+   mov ecx,dword  [ebp+16]
+   mov dx,word [ebp+20]
+   cld	
+   rep outsb	
+   pop ds
+   pop esi
+   pop edx
+   pop ecx
+   pop eax
+	pop esi
+	pop ebp
 	ret 
 
 
@@ -446,82 +443,82 @@ reptrans:
    ;	
    ;	 reptrans(unsigned short int bufSeg, unsigned int bufOff,
    ;	
-	push      ebp
-	mov       ebp,esp
-	push      edi
-	push	  eax
-	push	  ecx
-	push	  edx
-	mov	  ax,word   [ebp+8]
-	mov	  es,ax
-	mov	  edi,dword [ebp+12]
-	mov	  ecx,dword [ebp+16]
-	mov	  dx, word  [ebp+20]
+	push ebp
+	mov ebp,esp
+	push edi
+	push eax
+	push ecx
+	push edx
+	mov ax,word[ebp+8]
+	mov es,ax
+	mov edi,dword[ebp+12]
+	mov ecx,dword[ebp+16]
+	mov dx, word[ebp+20]
 	cld	
-	rep   insb	
-	pop	  edx
-	pop	  ecx
-	pop	  eax
-	pop       edi
-	pop       ebp
+	rep insb	
+	pop edx
+	pop ecx
+	pop eax
+	pop edi
+	pop ebp
 	ret 
 
 
 global getcpuid
 getcpuid:
    ;	void getcpuid(DWORD initial,DWORD *eax,DWORD *ebx,
-	push      ebp
-	mov       ebp,esp
-	add       esp,-16
-	push      ebx
-	mov	 eax,[ebp+8]
+	push ebp
+	mov ebp,esp
+	add esp,-16
+	push ebx
+	mov eax,[ebp+8]
 	cpuid	
-	mov	 [ebp-4],eax
-	mov	 [ebp-8],ebx
-	mov	 [ebp-12],ecx
-	mov	 [ebp-16],edx
-	mov       eax,[ebp-4]
-	mov       edx,[ebp+12]
-	mov       [edx],eax
-	mov       ecx,[ebp-8]
-	mov       eax,[ebp+16]
-	mov       [eax],ecx
-	mov       edx,[ebp+20]
-	mov       ecx,[ebp-12]
-	mov       [edx],ecx
-	mov       eax,[ebp+24]
-	mov       edx,[ebp-16]
-	mov       [eax],edx
-	pop       ebx
-	mov       esp,ebp
-	pop       ebp
+	mov [ebp-4],eax
+	mov [ebp-8],ebx
+	mov [ebp-12],ecx
+	mov [ebp-16],edx
+	mov eax,[ebp-4]
+	mov edx,[ebp+12]
+	mov [edx],eax
+	mov ecx,[ebp-8]
+	mov eax,[ebp+16]
+	mov [eax],ecx
+	mov edx,[ebp+20]
+	mov ecx,[ebp-12]
+	mov [edx],ecx
+	mov eax,[ebp+24]
+	mov edx,[ebp-16]
+	mov [eax],edx
+	pop ebx
+	mov esp,ebp
+	pop ebp
 	ret 
 
 
 global storeflags
 storeflags:
-push      ebp
-mov       ebp,esp
-push      ecx
-pushf	
-pop	 eax
-mov	  [ebp-4],eax
-mov       eax,[ebp-4]
-mov       edx,[ebp+8]
-mov       [edx],eax
-pop       ecx
-pop       ebp
-ret 
+   push ebp
+   mov ebp,esp
+   push ecx
+   pushf	
+   pop eax
+   mov [ebp-4],eax
+   mov eax,[ebp-4]
+   mov edx,[ebp+8]
+   mov [edx],eax
+   pop ecx
+   pop ebp
+   ret 
 
 global restoreflags
 restoreflags:
-push      ebp
-mov       ebp,esp
-mov	  eax,[ebp+8]
-push	  eax
-popf	
-pop       ebp
-ret 
+   push ebp
+   mov ebp,esp
+   mov eax,[ebp+8]
+   push eax
+   popf	
+   pop ebp
+   ret 
 
 
 ;set the processsor task register to the scheduler TSS
@@ -547,32 +544,28 @@ mempop:
    ;	
    ;	unsigned int mempop(unsigned int *s)
    ;	
-	push      ebp
-	mov       ebp,esp
-	mov       eax,dword [ebp+8]
-   	mov       edx,dword [eax]
-	test      edx,edx
-	ja        short @9x
-	xor       eax,eax
-	pop       ebp
+	push ebp
+	mov ebp,esp
+	mov eax,dword [ebp+8]
+  	mov edx,dword [eax]
+	test edx,edx
+	ja short @9x
+	xor eax,eax
+	pop ebp
 	ret 
    
 @9x:
-	mov       edx,dword [eax+4*edx]
-   	dec       dword [eax]
-   	mov       eax,edx
-	pop       ebp
+	mov edx,dword [eax+4*edx]
+  	dec dword [eax]
+   mov eax,edx
+	pop ebp
 	ret 
-
-
-
-
 
 global loadregisters
 
 loadregisters:
-lidt [idtr]  ;load em'
-ret
+   lidt [idtr]  ;load em'
+   ret
 
 
 global offcomputer
@@ -592,78 +585,68 @@ offcomputer:
   
    call [es:edx]
    pop ebp
-ret
-
-
+   ret
 
 global setpagedir
 ;setpagedir(pagedir *dir)
-
 setpagedir:
-      push ebp
-      mov ebp,esp
-      push eax
-      mov eax,[ebp+8]
-      mov cr3,eax
-      pop eax
-      pop ebp
-ret     
+   push ebp
+   mov ebp,esp
+   push eax
+   mov eax,[ebp+8]
+   mov cr3,eax
+   pop eax
+   pop ebp
+   ret     
 
 global refreshpages
 refreshpages:
-          
-
-      mov eax,cr3
-      mov cr3,eax
-  
-ret
-
-
+   mov eax,cr3
+   mov cr3,eax
+   ret
 
 refreshpagesA:
-       cli
-       mov eax,cr0
-       and eax,0x7FFFFFFF
-       mov cr0,eax  
-       mov       eax,cr0
-       or        eax,0x80000000
-       mov       cr0,eax
-       sti
-ret                  
+   cli
+   mov eax,cr0
+   and eax,0x7FFFFFFF
+   mov cr0,eax  
+   mov       eax,cr0
+   or        eax,0x80000000
+   mov       cr0,eax
+   sti
+   ret                  
 
 global disablepaging
 disablepaging:
-       mov eax,cr0
-       and eax,0x7FFFFFFF
-       mov cr0,eax
-       jmp        SYS_CODE_SEL:here3
-       here3:          
-       ret
+   mov eax,cr0
+   and eax,0x7FFFFFFF
+   mov cr0,eax
+   jmp        SYS_CODE_SEL:here3
+   here3:          
+   ret
 
 global enablepaging
 enablepaging:
-
-       mov        eax,0x80000011 
-       mov        cr0,eax
-       ;done, referesh the prefetch cache
-
-       jmp        SYS_CODE_SEL:here2
-       here2:          
-ret
+   mov        eax,0x80000011 
+   mov        cr0,eax
+   ;done, referesh the prefetch cache
+   jmp        SYS_CODE_SEL:here2
+   here2:          
+   ret
 
 global getCR0
 getCR0:
-  mov eax,cr0
-ret
+   mov eax,cr0
+   ret
 
 global setCR0
 setCR0:
-push ebp
-mov ebp,esp
-mov eax,[ebp+8]
-mov cr0,eax
-pop ebp
-ret
+   push ebp
+   mov ebp,esp
+   mov eax,[ebp+8]
+   mov cr0,eax
+   pop ebp
+   ret
 
 ;global setinterruptvector
 setinterruptvector:
@@ -671,88 +654,85 @@ setinterruptvector:
    ;	void  setinterruptvector(unsigned int x,idtd *t,unsigned char attr,
    ;	
 
-	push      ebp
-	mov       ebp,esp
-	mov       edx,dword [ebp+12]
-	mov       eax,dword [ebp+8]
-	mov       ecx,dword [ebp+20]
-	mov       word [edx+8*eax],cx
-   	shr       ecx,16
-	mov       word [edx+8*eax+6],cx
-   	xor       ecx,ecx
-	mov       cl,byte [ebp+24]
-	mov       word [edx+8*eax+2],cx
-	mov       byte [edx+8*eax+4],0
-   	mov       cl,byte [ebp+16]
-	mov       byte [edx+8*eax+5],cl
-	pop       ebp
+	push ebp
+	mov ebp,esp
+	mov edx,dword [ebp+12]
+	mov eax,dword [ebp+8]
+	mov ecx,dword [ebp+20]
+	mov word [edx+8*eax],cx
+  	shr ecx,16
+	mov word [edx+8*eax+6],cx
+   xor ecx,ecx
+	mov cl,byte [ebp+24]
+	mov word [edx+8*eax+2],cx
+	mov byte [edx+8*eax+4],0
+   mov cl,byte [ebp+16]
+	mov byte [edx+8*eax+5],cl
+	pop ebp
 	ret 
-
-
 
 xtoa:
 ?live1@0:
-
 @1:
-	push      ebp
-	mov       ebp,esp
-	push      ecx
-	push      ebx
-	push      esi
-	push      edi
-	mov       edi,dword [ebp+8]
-	mov       ebx,dword [ebp+12]
-	mov       eax,dword [ebp+20]
-	test      eax,eax
-	je        short @2
-	mov       byte [ebx],45
-	inc       ebx
-	neg       edi
+	push ebp
+	mov ebp,esp
+	push ecx
+	push ebx
+	push esi
+	push edi
+	mov edi,dword [ebp+8]
+	mov ebx,dword [ebp+12]
+	mov eax,dword [ebp+20]
+	test eax,eax
+	je short @2
+	mov byte [ebx],45
+	inc ebx
+	neg edi
 @2:
-	mov       esi,ebx
+	mov esi,ebx
 @3:
-	mov       eax,edi
-	xor       edx,edx
-	div       dword [ebp+16]
-	mov       dword [ebp-4],edx
-	xor       edx,edx
-	mov       ecx,dword [ebp+16]
-	mov       eax,edi
-	div       ecx
-	mov       ecx,dword [ebp-4]
-	mov       edi,eax
-	cmp       ecx,9
-	jbe       short @4
-	mov       al,byte [ebp-4]
-	add       al,87
-	mov       byte [ebx],al
-	inc       ebx
-	jmp       short @5
+	mov eax,edi
+	xor edx,edx
+	div dword [ebp+16]
+	mov dword [ebp-4],edx
+	xor edx,edx
+	mov ecx,dword [ebp+16]
+	mov eax,edi
+	div ecx
+	mov ecx,dword [ebp-4]
+	mov edi,eax
+	cmp ecx,9
+	jbe short @4
+	mov al,byte [ebp-4]
+	add al,87
+	mov byte [ebx],al
+	inc ebx
+	jmp short @5
 @4:
-	mov       dl,byte [ebp-4]
-	add       dl,48
-	mov       byte [ebx],dl
-	inc       ebx
+	mov dl,byte [ebp-4]
+	add dl,48
+	mov byte [ebx],dl
+	inc ebx
 @5:
-	test      edi,edi
-	ja        short @3
-	mov       byte [ebx],0
-	dec       ebx
+	test edi,edi
+	ja short @3
+	mov byte [ebx],0
+	dec ebx
 @7:
-	mov       al,byte [ebx]
-	mov       dl,byte [esi]
-	mov       byte [ebx],dl
-	mov       byte [esi],al
-	dec       ebx
-	inc       esi
-	cmp       ebx,esi
-	ja        short @7
+	mov al,byte [ebx]
+	mov dl,byte [esi]
+	mov byte [ebx],dl
+	mov byte [esi],al
+	dec ebx
+	inc esi
+	cmp ebx,esi
+	ja short @7
 @9:
-	pop       edi
-	pop       esi
-	pop       ebx
-	pop       ecx
-	pop       ebp
+	pop edi
+	pop esi
+	pop ebx
+	pop ecx
+	pop ebp
 	ret 
 
 ;This has the exact same prototype as its C equivalent
@@ -760,65 +740,63 @@ xtoa:
 ; char *  itoa ( int val, char *buf, int radix )
 
 global itoa
-
 itoa:
 @10:
-	push      ebp
-	mov       ebp,esp
-	push      ebx
-        push      ecx
-        push      edx  
-	mov       edx,dword [ebp+16]
-	mov       ebx,dword [ebp+12]
-	mov       eax,dword [ebp+8]
-	cmp       edx,10
-	jne       short @11
-	test      eax,eax
-	jge       short @11
-	push      dword 1
-	push      edx
-	push      ebx
-	push      eax
-	call      xtoa
-	add       esp,16
-	jmp       short @12
+	push ebp
+	mov ebp,esp
+	push ebx
+   push ecx
+   push edx  
+	mov edx,dword [ebp+16]
+	mov ebx,dword [ebp+12]
+	mov eax,dword [ebp+8]
+	cmp edx,10
+	jne short @11
+	test eax,eax
+	jge short @11
+	push dword 1
+	push edx
+	push ebx
+	push eax
+	call xtoa
+	add esp,16
+	jmp short @12
 @11:
-	push      dword 0
-	push      edx
-	push      ebx
-	push      eax
-	call      xtoa
-	add       esp,16
+	push dword 0
+	push edx
+	push ebx
+	push eax
+	call xtoa
+	add esp,16
 @12:
-	mov       eax,ebx
+	mov eax,ebx
 @14:
 @13:
-        pop       edx
-        pop       ecx  
-	pop       ebx
-	pop       ebp
+   pop edx
+   pop ecx  
+	pop ebx
+	pop ebp
 	ret 
-	
 	
 ultoa:
    ;	
    ;	char *ultoa (
    ;	
-	push      ebp
-	mov       ebp,esp
-	push      ebx
-	mov       ebx,dword [ebp+12]
-	push      dword 0
-	mov       eax,dword [ebp+16]
-	push      eax
-	push      ebx
-	mov       edx,dword [ebp+8]
-	push      edx
-	call      xtoa
-	add       esp,16
-	mov       eax,ebx
-	pop       ebx
-	pop       ebp
+	push ebp
+	mov ebp,esp
+	push ebx
+	mov ebx,dword [ebp+12]
+	push dword 0
+	mov eax,dword [ebp+16]
+	push eax
+	push ebx
+	mov edx,dword [ebp+8]
+	push edx
+	call xtoa
+	add esp,16
+	mov eax,ebx
+	pop ebx
+	pop ebp
 	ret 
 
 
@@ -831,12 +809,12 @@ textcolor:
    ;	
    ;	void stextcolor(unsigned char c)
    ;	
-	push      ebp
-	mov       ebp,esp
-	and       byte [attb],112
-	mov       al,byte [ebp+8]
-	or        byte [attb],al
-	pop       ebp
+	push ebp
+	mov ebp,esp
+	and byte [attb],112
+	mov al,byte [ebp+8]
+	or byte [attb],al
+	pop ebp
 	ret 
 
 global _textbackground
@@ -845,13 +823,13 @@ textbackground:
    ;	
    ;	void stextbackground(unsigned char c)
    ;	
-	push      ebp
-	mov       ebp,esp
-	mov       eax,dword [ebp+8]
-	and       byte [attb],-113
-	shl       al,4
-	or        byte [attb],al
-	pop       ebp
+	push ebp
+	mov ebp,esp
+	mov eax,dword [ebp+8]
+	and byte [attb],-113
+	shl al,4
+	or byte [attb],al
+	pop ebp
 	ret 
 
 
