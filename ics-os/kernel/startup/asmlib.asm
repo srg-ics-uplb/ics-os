@@ -79,59 +79,59 @@ pci_findclass:
    push ebp
    mov ebp,esp
 
-	push ecx
-	push edx
-	push esi
-	push ebx
+   push ecx
+   push edx
+   push esi
+   push ebx
 
-	mov ah, 0xB1
-	mov al, 3
-	mov ecx,[ebp+8]
-	mov esi,[ebp+12]
-	
-	call far [pcibios]
+   mov ah, 0xB1
+   mov al, 3
+   mov ecx,[ebp+8]
+   mov esi,[ebp+12]
 
-	mov ecx, [ebp+16]	
-	mov [ecx],bh
-	mov ecx, [ebp+20]
-	mov [ecx],bl
+   call far [pcibios]
 
-	shr eax, 8
-	and eax, 0xf
+   mov ecx, [ebp+16]	
+   mov [ecx],bh
+   mov ecx, [ebp+20]
+   mov [ecx],bl
 
-	pop ebx	
-	pop esi
-	pop edx
-	pop ecx
-	pop ebp
-	ret
+   shr eax, 8
+   and eax, 0xf
+
+   pop ebx	
+   pop esi
+   pop edx
+   pop ecx
+   pop ebp
+   ret
 
 ;char _pci_readconfigbyte(char bus, char devfunc, WORD register)
 global pci_readconfigbyte
 pci_readconfigbyte:
-	push ebp
-	mov ebp,esp
-	
-	push ecx
-	push edx
-	push esi
-	push ebx
+   push ebp
+   mov ebp,esp
 
-	mov ah, 0xb1
-	mov al, 8
-	mov bh, [ebp+8]
-	mov bl, [ebp+12]
-	mov edi, [ebp+16]
+   push ecx
+   push edx
+   push esi
+   push ebx
 
-	call far [pcibios]
+   mov ah, 0xb1
+   mov al, 8
+   mov bh, [ebp+8]
+   mov bl, [ebp+12]
+   mov edi, [ebp+16]
 
-	mov eax,ecx
-	pop ebx	
-	pop esi
-	pop edx
-	pop ecx
-	pop ebp
-	ret
+   call far [pcibios]
+
+   mov eax,ecx
+   pop ebx	
+   pop esi
+   pop edx
+   pop ecx
+   pop ebp
+   ret
 
 ;word _pci_readconfigword(char bus, char devfunc, WORD register)
 global pci_readconfigword
