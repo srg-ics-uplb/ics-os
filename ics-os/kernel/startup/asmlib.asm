@@ -782,22 +782,22 @@ ultoa:
    ;	
    ;	char *ultoa (
    ;	
-	push ebp
-	mov ebp,esp
-	push ebx
-	mov ebx,dword [ebp+12]
-	push dword 0
-	mov eax,dword [ebp+16]
-	push eax
-	push ebx
-	mov edx,dword [ebp+8]
-	push edx
-	call xtoa
-	add esp,16
-	mov eax,ebx
-	pop ebx
-	pop ebp
-	ret 
+   push ebp
+   mov ebp,esp
+   push ebx
+   mov ebx,dword [ebp+12]
+   push dword 0
+   mov eax,dword [ebp+16]
+   push eax
+   push ebx
+   mov edx,dword [ebp+8]
+   push edx
+   call xtoa
+   add esp,16
+   mov eax,ebx
+   pop ebx
+   pop ebp
+   ret 
 
 
 global _textcolor
@@ -832,10 +832,6 @@ textbackground:
    pop ebp
    ret 
 
-
-
-
-
 ;       move the cursor
 ;	void gotoxy(char X,char Y)
 global gotoxy
@@ -843,54 +839,54 @@ global gotoxy
 gotoxy:
 
    @70:
-   push      ebp
-   mov       ebp,esp
-   mov       al,byte  [ebp+8]
-   mov       byte  [CsrX],al
-   mov       dl,byte [ebp+12]
-   mov       byte  [CsrY],dl
-   push      edx
-   push      eax
-   call      move_cursor
-   add       esp,8
+   push ebp
+   mov ebp,esp
+   mov al,byte  [ebp+8]
+   mov byte  [CsrX],al
+   mov dl,byte [ebp+12]
+   mov byte  [CsrY],dl
+   push edx
+   push eax
+   call move_cursor
+   add esp,8
    @71:
-   pop       ebp
+   pop ebp
    ret 
 	
 outb:
    ;	
    ;	 void  outb (unsigned short int port,unsigned char data)
    ;	
-   push      ebp
-   mov       ebp,esp
-   mov	  al,byte [ebp+12]
-   mov	  dx,word [ebp+8]
-   out	  dx,al
-   pop       ebp
+   push ebp
+   mov ebp,esp
+   mov al,byte [ebp+12]
+   mov dx,word [ebp+8]
+   out dx,al
+   pop ebp
    ret 
 
 
 MOVECURSOR: 
 ;BX = New cursor pos 
-PUSH EDX 
-PUSH EAX 
-PUSH EBX 
-MOV DX, 0x3D4 ;Hardware Cursor RegIndex Port 
-MOV AL, 0xF ;Make Hardware Cursor Low reg available at 0x3D5 
-OUT DX, AL 
-INC DX ;Hardware Cursor RegData Port 
-MOV AL, BL 
-OUT DX, AL ;Write Actual Cursor Low reg 
-DEC DX ;Hardware Cursor RegIndex Port 
-MOV AL, 0xE ;Make Hardware Cursor High reg available at 0x3D5 
-OUT DX, AL 
-INC DX ;Hardware Cursor RegData Port 
-MOV AL, BH 
-OUT DX, AL ;Write Actual Cursor High reg 
-POP EBX 
-POP EAX 
-POP EDX 
-RET 
+   push edx 
+   push eax 
+   push ebx 
+   mov dx, 0x3D4 ;Hardware Cursor RegIndex Port 
+   mov al, 0xF ;Make Hardware Cursor Low reg available at 0x3D5 
+   out dx, al 
+   inc dx ;Hardware Cursor RegData Port 
+   mov al, bl 
+   out dx, al ;Write Actual Cursor Low reg 
+   dec dx ;Hardware Cursor RegIndex Port 
+   mov al, 0xE ;Make Hardware Cursor High reg available at 0x3D5 
+   out dx, al 
+   inc dx ;Hardware Cursor RegData Port 
+   mov al, bh 
+   out dx, al ;Write Actual Cursor High reg 
+   pop ebx 
+   pop eax 
+   pop edx 
+   ret 
 
 global move_cursor
 move_cursor:
@@ -899,106 +895,104 @@ move_cursor:
    ;	
    ;	void update_cursor(unsigned char row,unsigned int col)
    ;	
-	push      ebp
-	mov       ebp,esp
-	push      ecx
-	push      ebx
-	movzx     eax,word [ebp+8]
-	mov       edx,eax
-	shl       edx,4
-	lea       edx,[edx+4*edx]
-	add       dx,word [ebp+12]
-	mov       word [ebp-2],dx
-	movzx	  ebx,word [ebp-2]
-	call	  MOVECURSOR
-	pop       ebx
-	pop       ecx
-	pop       ebp
+	push ebp
+	mov ebp,esp
+	push ecx
+	push ebx
+	movzx eax,word [ebp+8]
+	mov edx,eax
+	shl edx,4
+	lea edx,[edx+4*edx]
+	add dx,word [ebp+12]
+	mov word [ebp-2],dx
+	movzx ebx,word [ebp-2]
+	call MOVECURSOR
+	pop ebx
+	pop ecx
+	pop ebp
 	ret 
-
-	
 
 
 clrscrC:
-        push ebp
-        mov ebp,esp
-        push es
-        push eax
-        push ebx
-        push edx
-        mov edx,[ebp+8]
-        mov ax,LINEAR_SEL
-        mov es,ax         ;Use the linear selector for this one
-        mov eax,0xB8000   ;The  linear address of the video memory
-        mov ebx,80*25   ;The size of the video memory
-     clr_C:
-        inc eax
-        inc eax
-        dec ebx
-       
-        mov byte [es:eax],dl
-        mov byte [es:eax+1],0 
-        cmp ebx,0
-        jne clr_C
-                ;reset the position of the cursor to the top left
-        mov byte [CsrX],0
-        mov byte [CsrY],0
-        pop edx
-        pop ebx
-        pop eax
-        pop es  
-        pop ebp
-	ret 	
+   push ebp
+   mov ebp,esp
+   push es
+   push eax
+   push ebx
+   push edx
+   mov edx,[ebp+8]
+   mov ax,LINEAR_SEL
+   mov es,ax         ;Use the linear selector for this one
+   mov eax,0xB8000   ;The  linear address of the video memory
+   mov ebx,80*25   ;The size of the video memory
+   clr_C:
+   inc eax
+   inc eax
+   dec ebx
+
+   mov byte [es:eax],dl
+   mov byte [es:eax+1],0 
+   cmp ebx,0
+   jne clr_C
+          ;reset the position of the cursor to the top left
+   mov byte [CsrX],0
+   mov byte [CsrY],0
+   pop edx
+   pop ebx
+   pop eax
+   pop es  
+   pop ebp
+   ret 	
 
 
 ;The clrscr function using memset
 clrscr2:
-	push      dword 4000
-	push      dword 0
-	push      dword 753664
-	push      dword LINEAR_SEL
-	call      memset
-	add       esp,16
+	push dword 4000
+	push dword 0
+	push dword 753664
+	push dword LINEAR_SEL
+	call memset
+	add esp,16
 	ret 
 
 scrollup:
    ;	
    ;	void scrollup()
 
-	push      dword 3840
-	push      dword 753824
-	push      dword 753664
-	call      linmemmove
-	add       esp,12
-	ret 
+   push dword 3840
+   push dword 753824
+   push dword 753664
+   call linmemmove
+   add esp,12
+   ret 
 
 
 
 memset:
-	push      ebp
-	mov       ebp,esp
-	push      ebx
-	push      eax
-	mov       edx,dword [ebp+20]
-	jmp       short @_24
-   
-@_23:
-	mov	 ax,word [ebp+8]
-   	mov	 gs,ax
-   	mov	 ebx,dword [ebp+12]
-   	mov	 al,byte [ebp+16]
-   	mov	 byte [gs:ebx],al
-	inc      dword [ebp+12]
-@_24:
-	mov       eax,edx
-	add       edx,-1
-	test      eax,eax
-	jne       short @_23
- 
-        pop       eax
-	pop       ebx
-	pop       ebp
-	ret 
+   push ebp
+   mov ebp,esp
+   push ebx
+   push eax
+   mov edx,dword [ebp+20]
+   jmp short @_24
+
+   @_23:
+   mov ax,word [ebp+8]
+   mov gs,ax
+   mov ebx,dword [ebp+12]
+   mov al,byte [ebp+16]
+   mov byte [gs:ebx],al
+   inc dword [ebp+12]
+   @_24:
+   mov eax,edx
+   add edx,-1
+   test eax,eax
+   jne short @_23
+
+   pop eax
+   pop ebx
+   pop ebp
+   ret 
 
 linmemmove:
 
