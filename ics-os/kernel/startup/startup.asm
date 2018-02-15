@@ -187,7 +187,7 @@ linearcode:
    ;enable A20 line
 call enable_A20
 
-   ;jump to the kernel
+   ;jump to main() in kernel32.c which is the start of the kernel
 call main
 
 
