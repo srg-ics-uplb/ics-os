@@ -53,7 +53,7 @@ DWORD sched_sysmes[3]={0,0,0}; //scheduler system messages [0] = pid, [1] = mes,
 
 int ps_notimeincrement = 0;
 
-//pointer to initial processes in the kernel
+//pointers to initial processes in the kernel
 PCB386   *schedp;                         //pointer to scheduler process
 PCB386   *plast;                          //pointer to last process
 PCB386   *current_process=0;              //pointer to current process
@@ -1241,7 +1241,7 @@ int process_pid_sorter(PCB386 *n1, PCB386 *n2){
 };
 
 
-//displays the list of processes
+//displays the list of processes. called in the ps command
 void show_process(){
    int total=0,i;
    DWORD totalsize=0 , grandtotalcputime = 0;
@@ -1255,10 +1255,8 @@ void show_process(){
    textcolor(MAGENTA);
    printf("%-5s %-17s %-10s %-17s %6s %5s %10s\n","ID","Name","User Level","Owner","Size","AT","CT");
    textcolor(WHITE);
-
     
-   
-    /*Tell the scheduler to give us an array of PCBs which contain the PCBs of the processes
+   /*Tell the scheduler to give us an array of PCBs which contain the PCBs of the processes
       running in the system*/  
    total = get_processlist(&ptr);
     
@@ -1266,289 +1264,287 @@ void show_process(){
     /*first we obtain the total cputime of all the processes, this is computed by
       the summation of the delta cputimes*/
       
-   for (i=0; i<total; i++) grandtotalcputime += ( ptr[i].totalcputime - ptr[i].lastcputime );
+   for (i=0; i<total; i++) 
+      grandtotalcputime += ( ptr[i].totalcputime - ptr[i].lastcputime );
 
     
-   for (i=0; i<total; i++)
-    {
-        char temp[255];
-        PCB386 *ps;
-        int percent_cpu_time;
-        //obtain the size of the memory used by the process (no. of pages used)
-        DWORD psize=getprocessmemory(ptr[i].meminfo,ptr[i].pagedirloc);	
+   for (i=0; i<total; i++){
+      char temp[255];
+      PCB386 *ps;
+      int percent_cpu_time;
+      
+      //obtain the size of the memory used by the process (no. of pages used)
+      DWORD psize=getprocessmemory(ptr[i].meminfo,ptr[i].pagedirloc);	
 
-        //convert to Kilobytes
-        psize=((psize*0x1000)/1024)+4;
+      //convert to Kilobytes
+      psize=((psize*0x1000)/1024)+4;
 
-        //update the global total
-        totalsize+=psize;
+      //update the global total
+      totalsize+=psize;
         
-        printf("[%-3s]",itoa(ptr[i].processid,temp,10));
-        if ( ptr[i].status & PS_ATTB_UNLOADABLE ) textcolor(RED);
-        else
-        if (ptr[i].accesslevel == ACCESS_SYS) textcolor(LIGHTBLUE);
-        else
-            textcolor(GREEN);
+      printf("[%-3s]",itoa(ptr[i].processid,temp,10));
+      if ( ptr[i].status & PS_ATTB_UNLOADABLE ) 
+         textcolor(RED);
+      else if (ptr[i].accesslevel == ACCESS_SYS) 
+         textcolor(LIGHTBLUE);
+      else
+         textcolor(GREEN);
             
-        printf(" %-17s",ptr[i].name);
-        textcolor(WHITE);
-        strcpy(levelstr,"?");
+      printf(" %-17s",ptr[i].name);
+      textcolor(WHITE);
+      strcpy(levelstr,"?");
 
-        //determine the access level and then show it on the screen
-        if (ptr[i].accesslevel == ACCESS_SYS) strcpy(levelstr,"supervisor");
-        else
-            if (ptr[i].accesslevel == ACCESS_USER) strcpy(levelstr,"user");
+      //determine the access level and then show it on the screen
+      if (ptr[i].accesslevel == ACCESS_SYS) 
+         strcpy(levelstr,"supervisor");
+      else if (ptr[i].accesslevel == ACCESS_USER) 
+         strcpy(levelstr,"user");
 
-        //obtain the name of the parent process
-        dex32_getname(ptr[i].owner,sizeof(temp),temp);
+      //obtain the name of the parent process
+      dex32_getname(ptr[i].owner,sizeof(temp),temp);
 
-        /*compute for the percent CPU time*/
-        percent_cpu_time = (ptr[i].totalcputime - ptr[i].lastcputime) * 100 / grandtotalcputime;
+      /*compute for the percent CPU time*/
+      percent_cpu_time = (ptr[i].totalcputime - ptr[i].lastcputime) * 100 / grandtotalcputime;
+     
+      sync_entercrit(&processmgr_busy);
+     
+      ps = ps_findprocess(ptr[i].processid);
+      if (ps!=-1){
+         ps->lastcputime = ptr[i].totalcputime;
+      };
         
-        sync_entercrit(&processmgr_busy);
+      sync_leavecrit(&processmgr_busy);
         
-        ps = ps_findprocess(ptr[i].processid);
-        if (ps!=-1)
-        {
-        ps->lastcputime = ptr[i].totalcputime;
-        };
-        
-        sync_leavecrit(&processmgr_busy);
-        
-        printf(" %-10s %-17s %5dK %5ds %5ds(%2d)%%\n",levelstr,temp,psize,
-        ptr[i].arrivaltime/100, ptr[i].totalcputime/100, percent_cpu_time);
-    };
+      printf(" %-10s %-17s %5dK %5ds %5ds(%2d)%%\n",levelstr,temp,psize,
+      ptr[i].arrivaltime/100, ptr[i].totalcputime/100, percent_cpu_time);
+   };
 
-    printf("\nTotal            : %d processes (%d KB)\n",total,totalsize);
-    printf("Time Since Startup : %d\n", ticks / context_switch_rate);
-    printf("Legend: AT = Arrival Time, CT = CPU Time, %%CT = Percent CPU Time\n");
+   printf("\nTotal            : %d processes (%d KB)\n",total,totalsize);
+   printf("Time Since Startup : %d\n", ticks / context_switch_rate);
+   printf("Legend: AT = Arrival Time, CT = CPU Time, %%CT = Percent CPU Time\n");
     
-    free(ptr);
+   free(ptr);
 };
 
 
-DWORD totalprocess()
-{
-    int total=0;
-    PCB386* ptr;
+//get the total number of process
+DWORD totalprocess(){
+   int total=0;
+   PCB386* ptr;
     
-    total = get_processlist(&ptr);
-    free(ptr);
-    return total;
+   total = get_processlist(&ptr);
+   free(ptr);
+   return total;
 };
 
-DWORD getprocessinfo(DWORD processid,PCB386 *data)
-{
-    PCB386 *ptr;
-    sync_justwait(&processmgr_busy);
-    ptr = ps_findprocess(processid);
-
-    if (ptr!=-1)
-    {
-        memcpy(data,ptr,ptr->size);
-        return 1;
-    };
-    return 0;
-    ;
+//get some stats from process
+DWORD getprocessinfo(DWORD processid,PCB386 *data){
+   PCB386 *ptr;
+   sync_justwait(&processmgr_busy);
+  
+   ptr = ps_findprocess(processid);
+   if (ptr!=-1){
+      memcpy(data,ptr,ptr->size);
+      return 1;
+   };
+   return 0;
+   ;
 };
 
 //dex32_locktasks is used only by system functions to temporarily prevent
 //other processes from taking control of the CPU
-DWORD dex32_locktasks()
-{
+DWORD dex32_locktasks(){
     sigwait=1;
     return 1;
 };
 
-DWORD dex32_unlocktasks()
-{
+DWORD dex32_unlocktasks(){
     sigwait=0;
     return 1;
     ;
 };
 
-extern loadtsr();
+extern loadtsr();  // startup/asmlib.asm
 
-
-
-void systemcall()
-{
+void systemcall(){
     printf("A system call has been called\n");
     ;
 };
 
 
 /* This procedure gets called when the kernel boots up, it sets up
-   the initial processes that would be run.*/
-void process_init()
-{
-    char tmp[255];
-    PCB386 *kernel;
+   the initial processes that would be run. Use the ps command to
+   view the details of these processes. Hardcoded. EIP field of the 
+   PCB points to the function that will be executed in the process.
+*/
+void process_init(){
+   char tmp[255];
+   PCB386 *kernel;
     
     
-    //initialize the FPU
-    asm volatile ("fninit");
-    asm volatile ("fnsave ps_kernelfpustate");
+   //initialize the FPU
+   asm volatile ("fninit");
+   asm volatile ("fnsave ps_kernelfpustate");
     
-    //add the first process in memory which is the process kernel
-    kernel=&sPCB;
-    memset(kernel,0,sizeof(PCB386));
-    kernel->next=kernel;
-    kernel->before=kernel;
-    kernel->processid=0;
-    kernel->meminfo=0;
-    strcpy(kernel->name,"dex_kernel-beta");
-    kernel->accesslevel=ACCESS_SYS;
-    kernel->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
-    kernel->knext=knext;
-    kernel->outdev=consoleDDL;
-    kernel->pagedirloc=pagedir1;
+   //add the first process in memory which is the process kernel
+   kernel=&sPCB;
+   memset(kernel,0,sizeof(PCB386));
+   kernel->next=kernel;
+   kernel->before=kernel;
+   kernel->processid=0;                              //process id is 0
+   kernel->meminfo=0;
+   strcpy(kernel->name,"dex_kernel-beta");           //sPCB
+   kernel->accesslevel=ACCESS_SYS;
+   kernel->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
+   kernel->knext=knext;
+   kernel->outdev=consoleDDL;
+   kernel->pagedirloc=pagedir1;
 
-    //initialize the current FPU state
-    memcpy(&kernel->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
+   //initialize the current FPU state
+   memcpy(&kernel->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
     
-    memset(&kernel->regs,0,sizeof(saveregs));
-    kernel->regs.EIP=(DWORD)dex_init;
-    kernel->regs.ESP= DISPATCHER_STACK_LOC;
-    kernel->regs.CR3=pagedir1;
-    kernel->regs.ES=SYS_DATA_SEL;
-    kernel->regs.SS=SYS_STACK_SEL;
-    kernel->regs.CS=SYS_CODE_SEL;
-    kernel->regs.DS=SYS_DATA_SEL;
-    kernel->regs.FS=SYS_DATA_SEL;
-    kernel->regs.GS=SYS_DATA_SEL;
-    kernel->regs.ESP0= DISPATCHER_STACK_LOC;
-    kernel->regs.SS0= SYS_DATA_SEL;
-    kernel->regs.EFLAGS=0x200;
-    memcpy(&kernelPCB,kernel,sizeof(PCB386));
-    setgdt(SYS_TSS,&kernelPCB.regs,103,0x89,0);
-    sched_phead=kernel;
+   memset(&kernel->regs,0,sizeof(saveregs));
+   kernel->regs.EIP=(DWORD)dex_init;                 //dex_init() in kernel32.c
+   kernel->regs.ESP= DISPATCHER_STACK_LOC;
+   kernel->regs.CR3=pagedir1;
+   kernel->regs.ES=SYS_DATA_SEL;
+   kernel->regs.SS=SYS_STACK_SEL;
+   kernel->regs.CS=SYS_CODE_SEL;
+   kernel->regs.DS=SYS_DATA_SEL;
+   kernel->regs.FS=SYS_DATA_SEL;
+   kernel->regs.GS=SYS_DATA_SEL;
+   kernel->regs.ESP0= DISPATCHER_STACK_LOC;
+   kernel->regs.SS0= SYS_DATA_SEL;
+   kernel->regs.EFLAGS=0x200;
+   memcpy(&kernelPCB,kernel,sizeof(PCB386));
+   setgdt(SYS_TSS,&kernelPCB.regs,103,0x89,0);
+   sched_phead=kernel;
 
-    /*Set up the PCB of the scheduler*/
-    schedp=&schedpPCB;
-    memset(schedp,0,sizeof(PCB386));
+   /*Set up the PCB of the scheduler*/
+   schedp=&schedpPCB;
+   memset(schedp,0,sizeof(PCB386));
     
-    schedp->processid=1;
-    strcpy(schedp->name,"dex32_sched");
-    schedp->accesslevel=ACCESS_SYS;
-    schedp->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
-    schedp->knext=knext;
-    schedp->pagedirloc=pagedir1;
-    schedp->outdev = consoleDDL;
-    schedp->regs.EIP=(DWORD)taskswitcher;
-    schedp->regs.ESP= SCHED_STACK_LOC;
-    schedp->regs.ES=SYS_DATA_SEL;
-    schedp->regs.SS=SYS_STACK_SEL;
-    schedp->regs.CS=SYS_CODE_SEL;
-    schedp->regs.DS=SYS_DATA_SEL;
-    schedp->regs.FS=SYS_DATA_SEL;
-    schedp->regs.CR3=pagedir1;
-    schedp->regs.GS=SYS_DATA_SEL;
-    schedp->regs.EFLAGS=0;
-    schedp->regs.SS0=SYS_STACK_SEL;
-    schedp->regs.ESP0= SCHED_STACK_LOC;
-    setgdt(SCHED_TSS,&(schedp->regs),103,0x89,0);
+   schedp->processid=1;                              //process id is 1
+   strcpy(schedp->name,"dex32_sched");               //schedpPCB
+   schedp->accesslevel=ACCESS_SYS;
+   schedp->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
+   schedp->knext=knext;
+   schedp->pagedirloc=pagedir1;
+   schedp->outdev = consoleDDL;
+   schedp->regs.EIP=(DWORD)taskswitcher;             //taskswitcher() defined here.
+   schedp->regs.ESP= SCHED_STACK_LOC;
+   schedp->regs.ES=SYS_DATA_SEL;
+   schedp->regs.SS=SYS_STACK_SEL;
+   schedp->regs.CS=SYS_CODE_SEL;
+   schedp->regs.DS=SYS_DATA_SEL;
+   schedp->regs.FS=SYS_DATA_SEL;
+   schedp->regs.CR3=pagedir1;
+   schedp->regs.GS=SYS_DATA_SEL;
+   schedp->regs.EFLAGS=0;
+   schedp->regs.SS0=SYS_STACK_SEL;
+   schedp->regs.ESP0= SCHED_STACK_LOC;
+   setgdt(SCHED_TSS,&(schedp->regs),103,0x89,0);
 
-    loadtsr();
+   loadtsr();  //terminate and stay resident 
 
-    keyPCB.next=0;
-    keyPCB.processid=1;
-    strcpy(keyPCB.name,"keybhandler");
-    keyPCB.accesslevel=ACCESS_SYS;
-    keyPCB.priority=0;
-    keyPCB.status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
-    keyPCB.knext=knext;
-    keyPCB.pagedirloc=pagedir1;
-    keyPCB.outdev= consoleDDL;
-    memset(&keyPCB.regs,0,sizeof(saveregs));
-    keyPCB.regs.EIP=(DWORD)kbdwrapper;
-    keyPCB.regs.ESP= PAGEFAULT_STACK_LOC;
-    keyPCB.regs.ES=SYS_DATA_SEL;
-    keyPCB.regs.SS=SYS_STACK_SEL;
-    keyPCB.regs.CS=SYS_CODE_SEL;
-    keyPCB.regs.DS=SYS_DATA_SEL;
-    keyPCB.regs.FS=SYS_DATA_SEL;
-    keyPCB.regs.CR3=pagedir1;
-    keyPCB.regs.GS=SYS_DATA_SEL;
-    keyPCB.regs.EFLAGS=0;
-    keyPCB.regs.SS0=SYS_STACK_SEL;
-    keyPCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
-    setgdt(KEYB_TSS,&(keyPCB.regs),103,0x89,0);
+   //directly manipulate the keyboard handler PCB. uses dot(.)
+   keyPCB.next=0;
+   keyPCB.processid=1;
+   strcpy(keyPCB.name,"keybhandler");
+   keyPCB.accesslevel=ACCESS_SYS;
+   keyPCB.priority=0;
+   keyPCB.status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
+   keyPCB.knext=knext;
+   keyPCB.pagedirloc=pagedir1;
+   keyPCB.outdev= consoleDDL;
+   memset(&keyPCB.regs,0,sizeof(saveregs));
+   keyPCB.regs.EIP=(DWORD)kbdwrapper;                // defined in irqwrap.asm to follow calling convention
+   keyPCB.regs.ESP= PAGEFAULT_STACK_LOC;
+   keyPCB.regs.ES=SYS_DATA_SEL;
+   keyPCB.regs.SS=SYS_STACK_SEL;
+   keyPCB.regs.CS=SYS_CODE_SEL;
+   keyPCB.regs.DS=SYS_DATA_SEL;
+   keyPCB.regs.FS=SYS_DATA_SEL;
+   keyPCB.regs.CR3=pagedir1;
+   keyPCB.regs.GS=SYS_DATA_SEL;
+   keyPCB.regs.EFLAGS=0;
+   keyPCB.regs.SS0=SYS_STACK_SEL;
+   keyPCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
+   setgdt(KEYB_TSS,&(keyPCB.regs),103,0x89,0);
 
-    mousePCB.next=0;
-    mousePCB.processid=1;
-    strcpy(mousePCB.name,"mousehandler");
-    mousePCB.accesslevel=ACCESS_SYS;
-    mousePCB.priority=0;
-    mousePCB.status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
-    mousePCB.knext=knext;
-    mousePCB.pagedirloc=pagedir1;
-    mousePCB.outdev= consoleDDL;
-    memset(&mousePCB.regs,0,sizeof(saveregs));
-    mousePCB.regs.EIP=(DWORD)mousewrapper;
-    mousePCB.regs.ESP= PAGEFAULT_STACK_LOC;
-    mousePCB.regs.ES=SYS_DATA_SEL;
-    mousePCB.regs.SS=SYS_STACK_SEL;
-    mousePCB.regs.CS=SYS_CODE_SEL;
-    mousePCB.regs.DS=SYS_DATA_SEL;
-    mousePCB.regs.FS=SYS_DATA_SEL;
-    mousePCB.regs.CR3=pagedir1;
-    mousePCB.regs.GS=SYS_DATA_SEL;
-    mousePCB.regs.EFLAGS=0;
-    mousePCB.regs.SS0=SYS_STACK_SEL;
-    mousePCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
-    setgdt(MOUSE_TSS,&(mousePCB.regs),103,0x89,0);
+   //directly manipulate the mouse handler PCB. uses dot(.)
+   mousePCB.next=0;
+   mousePCB.processid=1;
+   strcpy(mousePCB.name,"mousehandler");
+   mousePCB.accesslevel=ACCESS_SYS;
+   mousePCB.priority=0;
+   mousePCB.status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
+   mousePCB.knext=knext;
+   mousePCB.pagedirloc=pagedir1;
+   mousePCB.outdev= consoleDDL;
+   memset(&mousePCB.regs,0,sizeof(saveregs));
+   mousePCB.regs.EIP=(DWORD)mousewrapper;            //defined in irqwrap.asm
+   mousePCB.regs.ESP= PAGEFAULT_STACK_LOC;
+   mousePCB.regs.ES=SYS_DATA_SEL;
+   mousePCB.regs.SS=SYS_STACK_SEL;
+   mousePCB.regs.CS=SYS_CODE_SEL;
+   mousePCB.regs.DS=SYS_DATA_SEL;
+   mousePCB.regs.FS=SYS_DATA_SEL;
+   mousePCB.regs.CR3=pagedir1;
+   mousePCB.regs.GS=SYS_DATA_SEL;
+   mousePCB.regs.EFLAGS=0;
+   mousePCB.regs.SS0=SYS_STACK_SEL;
+   mousePCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
+   setgdt(MOUSE_TSS,&(mousePCB.regs),103,0x89,0);
 
 
-    /*set up the PCB of the pagefault handler*/
-    pfPCB.next=0;
-    pfPCB.processid=1;
-    strcpy(pfPCB.name,"dex32_pfhandler");
-    pfPCB.accesslevel=ACCESS_SYS;
-    pfPCB.priority=0;
-    pfPCB.status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
-    pfPCB.knext=knext;
-    pfPCB.pagedirloc=pagedir1;
-    memset(&pfPCB.regs,0,sizeof(saveregs));
-    pfPCB.regs.EIP=(DWORD)pfwrapper;
-    pfPCB.regs.ESP=0x7FFFE;
-    pfPCB.regs.ES=SYS_DATA_SEL;
-    pfPCB.regs.SS=SYS_STACK_SEL;
-    pfPCB.regs.CS=SYS_CODE_SEL;
-    pfPCB.regs.DS=SYS_DATA_SEL;
-    pfPCB.regs.FS=SYS_DATA_SEL;
-    pfPCB.regs.CR3=pagedir1;
-    pfPCB.regs.GS=USER_DATA;
-    pfPCB.regs.EFLAGS=0;
-    setgdt(PF_TSS,&(pfPCB.regs),103,0x89,0);
-    //create a duplicate copy
-    memcpy(&pfPCB_copy.regs,&pfPCB.regs,sizeof(pfPCB.regs));
+   /*set up the PCB of the pagefault handler*/
+   pfPCB.next=0;
+   pfPCB.processid=1;
+   strcpy(pfPCB.name,"dex32_pfhandler");
+   pfPCB.accesslevel=ACCESS_SYS;
+   pfPCB.priority=0;
+   pfPCB.status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
+   pfPCB.knext=knext;
+   pfPCB.pagedirloc=pagedir1;
+   memset(&pfPCB.regs,0,sizeof(saveregs));
+   pfPCB.regs.EIP=(DWORD)pfwrapper;                  //define in irqwrap.asm
+   pfPCB.regs.ESP=0x7FFFE;
+   pfPCB.regs.ES=SYS_DATA_SEL;
+   pfPCB.regs.SS=SYS_STACK_SEL;
+   pfPCB.regs.CS=SYS_CODE_SEL;
+   pfPCB.regs.DS=SYS_DATA_SEL;
+   pfPCB.regs.FS=SYS_DATA_SEL;
+   pfPCB.regs.CR3=pagedir1;
+   pfPCB.regs.GS=USER_DATA;
+   pfPCB.regs.EFLAGS=0;
+   setgdt(PF_TSS,&(pfPCB.regs),103,0x89,0);
+   //create a duplicate copy
+   memcpy(&pfPCB_copy.regs,&pfPCB.regs,sizeof(pfPCB.regs));
+   setgdt(USER_CODE,0,0xFFFFF,0xFA,0xCF);
+   setgdt(USER_DATA,0,0xFFFFF,0xF2,0xCF);
+   setgdt(USER_STACK,0,0xFFFFF,0xF2,0xCF);
+   setgdt(USER_TSS,0,103,0xE9,0);
+   setcallgate(DEX_SYSCALL,SYS_CODE_SEL,systemcall,0,3);
 
-    setgdt(USER_CODE,0,0xFFFFF,0xFA,0xCF);
-    setgdt(USER_DATA,0,0xFFFFF,0xF2,0xCF);
-    setgdt(USER_STACK,0,0xFFFFF,0xF2,0xCF);
-    setgdt(USER_TSS,0,103,0xE9,0);
-    setcallgate(DEX_SYSCALL,SYS_CODE_SEL,systemcall,0,3);
+   //set up the semaphore manager
+   semaphore_head=(semaphore*)malloc(sizeof(semaphore));
+   semaphore_head->owner=0;
+   semaphore_head->next=0;
+   semaphore_head->prev=0;
 
-    //set up the semaphore manager
-    semaphore_head=(semaphore*)malloc(sizeof(semaphore));
-    semaphore_head->owner=0;
-    semaphore_head->next=0;
-    semaphore_head->prev=0;
-
-    //initialize current_process
-    current_process = kernel;
-    current_process->workdir = vfs_root;
-
-    ps_scheduler_install();
+   //initialize current_process
+   current_process = kernel;
+   current_process->workdir = vfs_root;
+   ps_scheduler_install();
 
 #ifdef DEBUG_STARTUP
-    printf("process manager: done.\n");
+   printf("process manager: done.\n");
 #endif
 
-    processmgr_busy.busy = 0;
-    processmgr_busy.wait = 0;
+   processmgr_busy.busy = 0;
+   processmgr_busy.wait = 0;
     
-    printf("starting process manager...\n");
+   printf("starting process manager...\n");
 };
 
