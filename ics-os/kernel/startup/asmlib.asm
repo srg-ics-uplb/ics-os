@@ -136,174 +136,174 @@ pci_readconfigbyte:
 ;word _pci_readconfigword(char bus, char devfunc, WORD register)
 global pci_readconfigword
 pci_readconfigword:
-	push ebp
-	mov ebp,esp
-	
-	push ecx
-	push edx
-	push esi
-	push ebx
+   push ebp
+   mov ebp,esp
 
-	mov ah, 0xb1
-	mov al, 9
-	mov bh, [ebp+8]
-	mov bl, [ebp+12]
-	mov edi, [ebp+16]
+   push ecx
+   push edx
+   push esi
+   push ebx
 
-	call far [pcibios]
+   mov ah, 0xb1
+   mov al, 9
+   mov bh, [ebp+8]
+   mov bl, [ebp+12]
+   mov edi, [ebp+16]
 
-	mov eax,ecx
-	pop ebx	
-	pop esi
-	pop edx
-	pop ecx
-	pop ebp
-	ret
+   call far [pcibios]
+
+   mov eax,ecx
+   pop ebx	
+   pop esi
+   pop edx
+   pop ecx
+   pop ebp
+   ret
 
 ;word _pci_readconfigdword(char bus, char devfunc, WORD register)
 global pci_readconfigdword
 pci_readconfigdword:
-	push ebp
-	mov ebp,esp
-	
-	push ecx
-	push edx
-	push esi
-	push ebx
+   push ebp
+   mov ebp,esp
 
-	mov ah, 0xb1
-	mov al, 10
-	mov bh, [ebp+8]
-	mov bl, [ebp+12]
-	mov edi, [ebp+16]
+   push ecx
+   push edx
+   push esi
+   push ebx
 
-	call far [pcibios]
+   mov ah, 0xb1
+   mov al, 10
+   mov bh, [ebp+8]
+   mov bl, [ebp+12]
+   mov edi, [ebp+16]
 
-	mov eax,ecx
-	pop ebx	
-	pop esi
-	pop edx
-	pop ecx
-	pop ebp
-	ret
+   call far [pcibios]
+
+   mov eax,ecx
+   pop ebx	
+   pop esi
+   pop edx
+   pop ecx
+   pop ebp
+   ret
 
 ;int _pci_writeconfigbyte(char bus, char devfunc, WORD register, char data)
 global pci_writeconfigbyte
 pci_writeconfigbyte:
-	push ebp
-	mov ebp,esp
-	
-	push ecx
-	push edx
-	push esi
-	push ebx
+   push ebp
+   mov ebp,esp
 
-	mov ah, 0xb1
-	mov al, 10
-	mov bh, [ebp+8]
-	mov bl, [ebp+12]
-	mov edi, [ebp+16]
-	mov ecx, [ebp+20]
-	
-	call far [pcibios]
+   push ecx
+   push edx
+   push esi
+   push ebx
 
-	shr eax,8
-	pop ebx	
-	pop esi
-	pop edx
-	pop ecx
-	pop ebp
-	ret
+   mov ah, 0xb1
+   mov al, 10
+   mov bh, [ebp+8]
+   mov bl, [ebp+12]
+   mov edi, [ebp+16]
+   mov ecx, [ebp+20]
+
+   call far [pcibios]
+
+   shr eax,8
+   pop ebx	
+   pop esi
+   pop edx
+   pop ecx
+   pop ebp
+   ret
 
 ;int _pci_writeconfigword(char bus, char devfunc, WORD register, WORD data)
 global pci_writeconfigword
 pci_writeconfigword:
-	push ebp
-	mov ebp,esp
-	
-	push ecx
-	push edx
-	push esi
-	push ebx
+   push ebp
+   mov ebp,esp
 
-	mov ah, 0xb1
-	mov al, 11
-	mov bh, [ebp+8]
-	mov bl, [ebp+12]
-	mov edi, [ebp+16]
-	mov ecx, [ebp+20]
-	
-	call far [pcibios]
+   push ecx
+   push edx
+   push esi
+   push ebx
 
-	shr eax,8
-	pop ebx	
-	pop esi
-	pop edx
-	pop ecx
-	pop ebp
-	ret
+   mov ah, 0xb1
+   mov al, 11
+   mov bh, [ebp+8]
+   mov bl, [ebp+12]
+   mov edi, [ebp+16]
+   mov ecx, [ebp+20]
+
+   call far [pcibios]
+
+   shr eax,8
+   pop ebx	
+   pop esi
+   pop edx
+   pop ecx
+   pop ebp
+   ret
 
 ;int _pci_writeconfigdword(char bus, char devfunc, WORD register, DWORD data)
 global pci_writeconfigdword
 pci_writeconfigdword:
-	push ebp
-	mov ebp,esp
-	
-	push ecx
-	push edx
-	push esi
-	push ebx
+   push ebp
+   mov ebp,esp
 
-	mov ah, 0xb1
-	mov al, 12
-	mov bh, [ebp+8]
-	mov bl, [ebp+12]
-	mov edi, [ebp+16]
-	mov ecx, [ebp+20]
-	
-	call far [pcibios]
+   push ecx
+   push edx
+   push esi
+   push ebx
 
-	shr eax,8
-	pop ebx	
-	pop esi
-	pop edx
-	pop ecx
-	pop ebp
-	ret
+   mov ah, 0xb1
+   mov al, 12
+   mov bh, [ebp+8]
+   mov bl, [ebp+12]
+   mov edi, [ebp+16]
+   mov ecx, [ebp+20]
+
+   call far [pcibios]
+
+   shr eax,8
+   pop ebx	
+   pop esi
+   pop edx
+   pop ecx
+   pop ebp
+   ret
 
 global pcibios_call
 
 ;DWORD pcibios_call(function number)
 pcibios_call:
-	push ebp
-	mov ebp,esp
-	push ebx
-	push ecx
+   push ebp
+   mov ebp,esp
+   push ebx
+   push ecx
 
-	mov eax, 0x49435024
-	mov bl,0
+   mov eax, 0x49435024
+   mov bl,0
 
-	call far [pcibiosentry]
+   call far [pcibiosentry]
 
-	cmp al,0x80
-	je pci_error
+   cmp al,0x80
+   je pci_error
 
-	cmp al,0x81
-	je pci_error
+   cmp al,0x81
+   je pci_error
 
-	mov eax,ebx
-	add eax,edx
-	jmp pci_done
-	
-	pci_error
-	mov eax,-1
-	
-	pci_done:
-		
-	pop ecx	
-	pop ebx
-	pop ebp
-	ret
+   mov eax,ebx
+   add eax,edx
+   jmp pci_done
+
+   pci_error
+   mov eax,-1
+
+   pci_done:
+      
+   pop ecx	
+   pop ebx
+   pop ebp
+   ret
 
 
 global invtlb
