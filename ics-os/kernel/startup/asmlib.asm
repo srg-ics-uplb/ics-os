@@ -524,27 +524,23 @@ pop       ebp
 ret 
 
 
+;set the processsor task register to the scheduler TSS
 global loadtsr
-
-; loadstr(WORD sel)
 loadtsr:
-       mov ax,SCHED_TSS
-       ltr ax
-       ret 
+   mov ax,SCHED_TSS
+   ltr ax
+   ret 
 
+;
 global switchuserprocess
-
 switchuserprocess:
-        jmp USER_TSS:0
-ret	
-
+   jmp USER_TSS:0
+   ret	
 
 global switchprocess
-
 switchprocess:
-        jmp SYS_TSS:0
-ret	
-
+   jmp SYS_TSS:0
+   ret	
 
 
 mempop:
