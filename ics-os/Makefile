@@ -42,7 +42,7 @@ livecd: prep_image
 	rm -fr tmp/
 
 run-floppy: floppy
-	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 16M
+	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M
 
 run-livecd: livecd
-	qemu-system-i386 -cdrom ics-os-livecd.iso -boot cd -m 16M
+	qemu-system-i386 -cdrom ics-os-livecd.iso -boot cd -m 64M
