@@ -414,19 +414,22 @@ void dex_init(){
    textbackground(BLACK);
    printf("\n");  
 
-   printf("Getting date and time...\n");
+   printf("Getting date and time...");
    getdatetime(&date);
    getmonthname(date.month,temp);
+   printf("[OK]\n");   
 
-   printf("Installing floppy driver...\n");
+   printf("Installing floppy driver...");
    //Install the built-in floppy disk driver
    floppy_install("fd0"); 
+   printf("[OK]\n");   
     
-   printf("Initializing IDE drivers...");
+   printf("Initializing IDE drivers...\n");
    /*Install the IDE, ATA-2/4 compliant driver in order to be able to
       use CD-ROMS and harddisks. This will also create logical drives from
       the partition tables if needed.*/
    ide_init();
+   printf("[OK]\n");   
 
    /*Install the VGA driver*/
    printf("Loading VGA driver...");
@@ -479,9 +482,13 @@ void dex_init(){
    printf("[OK]\n");   
 
    printf("Mounting boot device %s...", boot_device_name);
-   //mount the floppy disk drive
-   vfs_mount_device("fat",boot_device_name,"icsos");
-   //vfs_mount_device("cdfs","cds0","ICSOS");
+   if (strcmp(boot_device_name,"fd0") == 0){
+      //mount the boot device
+      vfs_mount_device("fat",boot_device_name,"icsos");
+   }else{
+      //for livecd
+      vfs_mount_device("cdfs","cds0","icsos");
+   }
    printf("[OK]\n");   
 
    //setup the initial executable loaders (So we could run .EXEs,.b32,coff and elfs)
