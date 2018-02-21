@@ -19,11 +19,11 @@ prep_image: vmdex
 	cp -r vmdex tmp
 	cp  base/* tmp
 	mkdir -p tmp/apps
-	mkdir -p tmp/tcc
-	mkdir -p tmp/lib
+	mkdir -p tmp/tcc1
+	mkdir -p tmp/lib1
 	cp apps/* tmp/apps/
-	cp sdk/* tmp/tcc/
-	cp lib/* tmp/lib/
+	cp sdk/* tmp/tcc1/
+	cp lib/* tmp/lib1/
 
 floppy: prep_image
 	cp grub.img ics-os-floppy.img                #copy an image with grub
@@ -36,10 +36,13 @@ floppy: prep_image
 	rm -fr tmp/
 
 livecd: prep_image
-	cp -r iso/* tmp/
-	cp tmp/lib/* tmp/
+	mkdir -p tmp/boot/grub
+	cp boot/grub/grub.cfg tmp/boot/grub/.
 	grub-mkrescue -o ics-os-livecd.iso tmp/
 	rm -fr tmp/
 
-run-on-qemu:
-	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 16M
+run-floppy: floppy
+	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M
+
+run-livecd: livecd
+	qemu-system-i386 -cdrom ics-os-livecd.iso -boot cd -m 64M

@@ -1,8 +1,8 @@
 @echo off
 @echo Loading Microsoft C runtime library...
-loadmod /icsos/lib/msvcrt.dll
+loadmod /icsos/lib1/msvcrt.dll
 @echo Initializing RAM Disk...
-loadmod /icsos/lib/ramdisk.dll -blocks 10000
+loadmod /icsos/lib1/ramdisk.dll -blocks 10000
 mount fat ramdisk /ramdisk
 rem copy /icsos/apps/ed.exe /ramdisk
 pcut rd: /ramdisk/
