@@ -9,28 +9,37 @@ vmdex:
 .PHONY: clean
 clean:
 	rm -f vmdex
+	rm -f ics-os-livecd.iso
+	rm -fr tmp/*
 	make -C kernel/ clean
 
-install: vmdex
+prep_image: vmdex
+	rm -fr tmp
+	mkdir tmp
+	cp -r vmdex tmp
+	cp  base/* tmp
+	mkdir -p tmp/apps
+	mkdir -p tmp/tcc
+	mkdir -p tmp/lib
+	cp apps/* tmp/apps/
+	cp sdk/* tmp/tcc/
+	cp lib/* tmp/lib/
+
+floppy: prep_image
 	cp grub.img ics-os-floppy.img                #copy an image with grub
-	rm -fr mnt
-	mkdir mnt
-	mount ics-os-floppy.img mnt -tmsdos -oloop
-	cp -r vmdex mnt
-	cp  base/* mnt
-	mkdir -p mnt/apps
-	mkdir -p mnt/tcc
-	mkdir -p mnt/lib
-	cp apps/* mnt/apps/
-	cp sdk/* mnt/tcc/
-	cp lib/* mnt/lib/
-	umount mnt
-	chmod 666 ics-os-floppy.img
+	sudo rm -fr mnt
+	sudo mkdir mnt
+	sudo mount ics-os-floppy.img mnt -tmsdos -oloop
+	sudo cp -r tmp/* mnt/
+	sudo umount mnt
+	sudo chmod 666 ics-os-floppy.img
+	rm -fr tmp/
 
-floppy: install
-	dd if=ics-os-floppy.img of=/dev/fd0 bs=1440
-
-livecd: install
+livecd: prep_image
+	cp -r iso/* tmp/
+	cp tmp/lib/* tmp/
+	grub-mkrescue -o ics-os-livecd.iso tmp/
+	rm -fr tmp/
 
 run-on-qemu:
 	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 16M
