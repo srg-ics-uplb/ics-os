@@ -41,8 +41,8 @@ livecd: prep_image
 	grub-mkrescue -o ics-os-livecd.iso tmp/
 	rm -fr tmp/
 
-run-floppy: floppy
+boot-floppy: floppy
 	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M
 
-run-livecd: livecd
+boot-livecd: livecd
 	qemu-system-i386 -cdrom ics-os-livecd.iso -boot cd -m 64M
