@@ -522,71 +522,60 @@ int console_execute(const char *str){
    if (strcmp(u,"meminfo") == 0){
       mem_interpretmemory(memory_map,map_length);
    }else
-    if (strcmp(u,"pause")==0)
-                {
-                printf("press any key to continue or 'q' to quit..\n");
-                if (getch()=='q') return -1;
-                }
-                else
-    if (strcmp(u,"lspcut")==0)
-                vfs_showpathcuts();
-                else
-    if (strcmp(u,"pcut")==0)
-                {
-                   char *u2,*u3;
-                   u2 = strtok(0," ");
-                   u3 = strtok(0," ");
-                   if (u2!=0)
-                      {
-                          if (vfs_addpathcut(u2,u3)==-1)
-                            printf("Invalid Pathcut specified\n");
-                              else
-                            printf("pathcut added.\n");                                
-                      }
-                   else
-                      printf("Wrong number of parameters specified\n");
-                }
-                else
-    if (strcmp(u,"rmdir")==0)
-                {
-                char *u2 = strtok(0," ");
-                if (u2!=0)
-                    {
-                        char c;                
-                        printf("*Warning!* This will delete all files and subdirectories!\n");
-                        printf("Do you wish to continue? (y/n):");
-                        c = getch();
-                        if (c == 'y')
-                           {
-                              printf("please wait..\n");                        
-                              if (rmdir(u2)!=-1)
-                                printf("Remove directory successful!\n");
-                              else
-                                printf("Error while removing directory.\n");
-                           }
-                        else
-                           printf("Remove directory cancelled.\n");
-                    }
-                   else
-                   printf("Invalid parameter.\n"); 
-                }
-                else
-    if (strcmp(u,"rempcut")==0)
-                {
-                   char *u2;
-                   u2 = strtok(0," ");
-                   if (u2!=0)
-                     {
-                     if (vfs_removepathcut(u2)==-1)
-                        printf("Invalid Pathcut or pathcut not found\n");
-                           else
-                        printf("pathcut removed.\n");   
-                     
-                     }
-                   else
-                     printf("Wrong number of parameters specified\n");
-                     
-                }
+   if (strcmp(u,"pause") == 0){
+      printf("press any key to continue or 'q' to quit..\n");
+      if (getch() == 'q') 
+         return -1;
+   }else
+   if (strcmp(u,"lspcut") == 0){
+      vfs_showpathcuts();
+   }else
+   if (strcmp(u,"pcut") == 0){
+      char *u2,*u3;
+      u2 = strtok(0," ");
+      u3 = strtok(0," ");
+      if (u2 != 0){
+         if (vfs_addpathcut(u2,u3)==-1){
+            printf("Invalid pathcut specified.\n");
+         }else{
+            printf("Pathcut added.\n"); 
+         }                               
+      }else{
+         printf("Wrong number of parameters specified.\n");
+      }
+   }else
+   if (strcmp(u,"rmdir")==0){
+      char *u2 = strtok(0," ");
+      if (u2 != 0){
+         char c;                
+         printf("*Warning!* This will delete all files and subdirectories!\n");
+         printf("Do you wish to continue? (y/n):");
+         c = getch();
+         if (c == 'y'){
+            printf("Please wait..\n");                        
+            if (rmdir(u2) != -1)
+               printf("Remove directory successful!\n");
+            else
+               printf("Error while removing directory.\n");
+         }else{
+            printf("Remove directory cancelled.\n");
+         }
+      }else{
+         printf("Invalid parameter.\n"); 
+      }
+   }else
+   if (strcmp(u,"rempcut")==0){
+      char *u2;
+      u2 = strtok(0," ");
+      if (u2 != 0){
+         if (vfs_removepathcut(u2) == -1)
+            printf("Invalid Pathcut or pathcut not found\n");
+         else
+            printf("pathcut removed.\n");   
+      }else{
+         printf("Wrong number of parameters specified\n");
+      }               
+   }
                 else
     if (strcmp(u,"newconsole")==0)
                 {
