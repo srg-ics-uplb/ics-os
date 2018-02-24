@@ -280,9 +280,9 @@ int console_showfile(char *s, int wait){
    buf=(char*)malloc(size);
    textbackground(BLUE);
    myddl = Dex32GetProcessDevice();
-   printf("Name: %s  size of file: %d\n",s,size);
+   printf("Name: %s  Filesize: %d bytes \n", s, size);
    textbackground(BLACK);
-   fread(buf,size,1,handle);
+   fread(buf, size, 1, handle);
    for (i=0; i<size; i++){
       if (buf[i]!='\r') 
          printf("%c",buf[i]);
@@ -301,67 +301,50 @@ int console_showfile(char *s, int wait){
 
 
 //creates a virtual console for a process
-DWORD alloc_console()
-{
-dex32_commit(0xB8000,1,current_process->pagedirloc,PG_WR)
-;};
+DWORD alloc_console(){
+   dex32_commit(0xB8000, 1, current_process->pagedirloc, PG_WR);
+};
+
+void console(){
+   console_main();
+};
 
 
-void console()
- {
-   
-    console_main();
- };
-
-
-void prompt_parser(const char *promptstr,char *prompt)
-  {
-  int i,i2=0,i3=0;
-  char command[10],temp[255];
-  strcpy(prompt,"");
-  for (i=0;promptstr[i]&&i<255;i++)
-    {
-      if (promptstr[i]!='%')
-          //add to the prompt
-          {
-              prompt[i2]=promptstr[i];
-              i2++;
-              prompt[i2]=0;
-          }
-          else
-          {
-            if (promptstr[i+1]!=0)
-              {
-                if (promptstr[i+1]=='%')
-                   {
-                   prompt[i2]='%';
-                   i2++;
-                   prompt[i2]=0;
-                   i+=2;
-                   continue;
-                   };
-              };
-            i3=0;
-            for (i2=i+1;promptstr[i2]&&i2<255;i2++)
-              {
-
-                  if (promptstr[i2]=='%'||i3>=10) break;
-                  command[i3]=promptstr[i2];
-                  i3++;
-
-              };
-              i=i2;
-              command[i3]=0;
-              if (strcmp(command,"cdir")==0)
-                {
-                  strcat(prompt,showpath(temp));
-                  i2=strlen(prompt);
-                };
-          };
-
-    };
-
-  };
+void prompt_parser(const char *promptstr, char *prompt){
+   int i, i2 = 0, i3 = 0;
+   char command[10], temp[255];
+   strcpy(prompt,"");
+   for (i=0; promptstr[i] && i<255; i++){
+      if (promptstr[i] != '%'){ //add to the prompt
+         prompt[i2]=promptstr[i];
+         i2++;
+         prompt[i2]=0;
+      }else{
+         if (promptstr[i+1] != 0){
+            if (promptstr[i+1] == '%'){
+               prompt[i2] = '%';
+               i2++;
+               prompt[i2] = 0;
+               i+=2;
+               continue;
+            };
+         };
+         i3=0;
+         for (i2=i+1;promptstr[i2]&&i2<255;i2++){
+            if (promptstr[i2] == '%' || i3 >= 10) 
+               break;
+            command[i3]=promptstr[i2];
+            i3++;
+         };
+         i=i2;
+         command[i3]=0;
+         if (strcmp(command,"cdir")==0){
+            strcat(prompt, showpath(temp));
+            i2=strlen(prompt);
+         };
+      };
+   };
+};
   
 
 
