@@ -705,172 +705,130 @@ int console_execute(const char *str){
             delfile(u);
             printf("File deleted.\n");
          }else{
-            printf("invalid parameter.\n");
+            printf("Invalid parameter.\n");
          }
+      }else{
+         printf("Missing parameter.\n");
+      }
+   }else
+   if (strcmp(u,"ren")==0){
+      char *u2,*u3;
+      u2=strtok(0," ");
+      u3=strtok(0," ");               
+      if (u2!=0 && u3!=0){
+         if (rename(u2, u3)) 
+            printf("File renamed.\n");
+         else
+            printf("Error renaming file.\n");
+      }else{
+         printf("Missing parameter.\n"); 
+      }   
+   }else
+   if ( strcmp(u,"type")==0 || strcmp(u,"cat")==0 ){
+      u=strtok(0," ");
+      if (u!=0){
+         if (console_showfile(u,0)==-1)
+            printf("error opening file.\n");
       }else{
          printf("missing parameter.\n");
       }
    }else
-    if (strcmp(u,"ren")==0)
-              {
-              char *u2,*u3;
-               u2=strtok(0," ");
-               u3=strtok(0," ");               
-               if (u2!=0&&u3!=0)
-                  {
-                     if (rename(u2,u3)) printf("file renamed.\n");
-                        else
-                         printf("error renaming file.\n");
-                  }
-                    else
-                printf("missing parameter.\n");    
-              }
-              else
-    if ( strcmp(u,"type")==0 || strcmp(u,"cat")==0 )
-              {
-               u=strtok(0," ");
-               if (u!=0)
-                  {
-                   if (console_showfile(u,0)==-1)
-                    printf("error opening file.\n");
-                  }
-                  else
-               printf("missing parameter.\n");
+   if (strcmp(u,"copy")==0){
+      u=strtok(0," ");
+      if (u!=0){
+         char *u2 = strtok(0," ");
+         if (u2!=0){
+            if (fcopy(u,u2) == -1){
+               printf("Copy failed. Error while copying.\n");
+               printf("Destination directory might not be present.\n");
+            };
+         };  
+      };
+   }else              
+   if (strcmp(u,"cd")==0){
+      u=strtok(0," ");
+      if (u!=0){
+         if (!changedirectory(u))
+            printf("cd: Cannot find directory\n");
+      }else{
+         changedirectory(0); //go to working directory
+      } 
+   }else
+   if (strcmp(u,"loadmod")==0){
+      u=strtok(0," ");
+      if (u!=0){
+         if (loadDLL(u,str)==-1)
+            printf("Unable to load %s.\n",u);
+         else
+            printf("Load module Successful.\n");  
+      }else{
+            printf("missing parameter.\n");
+      }
+   }else
+   if (strcmp(u,"lsdev")==0){
+      devmgr_showdevices();
+   }else
+   if (strcmp(u,"lsext")==0){
+      extension_list();
+   }else
+   if (strcmp(u,"libinfo")==0){
+      u=strtok(0," ");
+      module_listfxn(u);
+   }else
+   if (strcmp(u,"time")==0){
+      printf("%d/%d/%d %d:%d.%d (%d total seconds since 1970)\n",time_systime.day,
+               time_systime.month, time_systime.year,
+               time_systime.hour, time_systime.min,
+               time_systime.sec,time());
+   }else
+   if (strcmp(u,"set")==0){
+      u=strtok(0," ");
+      if (u==0){
+         env_showenv();
+      }else{
+         char *name  = strtok(u,"=");
+         char *value = strtok(0,"\n");
+         env_setenv(name, value, 1);
+      }; 
+   }else         
+   if (strcmp(u,"unload")==0){
+      u=strtok(0," ");
+      if (u!=0){
+         if (module_unload_library(u) == -1)
+            printf("Error unloading library");
+   	};
+   }else
+   if (strcmp(u,"demo_graphics")==0){
+      demo_graphics();
+   }else
+   if (u[0]=='$'){
+      int i, devid;
+      char devicename[255],*cmd;
 
-              }
-              else
-   if (strcmp(u,"copy")==0)
-              {
-              u=strtok(0," ");
-              if (u!=0) 
-                   {
-                      char *u2 = strtok(0," ");
-                      if (u2!=0) 
-                          {
-                            if (fcopy(u,u2) == -1)
-                                {
-                                    printf("copy failed. Error while copying. Destination\n");
-                                    printf("directory might not be present.\n");
-                                };
-                          };  
-                   };
-              }
-              else              
-   if (strcmp(u,"cd")==0)
-              {
-              u=strtok(0," ");
-              if (u!=0)  {
-               if (!changedirectory(u))
-               printf("cd: Cannot find directory\n");
-                         } else
-                changedirectory(0); //go to working directory 
-              } else
-   if (strcmp(u,"loadmod")==0)
-              {
-               u=strtok(0," ");
-               if (u!=0)
-                {
-               if (loadDLL(u,str)==-1)
-                  printf("Unable to load %s.\n",u);
-                    else
-                  printf("Load module Successful.\n");  
-                }
-                  else
-               printf("missing parameter.\n");
-
-              }
-              else
-    if (strcmp(u,"lsdev")==0)
-             {
-              devmgr_showdevices();
-             }
-             else
-    if (strcmp(u,"lsext")==0)
-    			 {
-              extension_list();
-             }
-             else
-    if (strcmp(u,"libinfo")==0)
-             {
-              u=strtok(0," ");
-              module_listfxn(u);
-             }
-             else
-    if (strcmp(u,"time")==0)
-             {
-             printf("%d/%d/%d %d:%d.%d (%d total seconds since 1970)\n",time_systime.day,
-                      time_systime.month, time_systime.year,
-                      time_systime.hour, time_systime.min,
-                      time_systime.sec,time());
-             }
-             else
-    if (strcmp(u,"set")==0)
-             {
-              u=strtok(0," ");
-              if (u==0)
-                 {
-                   env_showenv();
-                 }
-                  else
-                 {
-                    char *name  = strtok(u,"=");
-                    char *value = strtok(0,"\n");
-                    env_setenv(name,value,1);
-                 }; 
-             }
-             else         
-    if (strcmp(u,"unload")==0)
-    			 {
-             u=strtok(0," ");
-             if (u!=0)
-             	{
-	             if (module_unload_library(u)==-1)
-                printf("Error unloading library");
-   	         };
-             }
-             else
-    if (strcmp(u,"demo_graphics")==0)
-              {
-               demo_graphics();
-              }
-    
-              else
-    if (u[0]=='$')
-             {
-               int i, devid;
-               char devicename[255],*cmd;
-               for (i=0;i<20&&u[i+1];i++)
-                    {
-                      devicename[i] = u[i+1];
-                    };
+      for (i=0;i<20 && u[i+1];i++){
+         devicename[i] = u[i+1];
+      };
                     
-               devicename[i] = 0;
+      devicename[i] = 0;
                
-               printf("sending command to %s\n",devicename);
-               devid = devmgr_finddevice(devicename);
+      printf("Sending command to %s\n",devicename);
+      devid = devmgr_finddevice(devicename);
                
-               if (devid != -1)
-               {
-               if (devmgr_sendmessage(devid,DEVMGR_MESSAGESTR,str)==-1)
-                   printf("console: send_message() failed or not supported.\n");
-               }
-                  else
-               printf("console: cannot find device.\n");   
+      if (devid != -1){
+         if (devmgr_sendmessage(devid,DEVMGR_MESSAGESTR,str)==-1)
+            printf("console: send_message() failed or not supported.\n");
+      }else{
+         printf("console: cannot find device.\n");
+      }   
 
-             }
-             else
-             {
-               if (u!=0)
-                 {
-                  
-                  if (!user_execp(u,0,str))
-                      printf("console32: undefined console command.\n");
-
-                 }
-
-              }
-//normal termination
-return 1;
+   }else{
+      if (u!=0){
+         if (!user_execp(u,0,str))
+            printf("console32: undefined console command.\n");
+      }
+   }
+   //normal termination
+   return 1;
 };
 
 int console_new()
