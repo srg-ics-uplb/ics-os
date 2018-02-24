@@ -494,10 +494,10 @@ int console_execute(const char *str){
       sprintf(temp,"cd %s",u);            
       console_execute(temp); 
    }else 
-   if (strcmp(u,"fgman") == 0){  //-Foreground manager
+   if (strcmp(u,"fgman") == 0){  //--  Foreground manager
       fg_set_state(1);
    }else 
-   if (strcmp(u,"mouse") == 0){  //-Activate the mouse
+   if (strcmp(u,"mouse") == 0){  //--  Activate the mouse
       while (!kb_ready()){
          get_mouse_pos(&mouse_x,&mouse_y);
          printf("Mouse (x,y): %d %d\n",mouse_x, mouse_y);
@@ -508,10 +508,10 @@ int console_execute(const char *str){
          last_mouse_y=mouse_y; 
       }
    }else 
-   if (strcmp(u,"shutdown") == 0){
+   if (strcmp(u,"shutdown") == 0){  //-- Shuts down the system.
       sendmessage(0,MES_SHUTDOWN,0);
    }else
-   if (strcmp(u,"procinfo") == 0){
+   if (strcmp(u,"procinfo") == 0){  //-- Show process information. Args: <pid>
       int pid;             
       u=strtok(0," ");
       if (u!=0){
@@ -519,18 +519,18 @@ int console_execute(const char *str){
          show_process_stat(pid);
       };
    }else
-   if (strcmp(u,"meminfo") == 0){
+   if (strcmp(u,"meminfo") == 0){   //-- Show memory map information.
       mem_interpretmemory(memory_map,map_length);
    }else
-   if (strcmp(u,"pause") == 0){
+   if (strcmp(u,"pause") == 0){     //-- Waits for a key press
       printf("press any key to continue or 'q' to quit..\n");
       if (getch() == 'q') 
          return -1;
    }else
-   if (strcmp(u,"lspcut") == 0){
+   if (strcmp(u,"lspcut") == 0){    //-- Shows a list of path aliases. 
       vfs_showpathcuts();
    }else
-   if (strcmp(u,"pcut") == 0){
+   if (strcmp(u,"pcut") == 0){      //-- Creates a path alias. Args: <alias:> [path]
       char *u2,*u3;
       u2 = strtok(0," ");
       u3 = strtok(0," ");
@@ -544,7 +544,7 @@ int console_execute(const char *str){
          printf("Wrong number of parameters specified.\n");
       }
    }else
-   if (strcmp(u,"rmdir") == 0){
+   if (strcmp(u,"rmdir") == 0){     //-- Removes a directory and all its subdirectories. Args: <dirname>
       char *u2 = strtok(0," ");
       if (u2 != 0){
          char c;                
@@ -564,73 +564,72 @@ int console_execute(const char *str){
          printf("Invalid parameter.\n"); 
       }
    }else
-   if (strcmp(u,"rempcut") == 0){
+   if (strcmp(u,"rempcut") == 0){   //-- Removes a path alias. Args: <alias:>
       char *u2;
       u2 = strtok(0," ");
       if (u2 != 0){
          if (vfs_removepathcut(u2) == -1)
             printf("Invalid Pathcut or pathcut not found\n");
          else
-            printf("pathcut removed.\n");   
+            printf("Pathcut removed.\n");   
       }else{
          printf("Wrong number of parameters specified\n");
       }               
    }else
-   if (strcmp(u,"newconsole") == 0){
+   if (strcmp(u,"newconsole") == 0){   //-- Creates a new console.  
       //create a new console         
       console_new();
       printf("New console thread created.\n");                   
    }else  
-   if (strcmp(u,"ver") == 0) {
+   if (strcmp(u,"ver") == 0) {         //-- Shows version information.
       printf("%s",dex32_versionstring);
    }else
-   if (strcmp(u,"cpuid") == 0){
+   if (strcmp(u,"cpuid") == 0){        //-- Displays CPU information. 
       hardware_cpuinfo mycpu;
       hardware_getcpuinfo(&mycpu);
       hardware_printinfo(&mycpu);
    }else            
-   if (strcmp(u,"exit") == 0){
+   if (strcmp(u,"exit") == 0){         //-- Exits a console session.
       fg_exit();
       exit(0);              
    }else  
-   if (strcmp(u,"echo") == 0){
+   if (strcmp(u,"echo") == 0){         //-- Displays a string. Args: <string>  
       u=strtok(0,"\n");
       if (u!=0)              
          printf("%s\n",u);
    }else  
-   if (strcmp(u,"use") == 0){
+   if (strcmp(u,"use") == 0){          //-- Tells the extension manager to use the extension: Args: <extension>  
       u=strtok(0," ");
       if (extension_override(devmgr_getdevicebyname(u),0) == -1){
          printf("Unable to install extension %s.\n",u);                
       };            
    }else        
-   if (strcmp(u,"off") == 0){
+   if (strcmp(u,"off") == 0){          //-- Power off the machine.
       dex32apm_off();
    }else
-   if (strcmp(u,"files") == 0){
+   if (strcmp(u,"files") == 0){        //-- Shows list of currently open files.
       file_showopenfiles();
    }else
-   if (strcmp(u,"find") == 0){
+   if (strcmp(u,"find") == 0){         //-- Finds a file.
       u=strtok(0," ");
       if (u != 0)
          findfile(u);
    }else
-   if (strcmp(u,"kill") == 0){
+   if (strcmp(u,"kill") == 0){         //-- Kills a kernel thread. Args: <thread name>
       u=strtok(0," ");
       if (u!=0)
          dex32_killkthread_name(u);
    }else
-   if (strcmp(u,"procs") == 0 || strcmp(u,"ps") == 0){
+   if (strcmp(u,"procs") == 0 || strcmp(u,"ps") == 0){  //-- List the running processes. "ps" can also be used.
       show_process();
    }else
-   if (strcmp(u,"cls") == 0){
+   if (strcmp(u,"cls") == 0){          //-- Clears the screen. 
       clrscr();
    }else
-   if (strcmp(u,"help") == 0){
-      //console_execute("type /icsos/icsoshlp.txt");
+   if (strcmp(u,"help") == 0){         //-- Displays this help screen.
       console_execute("type /icsos/icsoshlp.txt");
    }else
-   if (strcmp(u,"umount") == 0){
+   if (strcmp(u,"umount") == 0){       //-- Unmounts a mounted device. Args: <mount point>
       char *u =strtok(0," ");
       if (u!=0){
          if (vfs_unmount_device(u)==-1)
@@ -641,7 +640,7 @@ int console_execute(const char *str){
          printf("Missing parameter.\n");
       }                    
    }else
-   if (strcmp(u,"mount") == 0){
+   if (strcmp(u,"mount") == 0){        //-- Mounts a device. Args: fat/cdfs <partition/device> <mount point> 
       char *fsname,*devname,*location;
       fsname=strtok(0," ");
       devname=strtok(0," ");
@@ -653,24 +652,24 @@ int console_execute(const char *str){
          printf("mount successful.\n");  
          //fat12_mount_root(root,floppy_deviceid);
    }else
-   if (strcmp(u,"path") == 0){
+   if (strcmp(u,"path") == 0){         //-- Shows the current working directory.
       char temp[255];
       printf("%s\n",showpath(temp));
    }else
-   if (strcmp(u,"lsmod") == 0){
+   if (strcmp(u,"lsmod") == 0){        //-- Shows the list of loaded libraries and modules. 
       showlibinfo();
    }else
-   if (strcmp(u,"mem") == 0){
+   if (strcmp(u,"mem") == 0){          //-- Shows memory information.
       meminfo();
    }else
-   if (strcmp(u,"mkdir") == 0){
+   if (strcmp(u,"mkdir") == 0){        //-- Creates a directory. Args: <directory name> 
       u=strtok(0," ");
       if (u!=0){
          if (mkdir(u) == -1)
             printf("mkdir failed.\n");
       }
    }else       
-   if (strcmp(u,"run") == 0){
+   if (strcmp(u,"run") == 0){          //-- Executes a batch file or script. Args: <script>
       u=strtok(0," ");
       if (u!=0){
          if (script_load(u) == -1){
@@ -678,7 +677,7 @@ int console_execute(const char *str){
          };            
       }
    }else    
-   if (strcmp(u,"ls") == 0||strcmp(u,"dir") == 0){
+   if (strcmp(u,"ls") == 0||strcmp(u,"dir") == 0){ //-- Shows directory listing. Args: [-l | -osize | -oname] 
       int style=0, ordering = 0;
       char v[20];
    
@@ -697,7 +696,7 @@ int console_execute(const char *str){
       };
       console_ls(style, ordering);
    }else
-   if (strcmp(u,"del") == 0){
+   if (strcmp(u,"del") == 0){             //-- Deletes a files or directory. Args: <filename/dirname>
       int res;
       u=strtok(0," ");
       if (u!=0){
@@ -712,7 +711,7 @@ int console_execute(const char *str){
          printf("Missing parameter.\n");
       }
    }else
-   if (strcmp(u,"ren") == 0){
+   if (strcmp(u,"ren") == 0){            //-- Renames a file. Args: <oldname> <newname>
       char *u2,*u3;
       u2=strtok(0," ");
       u3=strtok(0," ");               
@@ -725,7 +724,7 @@ int console_execute(const char *str){
          printf("Missing parameter.\n"); 
       }   
    }else
-   if (strcmp(u,"type") == 0 || strcmp(u,"cat") == 0 ){
+   if (strcmp(u,"type") == 0 || strcmp(u,"cat") == 0 ){ //-- Displays the contents of a file. Args: <filename> [-p]
       u=strtok(0," ");
       if (u!=0){
          if (console_showfile(u,0)==-1)
@@ -734,7 +733,7 @@ int console_execute(const char *str){
          printf("missing parameter.\n");
       }
    }else
-   if (strcmp(u,"copy") == 0 || strcmp(u,"cp") == 0){
+   if (strcmp(u,"copy") == 0 || strcmp(u,"cp") == 0){ //-- Copy source to destination: Args: <source> <destination>
       u=strtok(0," ");
       if (u!=0){
          char *u2 = strtok(0," ");
@@ -746,7 +745,7 @@ int console_execute(const char *str){
          };  
       };
    }else              
-   if (strcmp(u,"cd") == 0){
+   if (strcmp(u,"cd") == 0){     //-- Changes working directory. Args: <directory>
       u=strtok(0," ");
       if (u!=0){
          if (!changedirectory(u))
@@ -755,7 +754,7 @@ int console_execute(const char *str){
          changedirectory(0); //go to working directory
       } 
    }else
-   if (strcmp(u,"loadmod") == 0){
+   if (strcmp(u,"loadmod") == 0){   //-- Loads a shared library (.dll or .so). Args: <module filename> 
       u=strtok(0," ");
       if (u!=0){
          if (loadDLL(u,str) == -1)
@@ -766,23 +765,23 @@ int console_execute(const char *str){
             printf("missing parameter.\n");
       }
    }else
-   if (strcmp(u,"lsdev") == 0){
+   if (strcmp(u,"lsdev") == 0){  //-- Lists all modules currently installed and available. 
       devmgr_showdevices();
    }else
-   if (strcmp(u,"lsext") == 0){
+   if (strcmp(u,"lsext") == 0){  //-- Lists all extensions.
       extension_list();
    }else
-   if (strcmp(u,"libinfo") == 0){
+   if (strcmp(u,"libinfo") == 0){ //-- Shows library information.
       u=strtok(0," ");
       module_listfxn(u);
    }else
-   if (strcmp(u,"time") == 0){
+   if (strcmp(u,"time") == 0){   //-- Displays date and time.
       printf("%d/%d/%d %d:%d.%d (%d total seconds since 1970)\n",time_systime.day,
                time_systime.month, time_systime.year,
                time_systime.hour, time_systime.min,
                time_systime.sec,time());
    }else
-   if (strcmp(u,"set") == 0){
+   if (strcmp(u,"set") == 0){    //-- Sets an environment variable. Args: <key>=<value>
       u=strtok(0," ");
       if (u==0){
          env_showenv();
@@ -792,17 +791,17 @@ int console_execute(const char *str){
          env_setenv(name, value, 1);
       }; 
    }else         
-   if (strcmp(u,"unload") == 0){
+   if (strcmp(u,"unload") == 0){ //-- Unloads a library. Args: <library name>
       u=strtok(0," ");
       if (u!=0){
          if (module_unload_library(u) == -1)
             printf("Error unloading library");
    	};
    }else
-   if (strcmp(u,"demo_graphics") == 0){
+   if (strcmp(u,"demo_graphics") == 0){   //-- Runs the graphics demonstration.
       demo_graphics();
    }else
-   if (u[0] == '$'){
+   if (u[0] == '$'){                      //-- Sends message to a device.
       int i, devid;
       char devicename[255],*cmd;
 
