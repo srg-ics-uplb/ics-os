@@ -17,6 +17,7 @@ prep_image: vmdex
 	rm -fr tmp
 	mkdir tmp
 	cp -r vmdex tmp
+	scripts/gen-help.sh
 	cp  base/* tmp
 	mkdir -p tmp/apps
 	mkdir -p tmp/tcc1

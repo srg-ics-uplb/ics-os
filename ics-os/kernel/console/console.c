@@ -627,7 +627,7 @@ int console_execute(const char *str){
       clrscr();
    }else
    if (strcmp(u,"help") == 0){         //-- Displays this help screen.
-      console_execute("type /icsos/icsoshlp.txt");
+      console_execute("type /icsos/icsos.hlp");
    }else
    if (strcmp(u,"umount") == 0){       //-- Unmounts a mounted device. Args: <mount point>
       char *u =strtok(0," ");
