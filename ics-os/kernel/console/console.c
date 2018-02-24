@@ -220,60 +220,61 @@ int user_exec(char *fname,DWORD mode,char *params){
   return 0;
 };
 
-int loadDLL(char *name,char *p)
-{
- file_PCB *handle;
- int fsize; vfs_stat filestat;
- int hdl,libid;
- char *buf;
 
- handle=openfilex(name,FILE_READ);
- if (!handle) return -1;
- fstat(handle,&filestat);
- vfs_setbuffer(handle,0,filestat.st_size,FILE_IOFBF);
- //get filesize and allocate memory
- fsize= filestat.st_size;
- buf=(char*)malloc(fsize);
- 
- //load the file from the disk 
- fread(buf,fsize,1,handle);
- 
- /*Tell the process dispatcher to map the file into memory and
-   create data structures necessary for managing dynamic libraries*/
-   
- hdl = addmodule(name,buf,lmodeproc,PE_USERDLL,p,0,getprocessid());
- 
- //wait until the library has been loaded before we continue since addmodule returns immediately
- while (!(libid = pd_ok(hdl)));
- 
- //done!
- free(buf);
+int loadDLL(char *name, char *p){
+   file_PCB *handle;
+   int fsize; vfs_stat filestat;
+   int hdl,libid;
+   char *buf;
 
- //close the file
- fclose(handle);
- return libid;
+   handle=openfilex(name,FILE_READ);
+   if (!handle) 
+      return -1;
+   fstat(handle,&filestat);
+   vfs_setbuffer(handle,0,filestat.st_size,FILE_IOFBF);
+   //get filesize and allocate memory
+   fsize= filestat.st_size;
+   buf=(char*)malloc(fsize);
+ 
+   //load the file from the disk 
+   fread(buf, fsize, 1, handle);
+ 
+   /*Tell the process dispatcher to map the file into memory and
+      create data structures necessary for managing dynamic libraries*/
+   hdl = addmodule(name, buf, lmodeproc, PE_USERDLL, p, 0, getprocessid());
+ 
+   //wait until the library has been loaded before we continue since addmodule returns immediately
+   while (!(libid = pd_ok(hdl)))
+      ;
+ 
+   //done!
+   free(buf);
+
+   //close the file
+   fclose(handle);
+   return libid;
 };
 
 void loadfile(char *s,int,int);
 
-void loadlib(char *s)
-  {
- char *buf;
+void loadlib(char *s){
+   char *buf;
    DWORD size;
- loadDLL(s,0);
- };
+   loadDLL(s,0);
+};
 
 
-int console_showfile(char *s,int wait)
- {
+int console_showfile(char *s, int wait){
    char *buf;
    DWORD size;
    file_PCB *handle;
    vfs_stat fileinfo;
    int i;
    DEX32_DDL_INFO *myddl;
-   handle=openfilex(s,FILE_READ);
-   if (!handle) return -1;
+   handle=openfilex(s, FILE_READ);
+
+   if (!handle) 
+      return -1;
    fstat(handle,&fileinfo);
    size = fileinfo.st_size;
    buf=(char*)malloc(size);
@@ -282,23 +283,23 @@ int console_showfile(char *s,int wait)
    printf("Name: %s  size of file: %d\n",s,size);
    textbackground(BLACK);
    fread(buf,size,1,handle);
-    for (i=0;i<size;i++)
-       {
-           if (buf[i]!='\r') 
-           printf("%c",buf[i]);
-
-           if (myddl->lines%25==0)  
-              { 
-                 char c;
-                 printf("\nPress any key to continue, 'q' to quit\n");
-                 c=getch();
-                 if (c=='q') break;
-             };
-       };
-    fclose(handle);
-    free(buf);
-    return 1;
+   for (i=0; i<size; i++){
+      if (buf[i]!='\r') 
+         printf("%c",buf[i]);
+      if (myddl->lines%25==0){ 
+         char c;
+         printf("\nPress any key to continue, 'q' to quit\n");
+         c=getch();
+         if (c=='q') 
+            break;
+      };
+   };
+   fclose(handle);
+   free(buf);
+   return 1;
 };
+
+
 //creates a virtual console for a process
 DWORD alloc_console()
 {
