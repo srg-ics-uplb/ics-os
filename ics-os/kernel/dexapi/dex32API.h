@@ -25,21 +25,22 @@ although a user procedure call is in the works
 
 #define __dex32API_h_
 
-//handles dex32 system calls, supports a maximum of
-//5 parameters per call with a single DWORD return value
-//this function is called using interrupt 0x30 by user-mode
-//applications
+/**
+ * Handles dex32 system calls, supports a maximum of
+ * 5 parameters per call with a single DWORD return value
+ * this function is called using interrupt 0x30 by user-mode
+ * applications
+*/
 #define API_MAXSYSCALLS 0x100
 
 #define API_REQUIRE_INTS 0x1
-typedef struct _api_systemcall 
-{
-    DWORD access_check;
-    int flags;
-    void *function_ptr;
-} api_systemcall;
+typedef struct _api_systemcall{
+   DWORD access_check;
+   int flags;
+   void *function_ptr;
+}api_systemcall;
 
-
+//The system call table
 api_systemcall api_syscalltable[API_MAXSYSCALLS];
 
 int api_addsystemcall(DWORD function_number, void *function_ptr, 
