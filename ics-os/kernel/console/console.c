@@ -535,7 +535,7 @@ int console_execute(const char *str){
       u2 = strtok(0," ");
       u3 = strtok(0," ");
       if (u2 != 0){
-         if (vfs_addpathcut(u2,u3)==-1){
+         if (vfs_addpathcut(u2,u3) == -1){
             printf("Invalid pathcut specified.\n");
          }else{
             printf("Pathcut added.\n"); 
@@ -544,7 +544,7 @@ int console_execute(const char *str){
          printf("Wrong number of parameters specified.\n");
       }
    }else
-   if (strcmp(u,"rmdir")==0){
+   if (strcmp(u,"rmdir") == 0){
       char *u2 = strtok(0," ");
       if (u2 != 0){
          char c;                
@@ -564,7 +564,7 @@ int console_execute(const char *str){
          printf("Invalid parameter.\n"); 
       }
    }else
-   if (strcmp(u,"rempcut")==0){
+   if (strcmp(u,"rempcut") == 0){
       char *u2;
       u2 = strtok(0," ");
       if (u2 != 0){
@@ -576,61 +576,61 @@ int console_execute(const char *str){
          printf("Wrong number of parameters specified\n");
       }               
    }else
-   if (strcmp(u,"newconsole")==0){
+   if (strcmp(u,"newconsole") == 0){
       //create a new console         
       console_new();
       printf("New console thread created.\n");                   
    }else  
-   if (strcmp(u,"ver")==0) {
+   if (strcmp(u,"ver") == 0) {
       printf("%s",dex32_versionstring);
    }else
-   if (strcmp(u,"cpuid")==0){
+   if (strcmp(u,"cpuid") == 0){
       hardware_cpuinfo mycpu;
       hardware_getcpuinfo(&mycpu);
       hardware_printinfo(&mycpu);
    }else            
-   if (strcmp(u,"exit")==0){
+   if (strcmp(u,"exit") == 0){
       fg_exit();
       exit(0);              
    }else  
-   if (strcmp(u,"echo")==0){
+   if (strcmp(u,"echo") == 0){
       u=strtok(0,"\n");
       if (u!=0)              
          printf("%s\n",u);
    }else  
-   if (strcmp(u,"use")==0){
+   if (strcmp(u,"use") == 0){
       u=strtok(0," ");
       if (extension_override(devmgr_getdevicebyname(u),0) == -1){
          printf("Unable to install extension %s.\n",u);                
       };            
    }else        
-   if (strcmp(u,"off")==0){
-                dex32apm_off();
+   if (strcmp(u,"off") == 0){
+      dex32apm_off();
    }else
-   if (strcmp(u,"files")==0){
+   if (strcmp(u,"files") == 0){
       file_showopenfiles();
    }else
-   if (strcmp(u,"find")==0){
+   if (strcmp(u,"find") == 0){
       u=strtok(0," ");
       if (u != 0)
          findfile(u);
    }else
-   if (strcmp(u,"kill")==0){
+   if (strcmp(u,"kill") == 0){
       u=strtok(0," ");
       if (u!=0)
          dex32_killkthread_name(u);
    }else
-   if (strcmp(u,"procs")==0 || strcmp(u,"ps")==0){
+   if (strcmp(u,"procs") == 0 || strcmp(u,"ps") == 0){
       show_process();
    }else
-   if (strcmp(u,"cls")==0){
+   if (strcmp(u,"cls") == 0){
       clrscr();
    }else
-   if (strcmp(u,"help")==0){
+   if (strcmp(u,"help") == 0){
       //console_execute("type /icsos/icsoshlp.txt");
       console_execute("type /icsos/icsoshlp.txt");
    }else
-   if (strcmp(u,"umount")==0){
+   if (strcmp(u,"umount") == 0){
       char *u =strtok(0," ");
       if (u!=0){
          if (vfs_unmount_device(u)==-1)
@@ -638,10 +638,10 @@ int console_execute(const char *str){
          else
             printf("%s umounted.\n",u);
       }else{
-         printf("missing parameter.\n");
+         printf("Missing parameter.\n");
       }                    
    }else
-   if (strcmp(u,"mount")==0){
+   if (strcmp(u,"mount") == 0){
       char *fsname,*devname,*location;
       fsname=strtok(0," ");
       devname=strtok(0," ");
@@ -653,24 +653,24 @@ int console_execute(const char *str){
          printf("mount successful.\n");  
          //fat12_mount_root(root,floppy_deviceid);
    }else
-   if (strcmp(u,"path")==0){
+   if (strcmp(u,"path") == 0){
       char temp[255];
       printf("%s\n",showpath(temp));
    }else
-   if (strcmp(u,"lsmod")==0){
+   if (strcmp(u,"lsmod") == 0){
       showlibinfo();
    }else
-   if (strcmp(u,"mem")==0){
+   if (strcmp(u,"mem") == 0){
       meminfo();
    }else
-   if (strcmp(u,"mkdir")==0){
+   if (strcmp(u,"mkdir") == 0){
       u=strtok(0," ");
       if (u!=0){
          if (mkdir(u) == -1)
             printf("mkdir failed.\n");
       }
    }else       
-   if (strcmp(u,"run")==0){
+   if (strcmp(u,"run") == 0){
       u=strtok(0," ");
       if (u!=0){
          if (script_load(u) == -1){
@@ -678,17 +678,17 @@ int console_execute(const char *str){
          };            
       }
    }else    
-   if (strcmp(u,"ls")==0||strcmp(u,"dir")==0){
+   if (strcmp(u,"ls") == 0||strcmp(u,"dir") == 0){
       int style=0, ordering = 0;
 
       u=strtok(0," ");
       if (u != 0){
          do {
-            if (strcmp(u,"-l")==0) 
+            if (strcmp(u,"-l") == 0) 
                style=1;
-            if (strcmp(u,"-oname")==0) 
+            if (strcmp(u,"-oname") == 0) 
                ordering  = 0;
-            if (strcmp(u,"-osize")==0) 
+            if (strcmp(u,"-osize") == 0) 
                ordering  = 1;
                    
             u=strtok(0," ");
@@ -696,7 +696,7 @@ int console_execute(const char *str){
       };
       console_ls(style, ordering);
    }else
-   if (strcmp(u,"del")==0){
+   if (strcmp(u,"del") == 0){
       int res;
       u=strtok(0," ");
       if (u!=0){
@@ -711,7 +711,7 @@ int console_execute(const char *str){
          printf("Missing parameter.\n");
       }
    }else
-   if (strcmp(u,"ren")==0){
+   if (strcmp(u,"ren") == 0){
       char *u2,*u3;
       u2=strtok(0," ");
       u3=strtok(0," ");               
@@ -724,7 +724,7 @@ int console_execute(const char *str){
          printf("Missing parameter.\n"); 
       }   
    }else
-   if ( strcmp(u,"type")==0 || strcmp(u,"cat")==0 ){
+   if ( strcmp(u,"type") == 0 || strcmp(u,"cat") == 0 ){
       u=strtok(0," ");
       if (u!=0){
          if (console_showfile(u,0)==-1)
@@ -733,7 +733,7 @@ int console_execute(const char *str){
          printf("missing parameter.\n");
       }
    }else
-   if (strcmp(u,"copy")==0){
+   if (strcmp(u,"copy") == 0 || strcmp(u,"cp") == 0){
       u=strtok(0," ");
       if (u!=0){
          char *u2 = strtok(0," ");
@@ -745,7 +745,7 @@ int console_execute(const char *str){
          };  
       };
    }else              
-   if (strcmp(u,"cd")==0){
+   if (strcmp(u,"cd") == 0){
       u=strtok(0," ");
       if (u!=0){
          if (!changedirectory(u))
@@ -754,10 +754,10 @@ int console_execute(const char *str){
          changedirectory(0); //go to working directory
       } 
    }else
-   if (strcmp(u,"loadmod")==0){
+   if (strcmp(u,"loadmod") == 0){
       u=strtok(0," ");
       if (u!=0){
-         if (loadDLL(u,str)==-1)
+         if (loadDLL(u,str) == -1)
             printf("Unable to load %s.\n",u);
          else
             printf("Load module Successful.\n");  
@@ -765,23 +765,23 @@ int console_execute(const char *str){
             printf("missing parameter.\n");
       }
    }else
-   if (strcmp(u,"lsdev")==0){
+   if (strcmp(u,"lsdev") == 0){
       devmgr_showdevices();
    }else
-   if (strcmp(u,"lsext")==0){
+   if (strcmp(u,"lsext") == 0){
       extension_list();
    }else
-   if (strcmp(u,"libinfo")==0){
+   if (strcmp(u,"libinfo") == 0){
       u=strtok(0," ");
       module_listfxn(u);
    }else
-   if (strcmp(u,"time")==0){
+   if (strcmp(u,"time") == 0){
       printf("%d/%d/%d %d:%d.%d (%d total seconds since 1970)\n",time_systime.day,
                time_systime.month, time_systime.year,
                time_systime.hour, time_systime.min,
                time_systime.sec,time());
    }else
-   if (strcmp(u,"set")==0){
+   if (strcmp(u,"set") == 0){
       u=strtok(0," ");
       if (u==0){
          env_showenv();
@@ -791,26 +791,24 @@ int console_execute(const char *str){
          env_setenv(name, value, 1);
       }; 
    }else         
-   if (strcmp(u,"unload")==0){
+   if (strcmp(u,"unload") == 0){
       u=strtok(0," ");
       if (u!=0){
          if (module_unload_library(u) == -1)
             printf("Error unloading library");
    	};
    }else
-   if (strcmp(u,"demo_graphics")==0){
+   if (strcmp(u,"demo_graphics") == 0){
       demo_graphics();
    }else
-   if (u[0]=='$'){
+   if (u[0] == '$'){
       int i, devid;
       char devicename[255],*cmd;
 
       for (i=0;i<20 && u[i+1];i++){
          devicename[i] = u[i+1];
       };
-                    
       devicename[i] = 0;
-               
       printf("Sending command to %s\n",devicename);
       devid = devmgr_finddevice(devicename);
                
