@@ -29,32 +29,26 @@
   
 /*A console mode get string function terminates
 upon receving \r */
-void getstring(char *buf,DEX32_DDL_INFO *dev)
-  {
-    unsigned int i=0;
-    char c;
-    do
-    {
-    c=getch();
-    if (c=='\r'||c=='\n'||c==0xa) break;
-    if (c=='\b' || (unsigned char)c == 145)
-       {
-       if(i>0)
-        {
-        i--;
-
-        if (Dex32GetX(dev)==0)
-             {
-              Dex32SetX(dev,79);
-              if (Dex32GetY(dev)>0) Dex32SetY(dev,Dex32GetY(dev)-1);
-             }
-             else
-        Dex32SetX(dev,Dex32GetX(dev)-1);     
-        Dex32PutChar(dev,Dex32GetX(dev),Dex32GetY(dev),' ',Dex32GetAttb(dev));
-        };
-       }
-       else
-       {
+void getstring(char *buf, DEX32_DDL_INFO *dev){
+   unsigned int i=0;
+   char c;
+   do{
+      c=getch();
+      if (c=='\r' || c=='\n' || c==0xa) 
+         break;
+      if (c=='\b' || (unsigned char)c == 145){
+         if(i>0){
+            i--;
+            if (Dex32GetX(dev)==0){
+               Dex32SetX(dev,79);
+               if (Dex32GetY(dev)>0) 
+                  Dex32SetY(dev,Dex32GetY(dev)-1);
+            }else{
+               Dex32SetX(dev,Dex32GetX(dev)-1);
+            }     
+            Dex32PutChar(dev,Dex32GetX(dev),Dex32GetY(dev),' ',Dex32GetAttb(dev));
+         };
+      }else{
 
         if (i<256)  //maximum command line is only 255 characters
          {
