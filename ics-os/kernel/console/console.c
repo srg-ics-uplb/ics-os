@@ -575,180 +575,142 @@ int console_execute(const char *str){
       }else{
          printf("Wrong number of parameters specified\n");
       }               
-   }
-                else
-    if (strcmp(u,"newconsole")==0)
-                {
-                //create a new console         
-                   console_new();
-                   printf("new console thread created.\n");                   
-                }
-                else  
-    if (strcmp(u,"ver")==0) {
-		printf("%s",dex32_versionstring);
-                }
-                else
-    if (strcmp(u,"cpuid")==0)
-                {
-                   hardware_cpuinfo mycpu;
-                   hardware_getcpuinfo(&mycpu);
-                   hardware_printinfo(&mycpu);
-                }
-                else            
-    if (strcmp(u,"exit")==0)
-                {
-                  fg_exit();
-                  exit(0);              
-                }
-                else  
-    if (strcmp(u,"echo")==0)
-                {
-                  u=strtok(0,"\n");
-                  
-                  if (u!=0)              
-                      printf("%s\n",u);
-                }
-                else  
-    if (strcmp(u,"use")==0)
-                {
-                u=strtok(0," ");
-                if (extension_override(devmgr_getdevicebyname(u),0)==-1)
-                    {
-                        printf("Unable to install extension %s.\n",u);                
-                    };            
-                }
-                else        
-    if (strcmp(u,"off")==0)
+   }else
+   if (strcmp(u,"newconsole")==0){
+      //create a new console         
+      console_new();
+      printf("New console thread created.\n");                   
+   }else  
+   if (strcmp(u,"ver")==0) {
+      printf("%s",dex32_versionstring);
+   }else
+   if (strcmp(u,"cpuid")==0){
+      hardware_cpuinfo mycpu;
+      hardware_getcpuinfo(&mycpu);
+      hardware_printinfo(&mycpu);
+   }else            
+   if (strcmp(u,"exit")==0){
+      fg_exit();
+      exit(0);              
+   }else  
+   if (strcmp(u,"echo")==0){
+      u=strtok(0,"\n");
+      if (u!=0)              
+         printf("%s\n",u);
+   }else  
+   if (strcmp(u,"use")==0){
+      u=strtok(0," ");
+      if (extension_override(devmgr_getdevicebyname(u),0) == -1){
+         printf("Unable to install extension %s.\n",u);                
+      };            
+   }else        
+   if (strcmp(u,"off")==0){
                 dex32apm_off();
-                else
-    if (strcmp(u,"files")==0)
-                 file_showopenfiles();
-                else
-    if (strcmp(u,"find")==0)
-                {
-                u=strtok(0," ");
-                if (u!=0)
-                  findfile(u);
-                }
-              else
-    if (strcmp(u,"kill")==0)
-                {
-                u=strtok(0," ");
-                if (u!=0)
-                      dex32_killkthread_name(u);
-                }
-                else
-    if (strcmp(u,"procs")==0||strcmp(u,"ps")==0)
-                show_process();
-                else
-    if (strcmp(u,"cls")==0)
-               clrscr();
-                else
-    if (strcmp(u,"help")==0)
-               //console_execute("type /icsos/icsoshlp.txt");
-               console_execute("type /icsos/icsoshlp.txt");
-                else
-    if (strcmp(u,"umount")==0)
-             {
-               char *u =strtok(0," ");
-               if (u!=0)
-                {
-                 if (vfs_unmount_device(u)==-1)
-                    printf("umount failed.\n");
-                 else
-                   printf("%s umounted.\n",u);
-                } 
-                  else
-                printf("missing parameter.\n");                    
-              }
-              else
-   if (strcmp(u,"mount")==0)
-               {
-               char *fsname,*devname,*location;
-               fsname=strtok(0," ");
-               devname=strtok(0," ");
-               location=strtok(0," ");
+   }else
+   if (strcmp(u,"files")==0){
+      file_showopenfiles();
+   }else
+   if (strcmp(u,"find")==0){
+      u=strtok(0," ");
+      if (u != 0)
+         findfile(u);
+   }else
+   if (strcmp(u,"kill")==0){
+      u=strtok(0," ");
+      if (u!=0)
+         dex32_killkthread_name(u);
+   }else
+   if (strcmp(u,"procs")==0 || strcmp(u,"ps")==0){
+      show_process();
+   }else
+   if (strcmp(u,"cls")==0){
+      clrscr();
+   }else
+   if (strcmp(u,"help")==0){
+      //console_execute("type /icsos/icsoshlp.txt");
+      console_execute("type /icsos/icsoshlp.txt");
+   }else
+   if (strcmp(u,"umount")==0){
+      char *u =strtok(0," ");
+      if (u!=0){
+         if (vfs_unmount_device(u)==-1)
+            printf("umount failed.\n");
+         else
+            printf("%s umounted.\n",u);
+      }else{
+         printf("missing parameter.\n");
+      }                    
+   }else
+   if (strcmp(u,"mount")==0){
+      char *fsname,*devname,*location;
+      fsname=strtok(0," ");
+      devname=strtok(0," ");
+      location=strtok(0," ");
                
-               if (vfs_mount_device(fsname,devname,location)==-1)
-                 printf("mount not successful.\n");
-                   else
-                 printf("mount successful.\n");  
-               //fat12_mount_root(root,floppy_deviceid);
-               }
-              else
-    if (strcmp(u,"path")==0)
-               {
-                char temp[255];
-                printf("%s\n",showpath(temp));
-               }
-                else
-    if (strcmp(u,"lsmod")==0)
-                showlibinfo();
-                else
-    if (strcmp(u,"mem")==0)
-                meminfo();
-                else
-    if (strcmp(u,"mkdir")==0)
-               {
-                u=strtok(0," ");
-                if (u!=0)
-                   if (mkdir(u)==-1)
-                     printf("mkdir failed.\n");
-               }
-                else       
-    if (strcmp(u,"run")==0)
-               {
-               u=strtok(0," ");
-               if (u!=0)
-                  {
-                  if (script_load(u)==-1)
-                      {
-                         printf("console: Error loading script file.\n");
-                      };            
-                  }
-               }
-               else    
-    if (strcmp(u,"ls")==0||strcmp(u,"dir")==0)
-               {
-               int style=0, ordering = 0;
-               
-               u=strtok(0," ");
-               
-               if (u!=0)
-               {
-                   do {           
-                   if (strcmp(u,"-l")==0) style=1;
-                   if (strcmp(u,"-oname")==0) ordering  = 0;
-                   if (strcmp(u,"-osize")==0) ordering  = 1;
-                   u=strtok(0," ");
-                   } while (u!=0);
-               };
-               
-               console_ls(style, ordering);
-               }
-              else
-     if (strcmp(u,"del")==0)
-              {
-              int res;
-               u=strtok(0," ");
-               if (u!=0)
-                  {
-                           char *u3=strtok(0," ");
-                           if (u3==0)
-                           {
-                               delfile(u);
-                               printf("file deleted.\n");
-                           }
-                            else
-                           printf("invalid parameter.\n");
+      if (vfs_mount_device(fsname, devname, location) == -1)
+         printf("mount not successful.\n");
+      else
+         printf("mount successful.\n");  
+         //fat12_mount_root(root,floppy_deviceid);
+   }else
+   if (strcmp(u,"path")==0){
+      char temp[255];
+      printf("%s\n",showpath(temp));
+   }else
+   if (strcmp(u,"lsmod")==0){
+      showlibinfo();
+   }else
+   if (strcmp(u,"mem")==0){
+      meminfo();
+   }else
+   if (strcmp(u,"mkdir")==0){
+      u=strtok(0," ");
+      if (u!=0){
+         if (mkdir(u) == -1)
+            printf("mkdir failed.\n");
+      }
+   }else       
+   if (strcmp(u,"run")==0){
+      u=strtok(0," ");
+      if (u!=0){
+         if (script_load(u) == -1){
+            printf("console: Error loading script file.\n");
+         };            
+      }
+   }else    
+   if (strcmp(u,"ls")==0||strcmp(u,"dir")==0){
+      int style=0, ordering = 0;
 
-                  }
-                     else
-                  printf("missing parameter.\n");
-
-              }
-
-              else
+      u=strtok(0," ");
+      if (u != 0){
+         do {
+            if (strcmp(u,"-l")==0) 
+               style=1;
+            if (strcmp(u,"-oname")==0) 
+               ordering  = 0;
+            if (strcmp(u,"-osize")==0) 
+               ordering  = 1;
+                   
+            u=strtok(0," ");
+         } while (u!=0);
+      };
+      console_ls(style, ordering);
+   }else
+   if (strcmp(u,"del")==0){
+      int res;
+      u=strtok(0," ");
+      if (u!=0){
+         char *u3=strtok(0," ");
+         if (u3==0){
+            delfile(u);
+            printf("File deleted.\n");
+         }else{
+            printf("invalid parameter.\n");
+         }
+      }else{
+         printf("missing parameter.\n");
+      }
+   }else
     if (strcmp(u,"ren")==0)
               {
               char *u2,*u3;
