@@ -1,7 +1,6 @@
 #include "dexsdk.h"
 
-int _start() 
-{
+int _start(){
    char *s;
    int c=0;
    char *p[100];
@@ -12,9 +11,9 @@ int _start()
    s=strtok(params," ");
    
    do {
-        p[c]=s;
-        c++;
-        s=strtok(0," ");
+      p[c]=s;
+      c++;
+      s=strtok(0," ");
    } while (s!=0);
    
    main(c,p);

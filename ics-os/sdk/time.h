@@ -13,7 +13,7 @@ typedef struct _dex32_datetime {
     int month,year,day,hour,min,sec,ms,adj;
 } dex32_datetime;
 
-void get_date_time(dex32_datetime*); //gets the date nd time
+void get_date_time(dex32_datetime *); //gets the date and time
 int time();
 void delay(unsigned int ms);
 #endif

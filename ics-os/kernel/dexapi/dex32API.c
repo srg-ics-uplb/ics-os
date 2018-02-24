@@ -24,11 +24,6 @@ although a user procedure call is in the works
 
 #include "dex32API.h"
 
-int my_syscall(){
-   printf("My own system call got called!\n");
-   return 0;
-}
-
 
 int dex32_getversion(){
    return DEX32_OSVER;
@@ -180,7 +175,6 @@ void api_init(){
    api_addsystemcall(0x9C,kb_ready,0,0);
    api_addsystemcall(0x9D,write_text,0,0);
    api_addsystemcall(0x9E,write_char,0,0);
-   api_addsystemcall(0x9F,my_syscall,0,0);
 };
 
 

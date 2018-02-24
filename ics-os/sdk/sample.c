@@ -8,16 +8,13 @@
 
 #include "dexsdk.h"
 
-int main() 
-{
+int main(){
    int i;
    clrscr();
-
-   for (i=0; i< 5; i++)
-      {
-       textcolor(i+1);
-       printf("Hello Glorious World!\n");
-      };
+   for (i=0; i< 5; i++){
+      textcolor(i+1);
+      printf("Hello Glorious World!\n");
+   };
    printf("Welcome to the ICS Operating System....\n");
    getch();
    return 0;

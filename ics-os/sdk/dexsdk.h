@@ -61,7 +61,7 @@
 #define FILE_READWRITE 2
 #define FILE_APPEND 3
 
-       /*-----POSIZ Constants-----*/
+/*-----POSIX Constants-----*/
 #define O_RDONLY	0x0000
 #define O_WRONLY	0x0001
 #define O_RDWR		0x0002
@@ -106,22 +106,22 @@
 #define __COLORS
 
 enum COLORS {
-    BLACK,          /* dark colors */
-    BLUE,
-    GREEN,
-    CYAN,
-    RED,
-    MAGENTA,
-    BROWN,
-    LIGHTGRAY,
-    DARKGRAY,       /* light colors */
-    LIGHTBLUE,
-    LIGHTGREEN,
-    LIGHTCYAN,
-    LIGHTRED,
-    LIGHTMAGENTA,
-    YELLOW,
-    WHITE
+   BLACK,          /* dark colors */
+   BLUE,
+   GREEN,
+   CYAN,
+   RED,
+   MAGENTA,
+   BROWN,
+   LIGHTGRAY,
+   DARKGRAY,       /* light colors */
+   LIGHTBLUE,
+   LIGHTGREEN,
+   LIGHTCYAN,
+   LIGHTRED,
+   LIGHTMAGENTA,
+   YELLOW,
+   WHITE
 };
 
 #define BLINK 128
@@ -155,23 +155,21 @@ extern FILE *stdout, *stdin, *stderr;
  * File stat
  */
 //derived from stat.h, modified for use with DEX -- returned by fstat to hold info about the file
-typedef struct _vfs_stat
-{
-        int     size;       /*The size of this structure*/
-        int         st_dev;             /* Equivalent to drive number 0=A 1=B ... */
-        int         st_ino;             /* Always zero ? */
-        int         st_mode;    /* See above constants */
-        short       st_nlink;       /* Number of links. */
-        short       st_uid;         /* User: Maybe significant on NT ? */
-        short       st_gid;         /* Group: Ditto */
-        int         st_rdev;    /* Seems useless (not even filled in) */
-        int         st_size;    /* File size in bytes */
-        int         st_atime;   /* Accessed date (always 00:00 hrs local
+typedef struct _vfs_stat{
+   int     size;       /*The size of this structure*/
+   int     st_dev;     /* Equivalent to drive number 0=A 1=B ... */
+   int     st_ino;     /* Always zero ? */
+   int     st_mode;    /* See above constants */
+   short   st_nlink;   /* Number of links. */
+   short   st_uid;     /* User: Maybe significant on NT ? */
+   short   st_gid;     /* Group: Ditto */
+   int     st_rdev;    /* Seems useless (not even filled in) */
+   int     st_size;    /* File size in bytes */
+   int     st_atime;   /* Accessed date (always 00:00 hrs local
                                  * on FAT) */
-        int         st_mtime;   /* Modified time */
-        int         st_ctime;   /* Creation time */
-} vfs_stat;
-
+   int     st_mtime;   /* Modified time */
+   int     st_ctime;   /* Creation time */
+}vfs_stat;
 
 
 
@@ -180,7 +178,7 @@ typedef struct _vfs_stat
 typedef unsigned int mode_t,dev_t,gid_t,ino_t,nlink_t,off_t,uid_t,clock_t,size_t;
 typedef long int time_t;
 typedef int pid_t,ssize_t;
-typedef int (*fnptr_t)(unsigned c, void **helper,FILE *f);
+typedef int (*fnptr_t)(unsigned c, void **helper, FILE *f);
 typedef int (*sfnptr_t)(unsigned c, void **helper);
 typedef void (*sighandler_t)(int signum);
 
@@ -218,9 +216,9 @@ unsigned int dexsdk_systemcall(int function_number,int p1,int p2,
                   int p3,int p4,int p5);
 void *malloc(size_t size);
 void *memmove (void *dst, const void *src,unsigned int count);
-void * memset (void *dst,int val,unsigned int count);
+void *memset (void *dst,int val,unsigned int count);
 void *memchr(const void *s, int c, size_t n);
-void * memcpy (void * dst, const void * src,unsigned int count);
+void *memcpy (void * dst, const void * src,unsigned int count);
 int memcmp(const void *s1, const void *s2, size_t n);
 void *realloc(void *ptr, size_t size);
 char *strcpy(char *to, const char *from);
