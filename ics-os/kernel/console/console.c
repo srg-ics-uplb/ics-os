@@ -36,6 +36,7 @@ void getstring(char *buf, DEX32_DDL_INFO *dev){
       c=getch();
       if (c=='\r' || c=='\n' || c==0xa) 
          break;
+
       if (c=='\b' || (unsigned char)c == 145){
          if(i>0){
             i--;
@@ -49,183 +50,175 @@ void getstring(char *buf, DEX32_DDL_INFO *dev){
             Dex32PutChar(dev,Dex32GetX(dev),Dex32GetY(dev),' ',Dex32GetAttb(dev));
          };
       }else{
-
-        if (i<256)  //maximum command line is only 255 characters
-         {
+         if (i<256){  //maximum command line is only 255 characters
             Dex32PutChar(dev,Dex32GetX(dev),Dex32GetY(dev),buf[i]=c,Dex32GetAttb(dev));
             i++;
             Dex32SetX(dev,Dex32GetX(dev)+1);     
-            if (Dex32GetX(dev)>79) {Dex32SetX(dev,0);
-            Dex32NextLn(dev);};
+            if (Dex32GetX(dev)>79){
+               Dex32SetX(dev,0);
+               Dex32NextLn(dev);
+            };
          };
-       };
+      };
 
-     Dex32PutChar(dev,Dex32GetX(dev),Dex32GetY(dev),' ',Dex32GetAttb(dev));
-     update_cursor(Dex32GetY(dev),Dex32GetX(dev));
-    } while (c!='\r');
+      Dex32PutChar(dev,Dex32GetX(dev),Dex32GetY(dev),' ',Dex32GetAttb(dev));
+      update_cursor(Dex32GetY(dev),Dex32GetX(dev));
+   }while (c!='\r');
     
-    Dex32SetX(dev,0);
-    Dex32NextLn(dev);
-    buf[i]=0;
-  };
+   Dex32SetX(dev,0);
+   Dex32NextLn(dev);
+   buf[i]=0;
+};
 
 /*Show information about memory usage. This function is also useful
   for detecting memory leaks*/
-void meminfo()
-  {
-    DWORD totalbytes = totalpages * 0x1000;
-    DWORD freebytes = totalbytes - (totalpages - stackbase[0])* 0x1000;
-    printf("=================Memory Information===============\n");
-    printf("Pages available     : %10u pages\n",stackbase[0]);
-    printf("Total Pages         : %10d pages\n",totalpages);
-    printf("Total Memory        : %10u bytes (%10d KB)\n",totalbytes, totalbytes / 1024);
-    printf("Free Memory         : %10u bytes (%10d KB)\n",freebytes, freebytes / 1024);
-    printf("used pages          : %10d pages (%10d KB)\n",totalpages-stackbase[0],
-    (totalpages-stackbase[0])*0x1000);
-  };
+void meminfo(){
+   DWORD totalbytes = totalpages * 0x1000;
+   DWORD freebytes = totalbytes - (totalpages - stackbase[0])* 0x1000;
+   printf("=================Memory Information===============\n");
+   printf("Pages available     : %10u pages\n",stackbase[0]);
+   printf("Total Pages         : %10d pages\n",totalpages);
+   printf("Total Memory        : %10u bytes (%10d KB)\n",totalbytes, totalbytes / 1024);
+   printf("Free Memory         : %10u bytes (%10d KB)\n",freebytes, freebytes / 1024);
+   printf("used pages          : %10d pages (%10d KB)\n",totalpages-stackbase[0],
+   (totalpages-stackbase[0])*0x1000);
+};
 
-int delfile(char *fname)
-  {
-    int sectors;
-    file_PCB *f=openfilex(fname,FILE_WRITE);
-    return fdelete(f);
-  };
 
-int user_fork()
-{
-    int curval = current_process->processid;
-    int childready = 0, retval = 0;
-    int hdl;
-    int id;
-    DWORD flags;
-    #ifdef DEBUG_FORK
-    printf("user_fork called\n");
-    #endif
+int delfile(char *fname){
+   int sectors;
+   file_PCB *f=openfilex(fname,FILE_WRITE);
+   return fdelete(f);
+};
+
+int user_fork(){
+   int curval = current_process->processid;
+   int childready = 0, retval = 0;
+   int hdl;
+   int id;
+   DWORD flags;
+   #ifdef DEBUG_FORK
+   printf("user_fork called\n");
+   #endif
     
-    //enable interrupts since we want the process dispatcher to take control
-    storeflags(&flags);
-    startints();
+   //enable interrupts since we want the process dispatcher to take control
+   storeflags(&flags);
+   startints();
    
-    hdl = pd_forkmodule(current_process->processid);
+   hdl = pd_forkmodule(current_process->processid);
     
-    taskswitch();  
-    id = pd_dispatched(hdl);
+   taskswitch();  
+   id = pd_dispatched(hdl);
     //while (!(id=pd_dispatched(hdl)))
     //  ;
     
-    if (curval != current_process->processid) //this is the child
-      {
-        //If this is the child process, the processid when this function
-        //was called is not equal to the current processid.
-        retval = 0;
-      };
+   if (curval != current_process->processid){ //this is the child
+      //If this is the child process, the processid when this function
+      //was called is not equal to the current processid.
+      retval = 0;
+   };
       
-    if (curval == current_process->processid) // this is the parent
-      {
-        pd_ok(hdl);
-        retval = id;
-      };
+   if (curval == current_process->processid){ // this is the parent
+      pd_ok(hdl);
+      retval = id;
+   };
       
-      restoreflags(flags);
-      return retval;
+   restoreflags(flags);
+   return retval;
 };
 
-int user_execp(char *fname,DWORD mode,char *params)
- {
-  DWORD id,size;
-  char *buf;
-  vfs_stat filestat;
-  file_PCB *f=openfilex(fname,0);
+int user_execp(char *fname, DWORD mode, char *params){
+   DWORD id,size;
+   char *buf;
+   vfs_stat filestat;
+   file_PCB *f = openfilex(fname, 0);
   
-  if (f!=0)
-  {
+   if (f!=0){
       fstat(f,&filestat);
       size = filestat.st_size;
-      buf=(char*)malloc(filestat.st_size+511);
+      buf = (char*)malloc(filestat.st_size+511);
       //tell the vfs to increase buffersize to speed up reads
-      vfs_setbuffer(f,0,filestat.st_size,FILE_IOFBF);
-      if (fread(buf,size,1,f)==size)
-      {
-        char temp[255];
-        #ifdef DEBUG_USER_PROCESS
-        printf("execp(): adding module..\n");
-        #endif
-        int hdl= addmodule(fname,buf,userspace,mode,params,showpath(temp),getprocessid());
+      vfs_setbuffer(f, 0, filestat.st_size, FILE_IOFBF);
+      if (fread(buf, size, 1, f) == size){
+         char temp[255];
+         #ifdef DEBUG_USER_PROCESS
+         printf("execp(): adding module..\n");
+         #endif
+         int hdl= addmodule(fname, buf, userspace, mode, params, showpath(temp), getprocessid());
         
-        #ifdef DEBUG_USER_PROCESS
-        printf("execp(): done.\n");
-        #endif
+         #ifdef DEBUG_USER_PROCESS
+         printf("execp(): done.\n");
+         #endif
 
-        taskswitch();
-        #ifdef DEBUG-USER_PROCESS
-        printf("execp(): parent waiting for child to finish\n");
-        #endif
+         taskswitch();
+         #ifdef DEBUG-USER_PROCESS
+         printf("execp(): parent waiting for child to finish\n");
+         #endif
         
-        while (!(id=pd_ok(hdl))) ; //process already running?
-        fg_setmykeyboard(id);
-        dex32_waitpid(id,0);
-        //dex32_wait();
-        fg_setmykeyboard(getprocessid());
+         while (!(id = pd_ok(hdl))) 
+            ; //process already running?
+         
+         fg_setmykeyboard(id);
+         dex32_waitpid(id,0);
+
+         //dex32_wait();
+
+         fg_setmykeyboard(getprocessid());
       };
-     free(buf);
-     fclose(f);
-     return id;
+      free(buf);
+      fclose(f);
+      return id;
+   };
+   return 0;
+};
+
+int exec(char *fname, DWORD mode, char *params){
+   DWORD id;
+   char *buf;
+   file_PCB *f=openfilex(fname,0);
+
+   if (f!=0){
+      DWORD size;
+      char temp[255];
+      vfs_stat fileinfo;
+      fstat(f,&fileinfo);
+      size = fileinfo.st_size;
+     
+      buf=(char*)malloc(size+511);
+     
+      if (fread(buf,size,1,f) == size)
+         id=dex32_loader(fname, buf, userspace, mode, params, showpath(temp), getprocessid());
+      
+      free(buf);
+      fclose(f);
+      return id;
+   };
+   return 0;
+;};
+
+int user_exec(char *fname,DWORD mode,char *params){
+   DWORD id;
+   char *buf;
+   file_PCB *f = openfilex(fname, FILE_READ);
+
+   if (f != 0){
+      int hdl,size;
+      char temp[255];
+      vfs_stat fileinfo;
+      fstat(f, &fileinfo);
+      size = fileinfo.st_size;
+      buf=(char*)malloc(size+511);
+      fread(buf, size, 1, f);
+      hdl = addmodule(fname, buf, userspace, mode, params, showpath(temp), getprocessid());
+      while (!pd_ok(hdl)) 
+         ;
+     
+      free(buf);
+      fclose(f);
+      return id;
   };
   return 0;
- ;};
-
-int exec(char *fname,DWORD mode,char *params)
- {
-  DWORD id;
-  char *buf;
-  file_PCB *f=openfilex(fname,0);
-
-  if (f!=0)
-  {
-     DWORD size;
-     char temp[255];
-     vfs_stat fileinfo;
-     fstat(f,&fileinfo);
-     size = fileinfo.st_size;
-     
-     buf=(char*)malloc(size+511);
-     
-     if (fread(buf,size,1,f)==size)
-     id=dex32_loader(fname,buf,userspace,mode,params,showpath(temp),getprocessid());
-
-
-     free(buf);
-     fclose(f);
-     return id;
-  };
-  return 0;
- ;};
-
-
-int user_exec(char *fname,DWORD mode,char *params)
- {
-  DWORD id;
-  char *buf;
-  file_PCB *f=openfilex(fname,FILE_READ);
-
-  if (f!=0)
-  {
-     int hdl,size;
-     char temp[255];
-     vfs_stat fileinfo;
-     fstat(f,&fileinfo);
-     size = fileinfo.st_size;
-     buf=(char*)malloc(size+511);
-     fread(buf,size,1,f);
-     hdl = addmodule(fname,buf,userspace,mode,params,showpath(temp),getprocessid());
-     while (!pd_ok(hdl)) ;
-     
-     free(buf);
-     fclose(f);
-     return id;
-  };
-  return 0;
- ;};
+};
 
 int loadDLL(char *name,char *p)
 {
