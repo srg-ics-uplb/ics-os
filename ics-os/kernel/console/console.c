@@ -494,10 +494,10 @@ int console_execute(const char *str){
       sprintf(temp,"cd %s",u);            
       console_execute(temp); 
    }else 
-   if (strcmp(u,"fgman") == 0){
+   if (strcmp(u,"fgman") == 0){  //-Foreground manager
       fg_set_state(1);
    }else 
-   if (strcmp(u,"mouse") == 0){
+   if (strcmp(u,"mouse") == 0){  //-Activate the mouse
       while (!kb_ready()){
          get_mouse_pos(&mouse_x,&mouse_y);
          printf("Mouse (x,y): %d %d\n",mouse_x, mouse_y);
@@ -680,17 +680,18 @@ int console_execute(const char *str){
    }else    
    if (strcmp(u,"ls") == 0||strcmp(u,"dir") == 0){
       int style=0, ordering = 0;
-
+      char v[20];
+   
       u=strtok(0," ");
       if (u != 0){
          do {
-            if (strcmp(u,"-l") == 0) 
+            strcpy(v,u);
+            if (strcmp(v,"-l") == 0) 
                style=1;
-            if (strcmp(u,"-oname") == 0) 
+            if (strcmp(v,"-oname") == 0) 
                ordering  = 0;
-            if (strcmp(u,"-osize") == 0) 
+            if (strcmp(v,"-osize") == 0) 
                ordering  = 1;
-                   
             u=strtok(0," ");
          } while (u!=0);
       };
@@ -724,7 +725,7 @@ int console_execute(const char *str){
          printf("Missing parameter.\n"); 
       }   
    }else
-   if ( strcmp(u,"type") == 0 || strcmp(u,"cat") == 0 ){
+   if (strcmp(u,"type") == 0 || strcmp(u,"cat") == 0 ){
       u=strtok(0," ");
       if (u!=0){
          if (console_showfile(u,0)==-1)

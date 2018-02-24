@@ -222,6 +222,7 @@ void main(){
 
     //obtain the device which booted this operating system         
    kernel_systeminfo.boot_device = mbhdr->boot_device >> 24;
+
    if (kernel_systeminfo.boot_device == 0){  
       //floppy
       strcpy(boot_device_name,"fd0");
