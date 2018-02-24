@@ -36,93 +36,87 @@ FILE *stdout = (FILE*)1, *stdin =(FILE*)2, *stderr=(FILE*)1;
 
 /*executes a dex32 systemcall (int 0x30) , implementation almost similar to linux*/
 unsigned int dexsdk_systemcall(int function_number,int p1,int p2,
-                  int p3,int p4,int p5)
-{
-    unsigned int return_value;
-    __asm__ volatile ("int $0x30" \
-        : "=a" (return_value) \
-        : "0" ((long)(function_number)),"b" ((long)(p1)),"c" ((long)(p2)), \
-          "d" ((long)(p3)),"S" ((long)(p4)),"D" ((long)(p5)) ); \
-    return return_value;
+                  int p3,int p4,int p5){
+   unsigned int return_value;
+   __asm__ volatile ("int $0x30" \
+         : "=a" (return_value) \
+         : "0" ((long)(function_number)),"b" ((long)(p1)),"c" ((long)(p2)), \
+         "d" ((long)(p3)),"S" ((long)(p4)),"D" ((long)(p5)) ); \
+   return return_value;
 };
 
-int dex_exit(int val)
- {
-  dexsdk_systemcall(FXN_EXIT,val,0,0,0,0);
- };
-
-void exit (int status)
-{
-    dex_exit(status);
+int dex_exit(int val){
+   dexsdk_systemcall(FXN_EXIT,val,0,0,0,0);
 };
 
-void getparameters(char *buf)
-{
-    dexsdk_systemcall(0x50,(int)buf,0,0,0,0);
+void exit (int status){
+   dex_exit(status);
 };
 
-void charputc(char c)
-{
-  dexsdk_systemcall(6,c,0,0,0,0);
+void getparameters(char *buf){
+   dexsdk_systemcall(0x50,(int)buf,0,0,0,0);
+};
+
+void charputc(char c){
+   dexsdk_systemcall(6,c,0,0,0,0);
 };  
 
 /*this strtok is still not thread safe, so be careful!*/
-char *strtok(char *s, const char *delim)
-{
-  const char *spanp;
-  int c, sc;
-  char *tok;
-  static char *last;
+char *strtok(char *s, const char *delim){
+   const char *spanp;
+   int c, sc;
+   char *tok;
+   static char *last;
 
 
-  if (s == NULL && (s = last) == NULL)
-    return (NULL);
+   if (s == NULL && (s = last) == NULL)
+      return (NULL);
 
-  /*
+   /*
    * Skip (span) leading delimiters (s += strspn(s, delim), sort of).
    */
- cont:
-  c = *s++;
-  for (spanp = delim; (sc = *spanp++) != 0;) {
-    if (c == sc)
-      goto cont;
-  }
+cont:
+   c = *s++;
+   for (spanp = delim; (sc = *spanp++) != 0;) {
+      if (c == sc)
+         goto cont;  
+   }
 
-  if (c == 0) {			/* no non-delimiter characters */
-    last = NULL;
-    return (NULL);
-  }
-  tok = s - 1;
+   if (c == 0) {			/* no non-delimiter characters */
+      last = NULL;
+      return (NULL);
+   }
+   tok = s - 1;
 
-  /*
+   /*
    * Scan token (scan for delimiters: s += strcspn(s, delim), sort of).
    * Note that delim must have one NUL; we stop if we see that, too.
    */
-  for (;;) {
-    c = *s++;
-    spanp = delim;
-    do {
-      if ((sc = *spanp++) == c) {
-	if (c == 0)
-	  s = NULL;
-	else
-	  s[-1] = 0;
-	last = s;
-	return (tok);
-      }
-    } while (sc != 0);
-  }
+   for (;;) {
+      c = *s++;
+      spanp = delim;
+      do {
+         if ((sc = *spanp++) == c) {
+            if (c == 0)
+	            s = NULL;
+	         else
+               s[-1] = 0;
+	      last = s;
+	      return (tok);
+         }
+      }while (sc != 0);
+   }
   /* NOTREACHED */
 };
 
-size_t strlen(const char *str)
-{
-  const char *s;
+size_t strlen(const char *str){
+   const char *s;
 
-  if (str == 0)
-    return 0;
-  for (s = str; *s; ++s);
-  return s-str;
+   if (str == 0)
+      return 0;
+   for (s = str; *s; ++s)
+      ;
+   return s-str;
 };
 
 
@@ -134,15 +128,14 @@ size_t strlen(const char *str)
 #define SPECIAL	32		/* 0x */
 #define LARGE	64		/* use 'ABCDEF' instead of 'abcdef' */
 
-static char * number(char * buf, char * end, long long num, int base, int size, int precision, int type)
-{
-	char c,sign,tmp[66];
-	const char *digits;
-	const char small_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-	const char large_digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	int i;
+static char * number(char * buf, char * end, long long num, int base, int size, int precision, int type){
+   char c,sign,tmp[66];
+   const char *digits;
+   const char small_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+   const char large_digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+   int i;
 
-	digits = (type & LARGE) ? large_digits : small_digits;
+   digits = (type & LARGE) ? large_digits : small_digits;
 	if (type & LEFT)
 		type &= ~ZEROPAD;
 	if (base < 2 || base > 36)
@@ -227,15 +220,13 @@ static char * number(char * buf, char * end, long long num, int base, int size, 
 	return buf;
 }
 
-int vprintf_help(unsigned c, void **ptr,FILE *f)
-{
-    charputc(c);
-	return 0 ;
+int vprintf_help(unsigned c, void **ptr,FILE *f){
+   charputc(c);
+   return 0 ;
 }
 
 
-int vprintf(const char *fmt, va_list args)
-{
+int vprintf(const char *fmt, va_list args){
 	return do_printf(fmt, args, vprintf_help,0,NULL);
 }
 
@@ -254,18 +245,15 @@ int vprintf(const char *fmt, va_list args)
 2^32-1 in base 8 has 11 digits (add 5 for trailing NUL and for slop) */
 #define		PR_BUFLEN	16
 
-int do_printf(const char *fmt, va_list args, fnptr_t fn,FILE *f, void *ptr)
-{
-	unsigned state, flags, radix, actual_wd, count, given_wd;
+int do_printf(const char *fmt, va_list args, fnptr_t fn,FILE *f, void *ptr){
+   unsigned state, flags, radix, actual_wd, count, given_wd;
 	unsigned char *where, buf[PR_BUFLEN];
 	long num;
 
 	state = flags = count = given_wd = 0;
 /* begin scanning format specifier list */
-	for(; *fmt; fmt++)
-	{
-		switch(state)
-		{
+	for(; *fmt; fmt++){
+		switch(state){
 /* STATE 0: AWAITING % */
 		case 0:
 			if(*fmt != '%')	/* not %... */
@@ -489,8 +477,7 @@ int printf(const char *fmt, ...)
 	return ret_val;
 }
 
-int do_sprintf(const char *fmt, va_list args, sfnptr_t fn, void **ptr)
-{
+int do_sprintf(const char *fmt, va_list args, sfnptr_t fn, void **ptr){
 	unsigned state, flags, radix, actual_wd, count, given_wd;
 	unsigned char *where, buf[PR_BUFLEN];
 	long num;
@@ -729,8 +716,7 @@ SPRINTF
 /*
  * FIXME
  */
-int vsprintf_help(unsigned c, void **ptr )
-{
+int vsprintf_help(unsigned c, void **ptr ){
         char *dst;
 
         dst = *ptr;
@@ -743,12 +729,11 @@ int vsprintf_help(unsigned c, void **ptr )
 /**
  * FIXME
  */ 
-int vsprintf(char *buffer, const char *fmt, va_list args)
-{
+int vsprintf(char *buffer, const char *fmt, va_list args){
         int ret_val;
 
         //ret_val = do_sprintf(fmt, args, vsprintf_help,NULL,(void*)& buffer);
-        ret_val=do_sprintf(fmt, args, vsprintf_help,(void*)& buffer);
+        ret_val=do_sprintf(fmt, args, vsprintf_help, (void*)& buffer);
         buffer[ret_val] = '\0';
         return ret_val;
 }
@@ -757,8 +742,7 @@ int vsprintf(char *buffer, const char *fmt, va_list args)
 /*
  * FIXME
  */
-int sprintf(char *buffer, const char *fmt, ...)
-{
+int sprintf(char *buffer, const char *fmt, ...){
         va_list args;
         int ret_val;
 
@@ -772,543 +756,477 @@ int sprintf(char *buffer, const char *fmt, ...)
 
 /********************CRT control functions******************************/
 /* Clear the screen */
-void  clrscr()
-{
+void  clrscr(){
     dexsdk_systemcall(8,0,0,0,0,0);
 };
 
-int wherex(void)
-{
+int wherex(void){
   return getx()+1;
 };
 
-int wherey(void)
-{
+int wherey(void){
  return gety()+1;
 };
 
-int getx()
-{
+int getx(){
    return dexsdk_systemcall(0x35,0,0,0,0,0);
 };
 
-int gety()
-{
+int gety(){
    return dexsdk_systemcall(0x36,0,0,0,0,0);
 };
 
-void setx(int x)
-{
+void setx(int x){
    dexsdk_systemcall(0x37,x,0,0,0,0);
 };
 
-void sety(int y)
-{
+void sety(int y){
    dexsdk_systemcall(0x38,y,0,0,0,0); 
 };
 
-void textcolor(char val)
-{
+void textcolor(char val){
    dexsdk_systemcall(13,val,0,0,0,0);
 };
 
-void textbackground(char val)
-{
+void textbackground(char val){
    dexsdk_systemcall(14,val,0,0,0,0);
 };
   
-void outc(char x)
-{
+void outc(char x){
     dexsdk_systemcall(0x51,x,0,0,0,0);
 };
 
-void update_cursor(int x,int y)
-{
+void update_cursor(int x, int y){
     dexsdk_systemcall(7,x,y,0,0,0);
 };
 
-void gotoxy(int x,int y)
- {
- setx(x-1);sety(y-1);
- update_cursor(y-1,x-1);
+void gotoxy(int x,int y){
+   setx(x-1);
+   sety(y-1);
+   update_cursor(y-1,x-1);
 ;};
 
 /************Heap management functions***/
-void *sbrk(int amt)
- {
+void *sbrk(int amt){
    return (void*)dexsdk_systemcall(FXN_SBRK,amt,0,0,0,0);
- };
+};
 
 char *buckets[32] = {0};
 int bucket2size[32] = {0};
 
-static int
-size2bucket(int size)
-{
-  int rv = 0x1f;
-  int bit = ~0x10;
-  int i;
+static int size2bucket(int size){
+   int rv = 0x1f;
+   int bit = ~0x10;
+   int i;
 
-  if (size < 4) size = 4;
-  size = (size+3)&~3;
-
-  for (i=0; i<5; i++)
-  {
-    if (bucket2size[rv&bit] >= size)
-      rv &= bit;
-    bit>>=1;
-  }
-  return rv;
+   if (size < 4) 
+      size = 4;
+   size = (size+3)&~3;
+   
+   for (i=0; i<5; i++){
+      if (bucket2size[rv&bit] >= size)
+         rv &= bit;
+      bit>>=1;
+   }
+   return rv;
 }
 
-static void
-init_buckets(void)
-{
-  unsigned b;
-  for (b=0; b<32; b++)
-    bucket2size[b] = (1<<b);
+static void init_buckets(void){
+   unsigned b;
+   for (b=0; b<32; b++)
+      bucket2size[b] = (1<<b);
 }
 
 
-void free(void *ptr)
-{
-  int b;
-  if (ptr == 0)
-    return;
-  b = *(int *)((char *)ptr-4);
-  *(char **)ptr = buckets[b];
-  buckets[b] =(char*) ptr;
+void free(void *ptr){
+   int b;
+   if (ptr == 0)
+      return;
+   b = *(int *)((char *)ptr-4);
+   *(char **)ptr = buckets[b];
+   buckets[b] =(char*) ptr;
 }
 
-void *realloc(void *ptr, size_t size)
-{
-  char *newptr;
-  int oldsize;
-  if (ptr == 0)
-    return malloc(size);
-  oldsize = bucket2size[*(int *)((char *)ptr-4)];
-  if (size <= oldsize)
-    return ptr;
-  newptr = (char *)malloc(size);
-  memcpy(newptr, ptr, oldsize);
-  free(ptr);
-  return newptr;
+void *realloc(void *ptr, size_t size) {
+   char *newptr;
+   int oldsize;
+   if (ptr == 0)
+      return malloc(size);
+   oldsize = bucket2size[*(int *)((char *)ptr-4)];
+   if (size <= oldsize)
+      return ptr;
+   newptr = (char *)malloc(size);
+   memcpy(newptr, ptr, oldsize);
+   free(ptr);
+   return newptr;
 }
 
-void *malloc(size_t size)
-{
+void *malloc(size_t size){
+   char *rv;
+   int b;
 
-  char *rv;
-  int b;
+   if (bucket2size[0] == 0)
+      init_buckets();
 
-  if (bucket2size[0] == 0)
-    init_buckets();
+   b = size2bucket(size);
+   if (buckets[b]){
+      rv = buckets[b];
+      buckets[b] = *(char **)rv;
+      return rv;
+   }
 
-  b = size2bucket(size);
-  if (buckets[b])
-  {
-    rv = buckets[b];
-    buckets[b] = *(char **)rv;
-    return rv;
-  }
+   size = bucket2size[b]+4;
+   rv = (char *)sbrk(size);
 
-  size = bucket2size[b]+4;
-  rv = (char *)sbrk(size);
-
-  *(int *)rv = b;
-  rv += 4;
-  return rv;
+   *(int *)rv = b;
+   rv += 4;
+   return rv;
 }
 
 
 /************String management***********/
-void *memmove (void *dst, const void *src,unsigned int count)
-{
-        void *ret = dst;
+void *memmove (void *dst, const void *src,unsigned int count){
+   void *ret = dst;
 
-        if (dst <= src || (char*)dst >= ((char*)src + count)) {
-                while (count--) {
-                        *(char*)dst = *(char*)src;
-                        dst = (char*)dst + 1;
-                        src = (char*)src + 1;
-                }
-        }
-        else {
-                /*
-                 * Overlapping Buffers
-                 * copy from higher addresses to lower addresses
-                 */
-                dst = (char*)dst + count - 1;
-                src = (char*)src + count - 1;
+   if (dst <= src || (char*)dst >= ((char*)src + count)) {
+      while (count--) {
+         *(char*)dst = *(char*)src;
+         dst = (char*)dst + 1;
+         src = (char*)src + 1;
+      }
+   }else {
+      /*
+      * Overlapping Buffers
+      * copy from higher addresses to lower addresses
+      */
+      dst = (char*)dst + count - 1;
+      src = (char*)src + count - 1;
 
-                while (count--) {
-                        *(char*)dst = *(char*)src;
-                        dst = (char*)dst - 1;
-                        src = (char*)src - 1;
-                }
-        }
-
-
-        return(ret);
+      while (count--) {
+         *(char*)dst = *(char*)src;
+         dst = (char*)dst - 1;
+         src = (char*)src - 1;
+      }
+   }
+   return(ret);
 };
 
-void * memset (void *dst,int val,unsigned int count)
-{
-        void *start = dst;
-        while (count--) {
-                *(char *)dst = (char)val;
-                dst = (char *)dst + 1;
-        }
-        return(start);
+void *memset (void *dst,int val,unsigned int count){
+   void *start = dst;
+   while (count--) {
+      *(char *)dst = (char)val;
+      dst = (char *)dst + 1;
+   }
+   return(start);
 };
 
-void *memchr(const void *s, int c, size_t n)
-{
-  if (n)
-  {
-    const char *p = s;
-    char cc = c;
-    do {
-      if (*p == cc)
-	return unconst(p, void *);
-      p++;
-    } while (--n != 0);
-  }
-  return 0;
+void *memchr(const void *s, int c, size_t n){
+   if (n){
+      const char *p = s;
+      char cc = c;
+      do {
+         if (*p == cc)
+	         return unconst(p, void *);
+         p++;
+      } while (--n != 0);
+   }
+   return 0;
 }
 
-void * memcpy (void * dst, const void * src,unsigned int count)
-{
-        void * ret = dst;
-        while (count--) {
-                *(char *)dst = *(char *)src;
-                dst = (char *)dst + 1;
-                src = (char *)src + 1;
-        }
-        return(ret);
+void *memcpy (void * dst, const void * src,unsigned int count){
+   void * ret = dst;
+   while (count--) {
+      *(char *)dst = *(char *)src;
+      dst = (char *)dst + 1;
+      src = (char *)src + 1;
+   }
+   return(ret);
 };
 
-int memcmp(const void *s1, const void *s2, size_t n)
-{
-  if (n != 0)
-  {
-    const unsigned char *p1 = s1, *p2 = s2;
+int memcmp(const void *s1, const void *s2, size_t n){
+   if (n != 0){
+      const unsigned char *p1 = s1, *p2 = s2;
 
-    do {
-      if (*p1++ != *p2++)
-	return (*--p1 - *--p2);
-    } while (--n != 0);
-  }
-  return 0;
+      do {
+         if (*p1++ != *p2++)
+	         return (*--p1 - *--p2);
+      } while (--n != 0);
+   }
+   return 0;
 }
 
-char *strcpy(char *to, const char *from)
-{
-  char *save = to;
+char *strcpy(char *to, const char *from){
+   char *save = to;
 
-  for (; (*to = *from); ++from, ++to);
-  return save;
+   for (; (*to = *from); ++from, ++to)
+      ;
+   return save;
 };
 
-char *strchr(const char *s, int c)
-{
-  char cc = c;
-  while (*s)
-  {
-    if (*s == cc)
+char *strchr(const char *s, int c){
+   char cc = c;
+   while (*s){
+      if (*s == cc)
+         return unconst(s, char *);
+      s++;
+   }
+   if (cc == 0)
       return unconst(s, char *);
-    s++;
-  }
-  if (cc == 0)
-    return unconst(s, char *);
-  return 0;
+   return 0;
 }
 
-char *strrchr(const char *s, int c)
-{
-  char cc = c;
-  const char *sp=(char *)0;
-  while (*s)
-  {
-    if (*s == cc)
+char *strrchr(const char *s, int c){
+   char cc = c;
+   const char *sp=(char *)0;
+   while (*s){
+      if (*s == cc)
+         sp = s;
+      s++;
+   }
+   if (cc == 0)
       sp = s;
-    s++;
-  }
-  if (cc == 0)
-    sp = s;
-  return unconst(sp, char *);
+   return unconst(sp, char *);
 }
 
-int strcmp(const char *s1, const char *s2)
-{
-  while (*s1 == *s2)
-  {
-    if (*s1 == 0)
-      return 0;
-    s1++;
-    s2++;
-  }
-  return *(unsigned const char *)s1 - *(unsigned const char *)(s2);
+int strcmp(const char *s1, const char *s2){
+   while (*s1 == *s2){
+      if (*s1 == 0)
+         return 0;
+      s1++;
+      s2++;
+   }
+   return *(unsigned const char *)s1 - *(unsigned const char *)(s2);
 }
 
-size_t strcspn(const char *s1, const char *s2)
-{
-  const char *p, *spanp;
-  char c, sc;
+size_t strcspn(const char *s1, const char *s2){
+   const char *p, *spanp;
+   char c, sc;
 
-  for (p = s1;;)
-  {
-    c = *p++;
-    spanp = s2;
-    do {
-      if ((sc = *spanp++) == c)
-	return p - 1 - s1;
-    } while (sc != 0);
-  }
+   for (p = s1;;){
+      c = *p++;
+      spanp = s2;
+      do {
+         if ((sc = *spanp++) == c)
+	         return p - 1 - s1;
+      } while (sc != 0);
+   }
   /* NOTREACHED */
 }
 
-int strcoll(const char *s1, const char *s2)
-{
-  return strcmp(s1, s2);
+int strcoll(const char *s1, const char *s2){
+   return strcmp(s1, s2);
 }
 
-size_t strspn(const char *s1, const char *s2)
-{
-  const char *p = s1, *spanp;
-  char c, sc;
+size_t strspn(const char *s1, const char *s2){
+   const char *p = s1, *spanp;
+   char c, sc;
 
  cont:
-  c = *p++;
-  for (spanp = s2; (sc = *spanp++) != 0;)
-    if (sc == c)
-      goto cont;
-  return (p - 1 - s1);
+   c = *p++;
+   for (spanp = s2; (sc = *spanp++) != 0;)
+      if (sc == c)
+         goto cont;
+   return (p - 1 - s1);
 }
 
-char *strcat(char *s, const char *append)
-{
-  char *save = s;
+char *strcat(char *s, const char *append){
+   char *save = s;
 
-  for (; *s; ++s);
-  while ((*s++ = *append++));
-  return save;
+   for (; *s; ++s);
+   while ((*s++ = *append++))
+      ;
+   return save;
 }
 
-char *strstr(const char *s, const char *find)
-{
-  char c, sc;
-  size_t len;
+char *strstr(const char *s, const char *find){
+   char c, sc;
+   size_t len;
 
-  if ((c = *find++) != 0)
-  {
-    len = strlen(find);
-    do {
+   if ((c = *find++) != 0){
+      len = strlen(find);
       do {
-	if ((sc = *s++) == 0)
-	  return 0;
-      } while (sc != c);
-    } while (strncmp(s, find, len) != 0);
-    s--;
-  }
-  return unconst(s, char *);
+         do {
+	         if ((sc = *s++) == 0)
+	            return 0;
+         } while (sc != c);
+      } while (strncmp(s, find, len) != 0);
+      s--;
+   }
+   return unconst(s, char *);
 }
 
-char *strncat(char *dst, const char *src, size_t n)
-{
-  if (n != 0)
-  {
-    char *d = dst;
-    const char *s = src;
-   while (*d != 0)
-      d++;
-    do {
-      if ((*d = *s++) == 0)
-	break;
-      d++;
-    } while (--n != 0);
-    *d = 0;
-  }
-  return dst;
+char *strncat(char *dst, const char *src, size_t n){
+   if (n != 0){
+      char *d = dst;
+      const char *s = src;
+      while (*d != 0)
+         d++;
+      do {
+         if ((*d = *s++) == 0)
+	         break;
+         d++;
+      } while (--n != 0);
+      *d = 0;
+   }
+   return dst;
 }
 
-char *strncpy(char *dst, const char *src, size_t n)
-{
-  if (n != 0) {
-    char *d = dst;
-    const char *s = src;
+char *strncpy(char *dst, const char *src, size_t n){
+   if (n != 0) {
+      char *d = dst;
+      const char *s = src;
 
-    do {
-      if ((*d++ = *s++) == 0)
-      {
-	while (--n != 0)
-	  *d++ = 0;
-	break;
-      }
-    } while (--n != 0);
-  }
-  return dst;
+      do {
+         if ((*d++ = *s++) == 0){
+	         while (--n != 0)
+	            *d++ = 0;
+	         break;
+         }
+      } while (--n != 0);
+   }
+   return dst;
 }
 
-int strncmp(const char *s1, const char *s2, size_t n)
-{
-
-  if (n == 0)
-    return 0;
-  do {
-    if (*s1 != *s2++)
-      return *(unsigned const char *)s1 - *(unsigned const char *)--s2;
-    if (*s1++ == 0)
-      break;
-  } while (--n != 0);
-  return 0;
+int strncmp(const char *s1, const char *s2, size_t n){
+   if (n == 0)
+      return 0;
+   do {
+      if (*s1 != *s2++)
+         return *(unsigned const char *)s1 - *(unsigned const char *)--s2;
+      if (*s1++ == 0)
+         break;
+   } while (--n != 0);
+   return 0;
 }
 
 /************Input functions*************/
 
-int kb_deq(int *code)
-  {
+int kb_deq(int *code){
    return dexsdk_systemcall(1,(int)code,0,0,0,0);
-  };
+};
   
-char getch()
- {
- int code,c;
-   do
-   {
-    c=kb_deq(&code);
-   }
-   while (c==-1);
+char getch(){
+   int code,c;
+   do{
+      c=kb_deq(&code);
+   }while (c==-1);
    return ((char)code);
- };
+};
 
-int getchar()
-{
-  return (int)getch();
+int getchar(){
+   return (int)getch();
 };
 
 /******** Files ********/
-FILE *openfile(const char  *filename,int mode)
-{
-  return (FILE*)dexsdk_systemcall(4,(int)filename,mode,0,0,0);
+FILE *openfile(const char  *filename,int mode){
+   return (FILE*)dexsdk_systemcall(4,(int)filename,mode,0,0,0);
 };
 
-int feof(FILE *f)
-{
-  return dexsdk_systemcall(0x52,(int)f,0,0,0,0);
+int feof(FILE *f){
+   return dexsdk_systemcall(0x52,(int)f,0,0,0,0);
 };
 
-int fstat(FILE *fp,vfs_stat *statbuf)
-{
-    return dexsdk_systemcall(0x58,(int)fp,(int)statbuf,0,0,0);
+int fstat(FILE *fp,vfs_stat *statbuf){
+   return dexsdk_systemcall(0x58,(int)fp,(int)statbuf,0,0,0);
 };
 
-FILE *fopen(const char *filename,const char *s)
- {
+FILE *fopen(const char *filename,const char *s){
    int read=0,write=0,append=0;
    int i;
-   for (i=0;s[i];i++)
-      {
-       if (s[i]=='a') append=1;
-       if (s[i]=='w') write=1;
-       if (s[i]=='r') read=1;
-      };
-   if (append) return openfile(filename,FILE_APPEND);
-   if (read&&write) return openfile(filename,FILE_READWRITE);
-   if (read) return openfile(filename,FILE_READ);
-   if (write) return openfile(filename,FILE_WRITE);
+   for (i=0;s[i];i++){
+      if (s[i]=='a') 
+         append=1;
+      if (s[i]=='w') 
+         write=1;
+      if (s[i]=='r') 
+         read=1;
+   };
+   if (append) 
+      return openfile(filename,FILE_APPEND);
+   if (read&&write) 
+      return openfile(filename,FILE_READWRITE);
+   if (read) 
+      return openfile(filename,FILE_READ);
+   if (write) 
+      return openfile(filename,FILE_WRITE);
    return 0;
 };
 
-int fgetc (FILE *stream)
-{
+int fgetc (FILE *stream){
    char ch;
-   if (stream==stdin) return getchar();
+   if (stream==stdin) 
+      return getchar();
    if (feof(stream))
      return -1;
    fread(&ch,1,1,stream);
    return ch;
 };
 
-char *gets(char *buf)
-  {
-    unsigned int i=0;
-    char c;
-    do
-    {
-    c=getch();
-    if (c=='\r'||c=='\n'||c==0xa) break;
-    if (c=='\b')
-       {
-       if(i>0)
-        {
-        i--;
+char *gets(char *buf){
+   unsigned int i=0;
+   char c;
+   do{
+      c=getch();
+      if (c=='\r'||c=='\n'||c==0xa) 
+         break;
+      if (c=='\b'){
+         if(i>0){
+            i--;
 
-        if (getx()==0)
-             {
-              setx(79);
-              if (gety()>0) sety(gety()-1);
-             }
-             else
-        setx(getx()-1);
-        outc(' ');
-        };
-       }
-       else
-       {
-
-        if (i<256)  //maximum command line is only 255 characters
-         {
+            if (getx()==0){
+               setx(79);
+               if (gety()>0) 
+                  sety(gety()-1);
+            }else{
+               setx(getx()-1);
+            }
+            outc(' ');
+         };
+      }else{
+         if (i<256){  //maximum command line is only 255 characters
             charputc(buf[i]=c);
             i++;
            // setx(getx()+1);
-
-            if (getx()>80) printf("\n");
+            if (getx()>80) 
+               printf("\n");
          };
-       };
-     outc(' ');
-     update_cursor(gety(),getx());
-    } while (c!='\r');
-    setx(0);
-    printf("\n");
-    buf[i]=0;
-    return buf;
-  };
-
-char *fgets(char *s, int n, FILE* f)
-{
-    
-    if (f==stdin)
-    {
-    int x;
-    gets(s);
-    x=strlen(s);
-    s[x]='\n';
-    s[x+1]= 0;
-    return s;
-    };
-    
-    return (char*)dexsdk_systemcall(0x40,(int)s,n,(int)f,0,0); 
+      };
+      outc(' ');
+      update_cursor(gety(),getx());
+   }while (c!='\r');
+   setx(0);
+   printf("\n");
+   buf[i]=0;
+   return buf;
 };
 
-int fread(const void *buf,int itemsize,int noitems,FILE* fhandle)
- {
-   return dexsdk_systemcall(0x39,(int)buf,itemsize,noitems,(int)fhandle,0);
- };
+char *fgets(char *s, int n, FILE* f){
+   if (f==stdin){
+      int x;
+      gets(s);
+      x=strlen(s);
+      s[x]='\n';
+      s[x+1]= 0;
+      return s;
+   };
+   return (char*)dexsdk_systemcall(0x40,(int)s,n,(int)f,0,0); 
+};
 
-int fwrite(const void *buf,int itemsize,int noitems,FILE* fhandle)
- {
+int fread(const void *buf,int itemsize,int noitems,FILE* fhandle){
+   return dexsdk_systemcall(0x39,(int)buf,itemsize,noitems,(int)fhandle,0);
+};
+
+int fwrite(const void *buf,int itemsize,int noitems,FILE* fhandle){
    return dexsdk_systemcall(0x45,(int)buf,itemsize,noitems,(int)fhandle,0);
- };
+};
  
-char fputc(char c,FILE *f)
-  {
-    if ( f ==  stdout || f == stderr) //stdout
-        charputc(c);
-           else
-        fwrite(&c,1,1,f);
-    return c;
-  };
+char fputc(char c,FILE *f){
+   if ( f ==  stdout || f == stderr) //stdout
+      charputc(c);
+   else
+      fwrite(&c,1,1,f);
+   return c;
+};
 
 fputs(const char *s, FILE *stream){
   const char *p=s;
@@ -1319,53 +1237,45 @@ fputs(const char *s, FILE *stream){
 }
 
  
-int fclose(FILE *stream)
-{
- if (stream==stdout) //stdout?
- return 0;
- closefile(stream);
- return 0;
+int fclose(FILE *stream){
+   if (stream==stdout) //stdout?
+      return 0;
+   closefile(stream);
+   return 0;
 };
 
-int fflush (FILE *stream)
-{
-    if (stream == stdout || stream==stderr || stream == stdin) return 1;
-    return dexsdk_systemcall(0x59,(int)stream,0,0,0,0);
+int fflush (FILE *stream){
+   if (stream == stdout || stream==stderr || stream == stdin) 
+      return 1;
+   return dexsdk_systemcall(0x59,(int)stream,0,0,0,0);
 };
 
-char *fseek(FILE* f,long x,int y)
-{
+char *fseek(FILE* f,long x,int y){
    return (char*)dexsdk_systemcall(0x41,(int)f,x,y,0,0);
 };
 
-long int ftell(FILE *stream)
-{
+long int ftell(FILE *stream){
    return dexsdk_systemcall(0x47,(int)stream,0,0,0,0);
 };
 
-int closefile(FILE* fhandle)
-{
+int closefile(FILE* fhandle){
    return dexsdk_systemcall(5,(int)fhandle,0,0,0,0);
 };
 
-int remove(char *filename)
-{
-    return dexsdk_systemcall(0x49,(int)filename,0,0,0,0);
+int remove(char *filename){
+   return dexsdk_systemcall(0x49,(int)filename,0,0,0,0);
 };
 
-int mkdir (const char *filename, mode_t mode)
-{
+int mkdir (const char *filename, mode_t mode){
     return dexsdk_systemcall(0x4A,(int)filename,0,0,0,0);
 };
 
-int copyfile(const char *src, const char *dest)
-{
+int copyfile(const char *src, const char *dest){
     return dexsdk_systemcall(0x97,(int)src,(int)dest,0,0,0);
 };
 
 //------------------------------------------
-int atoi(const char *str)
-{
+int atoi(const char *str){
     int i = strlen(str) - 1 , i2 = 1;
     int num = 0;
     for (;i>=0; i--)
@@ -1407,7 +1317,7 @@ void write_palette(char r, char g, char b, char index){
 
 
 
-//time
+//------------------------time
 void delay(unsigned int ms){
     dexsdk_systemcall(0x9B,ms,0,0,0,0);
 }
@@ -1427,16 +1337,16 @@ void kb_ready(){
 
 //random
 unsigned long int next = 1;
+
 /* rand: return pseudo-random integer on 0..32767 */
-int rand(void)
-{
-next = next * 1103515245 + 12345;
-return (unsigned int)(next/65536) % 32768;
+int rand(void){
+   next = next * 1103515245 + 12345;
+   return (unsigned int)(next/65536) % 32768;
 }
+
 /* srand: set seed for rand() */
-void srand(unsigned int seed)
-{
-next = seed;
+void srand(unsigned int seed){
+   next = seed;
 }
 
 /*Process control functions */
