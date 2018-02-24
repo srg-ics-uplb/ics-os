@@ -280,7 +280,7 @@ int console_showfile(char *s, int wait){
    buf=(char*)malloc(size);
    textbackground(BLUE);
    myddl = Dex32GetProcessDevice();
-   printf("Name: %s  Filesize: %d bytes \n", s, size);
+   printf("Name: %s  Size: %d bytes \n", s, size);
    textbackground(BLACK);
    fread(buf, size, 1, handle);
    for (i=0; i<size; i++){
@@ -330,7 +330,7 @@ void prompt_parser(const char *promptstr, char *prompt){
             };
          };
          i3=0;
-         for (i2=i+1;promptstr[i2]&&i2<255;i2++){
+         for (i2=i+1; promptstr[i2]&&i2 < 255; i2++){
             if (promptstr[i2] == '%' || i3 >= 10) 
                break;
             command[i3]=promptstr[i2];
@@ -348,134 +348,123 @@ void prompt_parser(const char *promptstr, char *prompt){
   
 
 
+
+/*An auxillary function for qsort for comparing two elements, based on size*/
+int console_ls_sortsize(vfs_node *n1, vfs_node *n2){
+   if (n1->size > n2->size) 
+      return -1;
+   if (n2->size > n1->size) 
+      return 1;
+   return 0;
+};
+
+/*An auxillary function for qsort for comparing two elements, based on name*/
+int console_ls_sortname(vfs_node *n1, vfs_node *n2){
+   if ( (n1->attb & FILE_DIRECTORY) && !(n2->attb & FILE_DIRECTORY))
+      return -1;
+
+   if ( !(n1->attb & FILE_DIRECTORY) && (n2->attb & FILE_DIRECTORY))
+      return 1;
+        
+   return strsort(n1->name,n2->name);
+};
+
 /* ==================================================================
    console_ls(int style):
    
    *list the contents of the current directory to the screen
     style = 1      : list format 
-    sty;e = others : wide format  
-
+    style = others : wide format  
 */
-
-/*An auxillary function for qsort for comparing two elements*/
-int console_ls_sortsize(vfs_node *n1,vfs_node *n2)
-{
-    if (n1->size > n2->size) return -1;
-    if (n2->size > n1->size) return 1;
-    return 0;
-};
-
-/*An auxillary function for qsort for comparing two elements*/
-int console_ls_sortname(vfs_node *n1,vfs_node *n2)
-{
-    if ( (n1->attb & FILE_DIRECTORY) && !(n2->attb & FILE_DIRECTORY))
-        return -1;
-
-    if ( !(n1->attb & FILE_DIRECTORY) && (n2->attb & FILE_DIRECTORY))
-        return 1;
-        
-    return strsort(n1->name,n2->name);
-};
-
 /*lists the files in the current directory to the console screen*/
-void console_ls(int style, int sortmethod)
-{
+void console_ls(int style, int sortmethod){
+   vfs_node *dptr=current_process->workdir;
+   vfs_node *buffer;
+   int totalbytes=0, freebytes=0;
+   int totalfiles=0, i;
+   char cdatestr[20], mdatestr[20], temp[20];
+    
+   //obtain total number of files
+   totalfiles = vfs_listdir(dptr, 0, 0);
+    
+   buffer = (vfs_node*) malloc( totalfiles * sizeof(vfs_node));
 
-    vfs_node *dptr=current_process->workdir;
-    vfs_node *buffer;
-    int totalbytes=0,freebytes=0;
-    int totalfiles=0,i;
-    char cdatestr[20],mdatestr[20],temp[20];
+   //Place the list of files obtained from the VFS into a buffer
+   totalfiles = vfs_listdir(dptr, buffer, totalfiles * sizeof(vfs_node));     
     
-    //obtain total number of files
-    totalfiles = vfs_listdir(dptr,0,0);
-    
-    buffer = (vfs_node*) malloc( totalfiles * sizeof(vfs_node));
-
-    //Place the list of files obtained from the VFS into a buffer
-    totalfiles = vfs_listdir(dptr,buffer,totalfiles* sizeof(vfs_node));     
-    
-    //Sort the list
-    if (sortmethod == SORT_NAME)
-        qsort(buffer,totalfiles,sizeof(vfs_node),console_ls_sortname);
-    else
-    if (sortmethod == SORT_SIZE)
-        qsort(buffer,totalfiles,sizeof(vfs_node),console_ls_sortsize);
+   //Sort the list
+   if (sortmethod == SORT_NAME)
+      qsort(buffer, totalfiles, sizeof(vfs_node), console_ls_sortname);
+   else if (sortmethod == SORT_SIZE)
+      qsort(buffer, totalfiles, sizeof(vfs_node), console_ls_sortsize);
         
-    textbackground(BLUE);
-    textcolor(WHITE);
+   textbackground(BLUE);
+   textcolor(WHITE);
     
-    if (style==1)
-        printf("%-25s %10s %14s %14s\n","Filename","Size(bytes)","Attribute","Date Modified");
+   if (style==1)
+      printf("%-25s %10s %14s %14s\n","Filename", "Size(bytes)", "Attribute", "Date Modified");
         
-    textbackground(BLACK);
+   textbackground(BLACK);
 
-    for (i=0; i < totalfiles; i++)
-    {
-        char fname[255];   
-        if (style==0) //wide view style
-        {
-            
-            if (buffer[i].attb&FILE_MOUNT)
-                textcolor(LIGHTBLUE);
-            else
-                if (buffer[i].attb&FILE_DIRECTORY)
-                    textcolor(GREEN);
-                else
-                    if (buffer[i].attb&FILE_OEXE)
-                        textcolor(YELLOW);
-                    else
-                    textcolor(WHITE);
-
-            strcpy(fname,buffer[i].name);
-            fname[24]=0;
-            printf("%-25s ",fname);
-            totalbytes+=buffer[i].size;
-            
-            if ( (i+1)%3==0 && (i+1 < totalfiles) ) printf("\n");
-
-        };
-
-        if (style==1) //list view style
-        {
-            if (buffer[i].attb&FILE_MOUNT)
-                textcolor(LIGHTBLUE);
-            else
-                if (buffer[i].attb&FILE_DIRECTORY)
-                    textcolor(GREEN);
-                else
-                     if (buffer[i].attb&FILE_OEXE)
-                        textcolor(YELLOW);
-                    else
-                    textcolor(WHITE);
-                    
-            strcpy(fname,buffer[i].name);
-            fname[24]=0;
-            printf("%-25s ",fname);
-            
+   for (i=0; i < totalfiles; i++){
+      char fname[255];   
+      if (style == 0){ //wide view style
+         if (buffer[i].attb&FILE_MOUNT)
+            textcolor(LIGHTBLUE);
+         else if (buffer[i].attb&FILE_DIRECTORY)
+            textcolor(GREEN);
+         else if (buffer[i].attb&FILE_OEXE)
+            textcolor(YELLOW);
+         else
             textcolor(WHITE);
-            printf("%10d %14s %14s\n",buffer[i].size,
-            vfs_attbstr(&buffer[i],temp),datetostr(&buffer[i].date_modified,
+
+         strcpy(fname,buffer[i].name);
+         fname[24]=0;
+         printf("%-25s ",fname);
+         totalbytes+=buffer[i].size;
+            
+         if ( (i+1)%3==0 && (i+1 < totalfiles) ) 
+            printf("\n");
+
+      };
+
+      if (style == 1){ //list view style
+         if (buffer[i].attb&FILE_MOUNT)
+            textcolor(LIGHTBLUE);
+         else if (buffer[i].attb&FILE_DIRECTORY)
+            textcolor(GREEN);
+         else if (buffer[i].attb&FILE_OEXE)
+            textcolor(YELLOW);
+         else
+            textcolor(WHITE);
+                    
+         strcpy(fname,buffer[i].name);
+         fname[24]=0;
+         printf("%-25s ",fname);
+            
+         textcolor(WHITE);
+         printf("%10d %14s %14s\n",buffer[i].size,
+         vfs_attbstr(&buffer[i],temp), datetostr(&buffer[i].date_modified,
                        mdatestr));
                        
-            totalbytes+=buffer[i].size;
+         totalbytes+=buffer[i].size;
 
 
-            //try to make it fit the screen
-            if ((i+1) % 23==0) 
-            {
-                char c;
-                printf("Press Q to quit or any other key to continue ...");
-                c=getch();
-                printf("\n");
-                if (c=='q'||c=='Q') break;
-            };
-        };       
-    };
+         //try to make it fit the screen
+         if ((i+1) % 23==0){
+            char c;
+            printf("Press Q to quit or any other key to continue ...");
+            c=getch();
+            printf("\n");
+            if (c=='q'||c=='Q') 
+               break;
+         };
+      };       
+   };
     
-    textcolor(WHITE);
-    printf("\nTotal Files: %d  Total Size: %d bytes\n", totalfiles, totalbytes);
-    free(buffer);
+   textcolor(WHITE);
+   printf("\nTotal Files: %d  Total Size: %d bytes\n", totalfiles, totalbytes);
+   free(buffer);
     
 };
 
@@ -484,67 +473,55 @@ void console_ls(int style, int sortmethod)
    * This command is used to execute a console string.
 
 */
-int console_execute(const char *str)
-{
-  char temp[512];
-  char *u;
-  int command_length = 0;
-  signed char mouse_x,mouse_y,last_mouse_x=0,last_mouse_y=0;
+int console_execute(const char *str){
+   char temp[512];
+   char *u;
+   int command_length = 0;
+   signed char mouse_x, mouse_y, last_mouse_x=0, last_mouse_y=0;
   
-  //make a copy so that strtok wouldn't ruin str
-  strcpy(temp,str);
-  u=strtok(temp," ");
+   //make a copy so that strtok wouldn't ruin str
+   strcpy(temp,str);
+   u=strtok(temp," ");
   
-  if (u==0) return;
+   if (u == 0) 
+      return;
   
-  command_length = strlen(u);    
+   command_length = strlen(u);    
     
-    //check if a pathcut command was executed
-    if (u[command_length - 1] == ':') 
-                {
-                    char temp[512];
-                    sprintf(temp,"cd %s",u);            
-                    console_execute(temp); 
-                }
-                else
-    if (strcmp(u,"fgman")==0)
-                {
-                    fg_set_state(1);
-                }
-                else
-    if (strcmp(u,"mouse")==0)
-                {
-                  while (!kb_ready()){
-                    get_mouse_pos(&mouse_x,&mouse_y);
-                    printf("Mouse (x,y): %d %d\n",mouse_x, mouse_y);
-                    while ((last_mouse_x == mouse_x) && (last_mouse_y==mouse_y))
-                    {
-                      get_mouse_pos(&mouse_x,&mouse_y);
-                    }
-                    last_mouse_x=mouse_x;
-                    last_mouse_y=mouse_y; 
-                  }
-                }
-                else
-    if (strcmp(u,"shutdown")==0)
-                {
-                    sendmessage(0,MES_SHUTDOWN,0);
-                }
-                else
-    if (strcmp(u,"procinfo")==0)
-                {
-                   int pid;             
-                   u=strtok(0," ");
-                   if (u!=0)
-                   {
-                       pid = atoi(u);
-                       show_process_stat(pid);
-                   };
-                }
-                else
-    if (strcmp(u,"meminfo")==0)
-                mem_interpretmemory(memory_map,map_length);
-                else
+   //check if a pathcut command was executed
+   if (u[command_length - 1] == ':'){
+      char temp[512];
+      sprintf(temp,"cd %s",u);            
+      console_execute(temp); 
+   }else 
+   if (strcmp(u,"fgman") == 0){
+      fg_set_state(1);
+   }else 
+   if (strcmp(u,"mouse") == 0){
+      while (!kb_ready()){
+         get_mouse_pos(&mouse_x,&mouse_y);
+         printf("Mouse (x,y): %d %d\n",mouse_x, mouse_y);
+         while ((last_mouse_x == mouse_x) && (last_mouse_y==mouse_y)){
+            get_mouse_pos(&mouse_x,&mouse_y);
+         }
+         last_mouse_x=mouse_x;
+         last_mouse_y=mouse_y; 
+      }
+   }else 
+   if (strcmp(u,"shutdown") == 0){
+      sendmessage(0,MES_SHUTDOWN,0);
+   }else
+   if (strcmp(u,"procinfo") == 0){
+      int pid;             
+      u=strtok(0," ");
+      if (u!=0){
+         pid = atoi(u);
+         show_process_stat(pid);
+      };
+   }else
+   if (strcmp(u,"meminfo") == 0){
+      mem_interpretmemory(memory_map,map_length);
+   }else
     if (strcmp(u,"pause")==0)
                 {
                 printf("press any key to continue or 'q' to quit..\n");
