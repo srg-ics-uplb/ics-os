@@ -821,79 +821,71 @@ int console_execute(const char *str){
          printf("console: cannot find device.\n");
       }   
 
-   }else{
+   }else{         //treat the command as an executable
       if (u!=0){
-         if (!user_execp(u,0,str))
-            printf("console32: undefined console command.\n");
+         if (!user_execp(u, 0, str))
+            printf("Undefined console command.\n");
       }
    }
    //normal termination
    return 1;
 };
 
-int console_new()
-{
-         //create a new console         
-         char consolename[255];
-         sprintf(consolename,"dex32_console(%d)",console_first);    
-         return createkthread((void*)console,consolename,200000);
+int console_new(){
+   //create a new console         
+   char consolename[255];
+   sprintf(consolename,"dex32_console(%d)", console_first);    
+   return createkthread((void*)console, consolename, 200000);
 };
 
-void console_main()
-  {
-    DEX32_DDL_INFO *myddl=0;
-    fg_processinfo *myfg;
-    char s[256]="";
-    char temp[256]="";
-    char last[256]="";
-    char console_fmt[256]="%cdir% %% ";
-    char console_prompt[256]="cmd >";
+void console_main(){
+   DEX32_DDL_INFO *myddl=0;
+   fg_processinfo *myfg;
+   char s[256]="";
+   char temp[256]="";
+   char last[256]="";
+   char console_fmt[256]="%cdir% %% ";
+   char console_prompt[256]="cmd >";
     
-    DWORD ptr;
+   DWORD ptr;
     
-    myddl =Dex32CreateDDL();    
+   myddl =Dex32CreateDDL();    
 
     
-    Dex32SetProcessDDL(myddl,getprocessid());
-    myfg = fg_register(myddl,getprocessid());
-    fg_setforeground( myfg->id );
+   Dex32SetProcessDDL(myddl, getprocessid());
+   myfg = fg_register(myddl, getprocessid());
+   fg_setforeground( myfg->id );
 
-
-    clrscr();
+   clrscr();
+   strcpy(last,"");
     
+   if (console_first == 0) 
+      script_load("/icsos/autoexec.bat");
     
-          
-    strcpy(last,"");
+   console_first++;  
+   do{
+      textcolor(WHITE);
+      textbackground(BLACK);
+      prompt_parser(console_fmt,console_prompt);
     
+      textcolor(LIGHTBLUE);
+      printf("%s",console_prompt);
+      textcolor(WHITE);
     
-    if (console_first == 0) script_load("/icsos/autoexec.bat");
+      if (strcmp(s,"@@")!=0 && strcmp(s,"!!")!=0)
+         strcpy(last,s);
     
-    console_first++;  
-    do {
-    textcolor(WHITE);
-    textbackground(BLACK);
-    prompt_parser(console_fmt,console_prompt);
-    
-    textcolor(LIGHTBLUE);
-    printf("%s",console_prompt);
-    textcolor(WHITE);
-    
-    if (strcmp(s,"@@")!=0&&
-        strcmp(s,"!!")!=0)
-    strcpy(last,s);
-    
-    getstring(s,myddl);
+      getstring(s, myddl);
    
-    if (strcmp(s,"!")==0)
-               sendtokeyb(last,&_q);
-               else
-    if (strcmp(s,"!!")==0)
-              {
-               sendtokeyb(last,&_q);
-               sendtokeyb("\r",&_q);
-              }
-               else   
-    console_execute(s);
-    } while (1);
-  ;};
+      if (strcmp(s,"!")==0){
+         sendtokeyb(last,&_q);
+      }
+      else if (strcmp(s,"!!")==0){
+         sendtokeyb(last,&_q);
+         sendtokeyb("\r",&_q);
+      }
+      else   
+         console_execute(s);
+   } while (1);
+};
 
