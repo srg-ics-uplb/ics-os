@@ -50,9 +50,11 @@ irq_attachments *irq_attachlist[16];
 //ticks gets incremented whenever the timer interrupt gets called.
 unsigned int ticks=0;
 
-/*These wrappers link to irqwrap.asm
- These must be in assembly since interrupt handlers are
- required to terminate with an IRET instruction*/
+/*
+ *These wrappers link to irqwrap.asm
+ *These must be in assembly since interrupt handlers are
+ *required to terminate with an IRET instruction
+*/
 
 extern void timerwrapper(void);
 extern void loadregisters(void);
@@ -96,8 +98,7 @@ idtr intloc;
 
   The paremeter b holds the IRQ bits of the devices that you want to enable
   See Kernel32.c where this function is used*/
-void program8259(unsigned char b)
- {
+void program8259(unsigned char b){
    unsigned char b1=0xFF;
    unsigned char b2=0xFF;
 
@@ -115,109 +116,96 @@ void program8259(unsigned char b)
    //b2^=IRQ_MOUSE;
    //outportb(0xA1,b2);
    outportb(0xA1, inportb(0xA1) & ~0x10);
- };
+};
 
 
-void dex32_irqcntl(unsigned char b)
- {
+void dex32_irqcntl(unsigned char b){
    unsigned char b1=0xFF;
    b1^=b;
    outportb(0x21,b1);	
    outportb(0xA1,0xFF);	
- };
+};
 
-void CPUint()
- {
-  stopints();
-  printf("unhandled Interrupt 0-0x19..\n");
-  while (1) {};
-  startints();
- };
+void CPUint(){
+   stopints();
+   printf("unhandled Interrupt 0-0x19..\n");
+   while (1) 
+      {};
+   startints();
+};
 
-void unhandled(int irq_num)
- {
+void unhandled(int irq_num){
    stopints();
    textcolor(RED);
    println("This interrupt is unhandled....",attb);
  //  while (1) {}; //temporarily disabled infinite loop for unhandled interrupts
    startints();
- };
-
+};
 
 
 void fdctimer(void); //found in floppy.c
 void fdcwrapper(void); //found in floppy.c
 
-void seg_error()
- {
+void seg_error(){
    stopints();
    printf("Segmentation error\n");
    printf("system halted.\n");
    while(1) {};
- };
+};
 
-void stack_error()
- {
+void stack_error(){
    stopints();
    printf("Stack segment error\n");
    printf("system halted.\n");
    while(1) {};
- };
+};
 
+void invalidtss(){
+   stopints();
+   printf("Invalid Task State Segment.\n");
+   printf("system halted.\n");
+   while (1) {};
+};
 
-void invalidtss()
-  {
-    stopints();
-    printf("Invalid Task State Segment.\n");
-    printf("system halted.\n");
-    while (1) {};
-  };
+void double_fault(){
+   stopints();
+   printf("Double fault.\n");
+   printf("system halted.\n");
+   while (1) {};
+};
 
-void double_fault()
-  {
-  stopints();
-    printf("Double fault.\n");
-    printf("system halted.\n");
-    while (1) {};
-  };
+void boundscheck(){
+   stopints();
+   printf("bounds check error.\n");
+   printf("system halted.\n");
+   while (1) {};
+};
 
-void boundscheck()
-  {
-    stopints();
-    printf("bounds check error.\n");
-    printf("system halted.\n");
-    while (1) {};
-  };
+void nocoprocessor(){
+   char temp[255];
+   setCR0(0x80000011);
+};
 
+void breakpoint(){
+   stopints();
+   printf("breakpoint reached.\n");
+   printf("system halted.\n");
+   while (1) {};
+};
 
-void nocoprocessor()
-  {
-    char temp[255];
-    setCR0(0x80000011);
-  };
+void overflow(){
+   stopints();
+   printf("over flow error.\n");
+   printf("system halted.\n");
+   while (1) {};
+};
 
-void breakpoint()
-  {
-    stopints();
-    printf("breakpoint reached.\n");
-    printf("system halted.\n");
-    while (1) {};
-  };
-void overflow()
-  {
-    stopints();
-    printf("over flow error.\n");
-    printf("system halted.\n");
-    while (1) {};
-  };
-
-void coprocessor_segment_overrun()
-  {
+void coprocessor_segment_overrun(){
    stopints();
    printf("Coprocessor segment overrun.\n");
    printf("System Halted.\n");
    while (1);   
-  };
+};
   
 void coprocessor()
   {
