@@ -80,7 +80,7 @@ void meminfo(){
    printf("Total Pages         : %10d pages\n",totalpages);
    printf("Total Memory        : %10u bytes (%10d KB)\n",totalbytes, totalbytes / 1024);
    printf("Free Memory         : %10u bytes (%10d KB)\n",freebytes, freebytes / 1024);
-   printf("used pages          : %10d pages (%10d KB)\n",totalpages-stackbase[0],
+   printf("Used pages          : %10d pages (%10d KB)\n",totalpages-stackbase[0],
    (totalpages-stackbase[0])*0x1000);
 };
 
