@@ -14,7 +14,7 @@ extern kbd_irq
 extern mouse_irq
 extern pagefaulthandler
 extern fdchandler
-extern api_syscall
+extern api_syscall      ;defined in kernel/dexapi/dex32API.c
 extern GPFhandler
 extern CPUint
 extern nocoprocessor
@@ -31,7 +31,7 @@ syscallwrapper:
    push ecx
    push ebx
    push eax
-   call api_syscall
+   call api_syscall      
    add esp,24
    iret
 

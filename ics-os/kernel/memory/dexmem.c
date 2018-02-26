@@ -11,25 +11,21 @@
 
 
 /* Stop Interrupts */
-inline void stopints()
-{
+inline void stopints(){
   asm ("cli");
 }
 
 /*start Interrupts */
 
-inline void startints()
-{
+inline void startints(){
   asm("sti");
 };
 
-inline void wbinvd()
-{
+inline void wbinvd(){
   asm ("wbinvd");
 };
 
-inline void hlt()
-{
+inline void hlt(){
   asm ("hlt");
 };
 
@@ -50,72 +46,59 @@ void mem_interpretmemory(mmap *map,int size){
 };
 
 /*using the memory map provided by grub, create the stack of physical frames*/
-DWORD mem_detectmemory(mmap *grub_meminfo , int size )
-{
-DWORD mem_size = 0 , i, i2;
-stackbase[0]=0;
-for (i=0;i < size / sizeof(mmap) ; i++)
-  {
-  
-   DWORD base = grub_meminfo[i].base_addr_low;
-   DWORD base_end = base + grub_meminfo[i].length_low;
+DWORD mem_detectmemory(mmap *grub_meminfo , int size ){
+   DWORD mem_size = 0 , i, i2;
+   stackbase[0]=0;
+   for (i=0;i < size / sizeof(mmap) ; i++){
+      DWORD base = grub_meminfo[i].base_addr_low;
+      DWORD base_end = base + grub_meminfo[i].length_low;
    
-   /*If type has a value of 1 it is free otherwise we cannot use
-     this memory region*/
-   if (grub_meminfo[i].type == 1) 
-       {
-                    for (i2 = base; i2 < base_end; i2 += 0x1000)
-                       {
-                          if ((stackbase + 0x100000) < i2 )
-                             {
-                             stackbase[0]++;
-                             stackbase[stackbase[0]]=i2;
-                             };
-                       };
-
-                   mem_size += ( base_end - base );
+      /*If type has a value of 1 it is free otherwise we cannot use
+      this memory region*/
+      if (grub_meminfo[i].type == 1){
+         for (i2 = base; i2 < base_end; i2 += 0x1000){
+            if ((stackbase + 0x100000) < i2 ){
+               stackbase[0]++;
+               stackbase[stackbase[0]]=i2;
+            };
+         };
+         mem_size += ( base_end - base );
       };
-  }; 
+   }; 
   
-totalpages = stackbase[0]; 
-return mem_size;   
+   totalpages = stackbase[0]; 
+   return mem_size;   
 };
 
 
 
-DWORD *mempop()
-{
- DWORD *ret;
- if (stackbase[0]==0) return 0; //no more free pages available!
- ret=(DWORD*)stackbase[stackbase[0]];
- stackbase[0]--;
- return ret;
-;};
+DWORD *mempop(){
+   DWORD *ret;
+   if (stackbase[0]==0) 
+      return 0; //no more free pages available!
+   ret=(DWORD*)stackbase[stackbase[0]];
+   stackbase[0]--;
+   return ret;
+};
 
-void mempush(DWORD mem)
-{
-//make sure that the physcial memory location pushed is within
-//the range of the computer's physical memory
-if (stackbase+0x100000>=mem<memamount-0x1000)
-   {
-    stackbase[0]++;
-    stackbase[stackbase[0]]=mem;
-   }
-     else
-   { 
-   char temp[255]; 
-   printf("memory manager: An invalid value (%s) was tried to be added to the\n");
-   printf("memory manager: free physical pages list.\n");    
+void mempush(DWORD mem){
+   //make sure that the physcial memory location pushed is within
+   //the range of the computer's physical memory
+   if (stackbase+0x100000>=mem<memamount-0x1000){
+      stackbase[0]++;
+      stackbase[stackbase[0]]=mem;
+   }else{ 
+      char temp[255]; 
+      printf("memory manager: An invalid value (%s) was tried to be added to the\n");
+      printf("memory manager: free physical pages list.\n");    
    };
 };
 
-void clearpagetable(DWORD *pagetable)
-   {
-     DWORD i;
-     for (i=0;i<4096;i++)
-        pagetable[i]=0;
-
-   };
+void clearpagetable(DWORD *pagetable){
+   DWORD i;
+   for (i=0;i<4096;i++)
+      pagetable[i]=0;
+};
 
 /* This function maps the linear address to a physical address:
    The function automatically allocates a page for a page table
@@ -125,32 +108,26 @@ void maplineartophysical(unsigned int *pagedir, /*the location of the page direc
                               unsigned int linearaddr, /*the paged aligned linear address requested*/
                               unsigned int physical,   /*the paged aligned physical address to map to*/
 									 unsigned int attribute /*used to specify the page attributes to be applied*/
-					    )
-   {
-	  unsigned int pagedirindex,pagetableindex,*pagetable;
-	  /*get the index of the page directory and the pagetable respectively*/
-	  pagedirindex= linearaddr >> 22;
-	  pagetableindex= (linearaddr  & 0x3FFFFF) >> 12;
-	  /*get the location of the page table and mask the first 12 bits*/
-	  pagetable=(unsigned int*)(pagedir[pagedirindex] & 0xFFFFF000);
-	  if (pagetable==0)  /*there is no entry?*/
-		     {
-				 /*map a new memory location*/
-				pagedir[pagedirindex]=(DWORD) mempop();
-				pagetable=(unsigned int*)pagedir[pagedirindex];
-				/*clear the locations of the page table to zero*/
-				memset(pagetable,0,4096);
-				/*set the present bit of the pagetable dir entry*/
-				pagedir[pagedirindex]=pagedir[pagedirindex] | 1 | PG_USER | PG_WR;
-
-             };
-	  physical=(physical & 0xFFFFF000) | attribute;
-      pagetable[pagetableindex]=physical;
-
-      /*done!*/
-
-
+					    ){
+   unsigned int pagedirindex,pagetableindex,*pagetable;
+   /*get the index of the page directory and the pagetable respectively*/
+   pagedirindex= linearaddr >> 22;
+   pagetableindex= (linearaddr  & 0x3FFFFF) >> 12;
+   /*get the location of the page table and mask the first 12 bits*/
+   pagetable=(unsigned int*)(pagedir[pagedirindex] & 0xFFFFF000);
+   if (pagetable==0){  /*there is no entry?*/
+      /*map a new memory location*/
+      pagedir[pagedirindex]=(DWORD) mempop();
+      pagetable=(unsigned int*)pagedir[pagedirindex];
+      /*clear the locations of the page table to zero*/
+      memset(pagetable,0,4096);
+      /*set the present bit of the pagetable dir entry*/
+      pagedir[pagedirindex]=pagedir[pagedirindex] | 1 | PG_USER | PG_WR;
    };
+   physical=(physical & 0xFFFFF000) | attribute;
+   pagetable[pagetableindex]=physical;
+      /*done!*/
+};
 
 DWORD tlb_address;
 extern void invtlb();
