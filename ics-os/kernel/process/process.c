@@ -1212,20 +1212,20 @@ void show_process_stat(int pid){
    for (i=0;i<total;i++){
       if (pid ==  ptr[i].processid){
          printf("=========================================================\n");
-         printf("Name:%s", ptr[i].name);
-         printf("Parent:%d", ptr[i].owner);
+         printf("Name: %s\n", ptr[i].name);
+         printf("Parent: %d\n ", ptr[i].owner);
          printf("EIP=0x%s\n",itoa(ptr[i].regs.EIP,temp,16));
          printf("EAX=0x%s EBX=0x%s ECX=0x%s EDX=0x%s\n",itoa(ptr[i].regs.EAX,temp,16),
-         itoa(ptr[i].regs.EBX,temp1,16),itoa(ptr[i].regs.ECX,temp2,16),
-         itoa(ptr[i].regs.EDX,temp3,16));
+                  itoa(ptr[i].regs.EBX,temp1,16),itoa(ptr[i].regs.ECX,temp2,16),
+                  itoa(ptr[i].regs.EDX,temp3,16));
 
          printf("EDI=0x%s ESI=0x%s ESP=0x%s Flags=0x%s\n",itoa(ptr[i].regs.EDI,temp,16),
-                         itoa(ptr[i].regs.ESI,temp1,16),itoa(ptr[i].regs.ESP,temp2,16),
-                         itoa(ptr[i].regs.EFLAGS,temp3,16));
+                  itoa(ptr[i].regs.ESI,temp1,16),itoa(ptr[i].regs.ESP,temp2,16),
+                  itoa(ptr[i].regs.EFLAGS,temp3,16));
                          
-                         printf("waiting: %d\n", ptr[i].waiting);
-                         printf("last system calls:(1) : 0x%s ,(2-last): 0x%s\n",
-                         itoa(ptr[i].cursyscall[0],temp2,16),itoa(ptr[i].cursyscall[1],temp,16));
+         printf("Waiting: %d\n", ptr[i].waiting);
+         printf("Last system calls:(1) : 0x%s ,(2-last): 0x%s\n",
+                  itoa(ptr[i].cursyscall[0],temp2,16),itoa(ptr[i].cursyscall[1],temp,16));
 
       };
    };

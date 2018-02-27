@@ -28,102 +28,105 @@
 //called by modules or applications to add a process with the image of the
 //executable file as parameters
 int addmodule(char *name,char *image,char *loadaddress,int mode,char *parameter,
-                char *workdir,int parent)
-  {
-    //Make sure no one else is in its critical section
-    DWORD flags;
-    storeflags(&flags);
-    stopints();
+                char *workdir,int parent){
+   //Make sure no one else is in its critical section
+   DWORD flags;
+   storeflags(&flags);
+   stopints();
    
-     if (pd_head==0)
-       {
-       pd_head=(createp_queue*)malloc(sizeof(createp_queue));
-       pd_head->next=0;
-       }
-         else
-       {
-       pd_head->next=pd_head;
-       pd_head=(createp_queue*)malloc(sizeof(createp_queue));
-       };
-       pd_head->handle=(DWORD)pd_head;
-       pd_head->image=image;
-       pd_head->type = NEW_MODULE;
-       if (parameter!=0)
-       strcpy(pd_head->parameter,parameter);
+   if (pd_head == 0){
+      pd_head=(createp_queue*)malloc(sizeof(createp_queue));
+      pd_head->next=0;
+   }
+   else{
+      pd_head->next=pd_head;
+      pd_head=(createp_queue*)malloc(sizeof(createp_queue));
+   };
+   
+   pd_head->handle=(DWORD)pd_head;
+   pd_head->image=image;
+
+   pd_head->type = NEW_MODULE;
+   if (parameter!=0)
+      strcpy(pd_head->parameter,parameter);
        
-       pd_head->mode=mode;
-       pd_head->loadaddress = loadaddress;
-       pd_head->dispatched=0;
-       pd_head->parent=parent;
-       strcpy(pd_head->name,name);
-       strcpy(pd_head->workdir,workdir);
+   pd_head->mode=mode;
+   pd_head->loadaddress = loadaddress;
+   pd_head->dispatched=0;
+   pd_head->parent=parent;
+   strcpy(pd_head->name,name);
+   strcpy(pd_head->workdir,workdir);
        
     
-       restoreflags(flags);
-       return pd_head->handle;
-  ;};
+   restoreflags(flags);
+   return pd_head->handle;
+};
 
 //called by modules or applications to fork this current process  
-int pd_forkmodule(int parent)
-{
-    DWORD flags;
-    storeflags(&flags);
-    stopints();
-       if (pd_head==0)
-       {
-              pd_head=(createp_queue*)malloc(sizeof(createp_queue));
-              pd_head->next=0;
-       }
-         else
-       {
-              pd_head->next=pd_head;
-              pd_head=(createp_queue*)malloc(sizeof(createp_queue));
-       };
+int pd_forkmodule(int parent){
+   DWORD flags;
+   createp_queue *tmp;
+
+   storeflags(&flags);
+   stopints();
+
+   if(pd_head==0){
+      pd_head=(createp_queue*)malloc(sizeof(createp_queue));
+      pd_head->next=0;
+   }else{
+      //pd_head->next=pd_head;
+      //pd_head=(createp_queue*)malloc(sizeof(createp_queue));
+      tmp=pd_head;
+      pd_head=(createp_queue*)malloc(sizeof(createp_queue));
+      pd_head->next=tmp;
+   };
        
-       pd_head->handle=(DWORD)pd_head;
-       pd_head->image=0;
-       pd_head->type = FORK_MODULE;
-       pd_head->dispatched=0;
-       pd_head->parent=parent;
+   pd_head->handle=(DWORD)pd_head;
+   pd_head->image=0;
+   pd_head->type = FORK_MODULE;
+   pd_head->dispatched=0;
+   pd_head->parent=parent;
        
-    restoreflags(flags);  
-    return pd_head->handle;
+   restoreflags(flags);
+   return pd_head->handle;
 };
 
 //Determines if a process has already been dispatched.
-int pd_dispatched(int handle)
-{
-createp_queue *ptr=(createp_queue*)handle;
-int retval=0;
+int pd_dispatched(int handle){
+   createp_queue *ptr=(createp_queue*)handle;
+   int retval=0;
   
-while (pd_busy);
-pd_busy = 1;  
-if (ptr->dispatched)
-     {
-      if (ptr->processid==0) 
-      retval=-1; /*pid of 0? Error loading executable?(only the kernel has a pid of 0) */
-           else
-      retval=ptr->processid;
-
-     };
+   while (pd_busy)
+      ;
+   
+   pd_busy = 1;  
+   if (ptr->dispatched){
+      if (ptr->processid == 0) 
+         retval=-1; /*pid of 0? Error loading executable?(only the kernel has a pid of 0) */
+      else
+         retval=ptr->processid;
+   };
      
-pd_busy = 0;
-return retval;
+   pd_busy = 0;
+   return retval;
 };
 
 //Determines if a process has already been dispatched, and frees up 
 //memory used by the createp_queue data structure
-int pd_ok(int handle)
- {
-  createp_queue *ptr=(createp_queue*)handle;
-  int retval = pd_dispatched(handle);
+int pd_ok(int handle){
+   createp_queue *ptr=(createp_queue*)handle;
+   int retval = pd_dispatched(handle);
  
-  while (pd_busy);
-  pd_busy = 1;
-  if (retval!=0 && retval !=-1) free(ptr);
-  pd_busy = 0;   
-  return retval;
- };
+   while (pd_busy)
+      ;
+   
+   pd_busy = 1;
+   if (retval!=0 && retval !=-1) 
+      free(ptr);
+  
+   pd_busy = 0;   
+   return retval;
+};
 
 //The process dispatcher is a kernel service/thread that handles process
 //creation requests, it calls the module loader. A unique aspect of this

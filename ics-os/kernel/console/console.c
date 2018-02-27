@@ -109,9 +109,7 @@ int user_fork(){
     
    taskswitch();  
    id = pd_dispatched(hdl);
-    //while (!(id=pd_dispatched(hdl)))
-    //  ;
-    
+
    if (curval != current_process->processid){ //this is the child
       //If this is the child process, the processid when this function
       //was called is not equal to the current processid.

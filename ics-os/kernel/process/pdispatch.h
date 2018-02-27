@@ -28,21 +28,20 @@
 #define FORK_MODULE 1
 
 
-typedef struct _createp_queue
-{
-  int handle;
-  int type;
-  char *image;
-  char *loadaddress;
-  char name[255];
-  char parameter[500];
-  char workdir[500];
-  int  mode;
-  int parent;
-  int dispatched;
-  DWORD processid;
-  struct _createp_queue *next;
-} createp_queue;
+typedef struct _createp_queue{
+   int handle;
+   int type;
+   char *image;
+   char *loadaddress;
+   char name[255];
+   char parameter[500];
+   char workdir[500];
+   int  mode;
+   int parent;
+   int dispatched;
+   DWORD processid;
+   struct _createp_queue *next;
+}createp_queue;
 
 createp_queue *pd_head=0;
 DWORD pd_handlecounter=0;
