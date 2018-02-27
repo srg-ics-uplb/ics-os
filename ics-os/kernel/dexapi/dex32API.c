@@ -24,7 +24,6 @@ although a user procedure call is in the works
 
 #include "dex32API.h"
 
-
 int dex32_getversion(){
    return DEX32_OSVER;
 };
