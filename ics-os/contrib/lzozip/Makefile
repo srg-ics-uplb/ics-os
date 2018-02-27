@@ -1,8 +1,8 @@
-CC=tcc
+CC=gcc
 ICSOS_ROOT=../..
 KERNEL=$(ICSOS_ROOT)/kernel
 SDK=../../sdk
-CFLAGS=-w -nostdlib -fno-builtin -static -ffreestanding
+CFLAGS=-m32 -w -nostdlib -fno-builtin -static -ffreestanding
 LIBS=$(SDK)/tccsdk.c $(SDK)/libtcc1.c $(SDK)/crt1.c
 EXE=lzozip.exe
 

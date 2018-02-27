@@ -1,8 +1,8 @@
 Run the following commands:
 
-$./install-deps.sh
+$./scripts/install-deps.sh
 $make clean
-$make
-$sudo make install
-$make run-on-qemu
+$make vmdex
+$make floppy
+$make boot-floppy 
 
