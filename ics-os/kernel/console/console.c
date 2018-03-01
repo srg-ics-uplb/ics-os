@@ -121,7 +121,7 @@ int user_fork(){
    };
       
    if (curval == current_process->processid){ // this is the parent
-      //pd_ok(hdl);
+      pd_ok(hdl);
       retval = id;
    };
       

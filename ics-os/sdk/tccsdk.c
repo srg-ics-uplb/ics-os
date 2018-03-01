@@ -1354,6 +1354,10 @@ int fork(){
    return dexsdk_systemcall(0x90,0,0,0,0,0);   
 }
 
+int getpid(){
+   return dexsdk_systemcall(0x2,0,0,0,0,0);
+};
+
 int exec(char *fname,unsigned short  mode, char *params){
    return dexsdk_systemcall(0x5C,(int)fname,mode,(int)params,0,0);     
 }
