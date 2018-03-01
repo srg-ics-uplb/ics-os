@@ -275,8 +275,8 @@ void main(){
    fg_init();
     
    //Create a virtual console that the kernel will send its output to
-   consoleDDL=Dex32CreateDDL();
-   fg_kernel = fg_register(consoleDDL,0);
+   consoleDDL = Dex32CreateDDL();
+   fg_kernel = fg_register(consoleDDL, 0);
    fg_setforeground(fg_kernel);
     
    /* Preliminary initializaation complete, start up the operating system*/
@@ -296,11 +296,11 @@ void dex32_startup(){
    //printf("Bootloader name : %s\n", mbhdr->boot_loader_name);
     
    //obtain CPU information using the CPUID instruction
-   printf("Obtaining CPU information\n");
+   printf("Obtaining CPU information...\n");
    hardware_getcpuinfo(&hardware_mycpu);
    hardware_printinfo(&hardware_mycpu);
     
-   printf("Available size: %d KB\n",memamount/1024);
+   printf("Available memory: %d KB\n", memamount/1024);
 
    //Initialize the extension manager
    printf("Initializing the extension manager...");
@@ -312,10 +312,8 @@ void dex32_startup(){
    devmgr_init();
    printf("[OK]\n");
 
-
-   printf("Registering the memory manager and the memory allocator...");
-
    //register the memory manager
+   printf("Registering the memory manager and the memory allocator...");
    mem_register();
 
    //register the different memory allocators
@@ -339,14 +337,9 @@ void dex32_startup(){
    //delay(400/80);
    printf("[OK]\n");
 				
+   //initialize the API module
    printf("Initializing kernel API...");		  
-   //initialize the DEX API module
    api_init();
-   printf("[OK]\n");
-
-   printf("Initializing the process manager...");
-   //Initialize the process manager
-   process_init();
    printf("[OK]\n");
 
    //initialize the keyboard device driver
@@ -354,6 +347,12 @@ void dex32_startup(){
    init_keyboard();
    installmouse();
    init_mouse();
+   printf("[OK]\n");
+   
+   //Initialize the process manager and the initial
+   //processes
+   printf("Initializing the process manager...");
+   process_init();    //defined in process.c
    printf("[OK]\n");
 
    //process manager is ready, pass execution to the taskswitcher

@@ -227,11 +227,15 @@ DWORD forkprocess(PCB386 *parent){
    disablepaging();
    dex32_copy_pg(pagedir,parentpd);
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR_VIR,(DWORD)pagedir    /*,stackbase*/,1);
+
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR2_VIR,
-   (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+                        (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR3_VIR,
-   (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+                        (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_KERPDIR_VIR,(DWORD)pagedir1    /*,stackbase*/,1);
+
    enablepaging();
     
 #ifdef DEBUG_FORK
@@ -1111,8 +1115,8 @@ inline void taskswitch(){
    asm volatile ("int $0x20");
 };
 
-//The taskswitcher is basically the program that runs all the time.
-//It is  responsible for switching ro various processes and terminating them.
+//The taskswitcher() is basically the program that runs all the time.
+//It is  responsible for switching to various processes and terminating them.
 void taskswitcher(){
    char temp[255];
    DWORD cputime=0;
@@ -1120,8 +1124,8 @@ void taskswitcher(){
 
    do{
       stopints(); //disable interrupts first
-      //fetch a ready process from the ready queue
 
+      //fetch a ready process from the ready queue
       do{
          if (!sigwait){
             //if the wait register is not set, switch to
@@ -1133,23 +1137,28 @@ void taskswitcher(){
 
             //obtain next job from the scheduler
             //readyprocess=extension_current->ps_scheduler->scheduler(&kernelPCB);
+
+            //get handle to the current scheduler
             devmgr_scheduler_extension *cursched = (devmgr_scheduler_extension*)extension_table[CURRENT_SCHEDULER].iface;
-            readyprocess = (PCB386*)bridges_link((devmgr_generic*)cursched,&cursched->scheduler,
+
+            //get the ready process
+            readyprocess = (PCB386*)bridges_link((devmgr_generic*)cursched, &cursched->scheduler,
                                                    current_process,0,0,0,0,0);
          };
          //readyprocess=bridges_ps_scheduler(current_process);
             
-         current_process=readyprocess;
+         //set the current process to the ready process
+         current_process = readyprocess;
 
-         //tell the cpu to give control to <readyprocess>
+         //tell the cpu to give control to readyprocess
+         //the context switch
          ps_switchto(readyprocess);
 
          /*Make sure the taskwitcher was really called by the timer, since
             another way of calling the taskswithcer is through taskswitch().
             In that case we must not call time_handler in order to make
-            the time as accurate as possible*/
-            
-            
+            the time as accurate as possible
+         */
          if (!ps_notimeincrement){
             //Increment system time... etc.
             time_handler();
@@ -1181,23 +1190,21 @@ void taskswitcher(){
          pfoccured=0;
       };
 
+      //do clean up for terminate process
       if (sigterm && !flushing){
-         flushok=0;
+         flushok = 0;
          kill_process(sigterm);
-         flushok=1;
-         sigterm=0;
-            ;
+         flushok = 1;
+         sigterm = 0;
       };
 
       if (sched_sysmes[0]){
          sendmessage(sched_sysmes[0],sched_sysmes[1],sched_sysmes[2]);
          sched_sysmes[0]=0;
-            ;
       };
 
       if (sigshutdown){
          broadcastmessage(1, SIG_KILL, 0);
-            ;
       };
     }while (1);
 };
