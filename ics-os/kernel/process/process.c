@@ -103,7 +103,7 @@ DWORD getpprocessid(){
     return current_process->owner;
 }
 
-/*creates a USER thread (In DEX this is process which shares the same memory space as its parent
+/*creates a USER thread (In DEX this is process which shares the same memory space as its parent, BUGGY
  * process, but has its own stack pointer)
  *
  * ptr - function to execute in the thread. 
@@ -114,40 +114,32 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
 
    int pages;
    DWORD flags;
-    
-   //create new PCB for the thread
-   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
-   memset(temp,0,sizeof(PCB386));
-
-   totalprocesses++;
    
    //save flags 
    dex32_stopints(&flags);
-    
-   temp->size=sizeof(PCB386);
-   temp->before=current_process;
-    
+   
+ 
+   //create new PCB for the thread
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
+   memset(temp,0,sizeof(PCB386));
    sprintf(temp->name,"%s.thread",current_process->name);
+   totalprocesses++;
+   temp->size        = sizeof(PCB386);
    temp->processid   = nextprocessid++;
    temp->accesslevel = ACCESS_USER;
-   temp->status      |= PS_ATTB_THREAD;
-
-   current_process->childwait++;
-
-   temp->meminfo     = current_process->meminfo;
    temp->owner       = getprocessid();
-   temp->workdir     = current_process->workdir;
-   temp->stdout      = current_process->stdout;
-   temp->outdev      = current_process->outdev;
+   temp->status      |= PS_ATTB_THREAD;
    temp->knext       = current_process->knext; 
    temp->pagedirloc  = current_process->pagedirloc;
-    
+
    /*Set up initial contents of the CPU registers*/
    memset(temp,0,sizeof(saveregs));
    temp->regs.EIP    = (DWORD)ptr;
-
+   //set up stack
    temp->stackptr    = malloc(stacksize);
    temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   temp->stackptr    = (void*)temp->regs.ESP;
+
    //temp->regs.ESP    = (DWORD)(stack+stacksize-4);
    //temp->stackptr    = (void*)temp->regs.ESP;
 
@@ -158,6 +150,16 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.DS     = USER_DATA;
    temp->regs.FS     = USER_DATA;
    temp->regs.GS     = USER_DATA;
+
+ 
+   temp->before=current_process;
+   current_process->childwait++;
+
+   temp->meminfo     = current_process->meminfo;
+   temp->workdir     = current_process->workdir;
+   temp->stdout      = current_process->stdout;
+   temp->outdev      = current_process->outdev;
+ 
    temp->regs.SS0    = SYS_STACK_SEL;
 
    //set up the initial stack pointer for system calls
@@ -167,7 +169,7 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
     
    //initialize the current FPU state
    memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
-    
+   
    //Tell the scheduler to add it to the process queue, ready queue
    ps_enqueue(temp);
     
@@ -176,6 +178,72 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
 
    return temp->processid;
 };
+
+//FIXME:
+DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
+
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
+   DWORD cpuflags;
+    
+   memset(temp,0,sizeof(PCB386));
+   temp->before=current_process;
+   sprintf(temp->name,"%s.thread",current_process->name);
+   totalprocesses++;
+   temp->size        = sizeof(PCB386);
+   temp->processid   = nextprocessid++;
+   temp->accesslevel = ACCESS_USER;
+   temp->owner       = getprocessid();
+   temp->status      |= PS_ATTB_THREAD; 
+   temp->knext       = current_process->knext;
+   temp->pagedirloc  = current_process->pagedirloc;
+   temp->workdir     = current_process->workdir;
+
+   //set up the initial values of the CPU registers for this process
+   memset(temp,0,sizeof(saveregs));
+   temp->regs.EIP    = (DWORD)ptr;
+   temp->regs.ESP    = (DWORD)(stack+stacksize-4);
+   temp->stackptr    = (void*)temp->regs.ESP;
+
+   temp->regs.CR3    = (DWORD)current_process->pagedirloc;
+   temp->regs.ES     = USER_DATA;
+   temp->regs.SS     = USER_DATA;
+   temp->regs.CS     = USER_CODE;
+   temp->regs.DS     = USER_DATA;
+   temp->regs.FS     = USER_DATA;
+   temp->regs.GS     = USER_DATA;
+
+   temp->arrivaltime = getprecisetime(); 
+   temp->stdin       = current_process->stdin;
+
+   temp->meminfo     = current_process->meminfo;
+   temp->workdir     = current_process->workdir;
+   temp->stdout      = current_process->stdout;
+   temp->outdev      = current_process->outdev;
+   
+   temp->regs.SS0    = SYS_STACK_SEL;
+   
+   //set up the initial stack pointer for system calls
+   temp->stackptr0   = malloc(SYSCALL_STACK);
+   temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
+   temp->regs.EFLAGS = current_process->regs.EFLAGS;
+   
+   //initialize the current FPU state
+   memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
+
+   /*critical section...*/
+   //sync_entercrit(&processmgr_busy);
+   dex32_stopints(&cpuflags);
+    
+   //add to the process list
+   ps_enqueue(temp);
+
+   dex32_restoreints(cpuflags);
+    
+   //end of critical section
+   //sync_leavecrit(&processmgr_busy);
+   
+   return temp->processid;
+}
 
 //Tells the scheduler to queue a process, uses aspect-oriented programming
 DWORD ps_enqueue(PCB386 *process){

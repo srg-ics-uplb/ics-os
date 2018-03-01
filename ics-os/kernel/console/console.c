@@ -27,6 +27,12 @@
 
 #include "console.h"
 
+void runner(){
+   while(1)
+      ;
+   //printf("Hello user thread!\n");
+}
+
   
 /*A console mode get string function terminates
 upon receving \r */
@@ -627,7 +633,9 @@ int console_execute(const char *str){
       show_process();
    }else
    if (strcmp(u,"cls") == 0){          //-- Clears the screen. 
-      clrscr();
+      //clrscr();
+      char *stk = (char *)malloc(10240);
+      createuthread((void *)runner,stk,10240);
    }else
    if (strcmp(u,"help") == 0){         //-- Displays this help screen.
       console_execute("type /icsos/icsos.hlp");

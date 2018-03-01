@@ -1375,9 +1375,9 @@ int sleep(unsigned int ms){
 
 /* Creates and starts a thread. returns thread id (jach) */
 int thread_create(void *f){
-    unsigned char *stack;
-    stack=(unsigned char *)malloc(1024);
-    return dexsdk_systemcall(0xB,(void*)&f,stack,1024,0,0);
+   char *stk;
+   stk = (char *)malloc(10240);   
+   return dexsdk_systemcall(0xB,(void*)f,stk,10240,0,0);
 }
 
 

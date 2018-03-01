@@ -278,24 +278,20 @@ DWORD pagefaulthandler(DWORD location,DWORD fault_info)
   };
 
   
-  //This function is called when DEX is trying to recover from a fault
-  void exc_recover()
-  {
-     if (current_process->processid==0)
-    {
-     printf("dex32_kernel: kernel mode page fault.\n");
-     printf("recovery mode active. system may become unstable.\n");
-     printf("System Halted\n");
-     while (1);
-    }
-     else
-    {
-     printf("dex32_kernel: user mode page fault.\n");
-     printf("recovery mode active. system may become unstable.\n");
-     printf("shutting down application..\n");
-     //remove process from the process queue
-     exit(0);
-     startints();
-    };
-  };
+//This function is called when DEX is trying to recover from a fault
+void exc_recover(){
+   if (current_process->processid==0){
+      printf("dex32_kernel: kernel mode page fault.\n");
+      printf("recovery mode active. system may become unstable.\n");
+      printf("System Halted\n");
+      while (1);
+   }else{
+      printf("dex32_kernel: user mode page fault.\n");
+      printf("recovery mode active. system may become unstable.\n");
+      printf("shutting down application..\n");
+      //remove process from the process queue
+      exit(0);
+      startints();
+   };
+};
 

@@ -320,6 +320,7 @@ DWORD    createprocess(void *ptr,char *name,
                      char *workdir,
                      PCB386 *parent);
 DWORD    createthread(void *ptr,void *stack,DWORD stacksize);
+DWORD    createuthread(void *ptr,void *stack,DWORD stacksize);
 DWORD    dex32_exitprocess(DWORD ret_value);
 int      dex32_getname(DWORD processid,int bufsize,char *s);
 void     dex32_getparametersinfo(char *buf);
