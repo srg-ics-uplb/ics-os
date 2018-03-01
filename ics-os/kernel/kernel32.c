@@ -356,7 +356,7 @@ void dex32_startup(){
    printf("[OK]\n");
 
    //process manager is ready, pass execution to the taskswitcher
-   taskswitcher();
+   taskswitcher();      //defined in process.h
 
     //============ we should not reach this point at all =================
    while (1)
@@ -523,7 +523,6 @@ void dex_init(){
    spk=inportb(0x61);
    spk=spk&252;
    outportb(0x61,spk);
-
 
    //set the console for this process
    Dex32SetProcessDDL(consoleDDL, getprocessid());

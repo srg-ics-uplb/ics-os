@@ -1080,6 +1080,7 @@ void halt(){
 };
 
 
+//Context switching
 //switched to another process using the TSS switching method
 // 1/25/2004: Also added the capability to save the FPU registers to prevent
 //            applications that use the FPU from doing unexpected things
@@ -1091,14 +1092,13 @@ void ps_switchto(PCB386 *process){
    asm volatile ("frstor ps_fpustate");
 
    //switch to a user process
-   if (process->accesslevel==ACCESS_USER){
+   if (process->accesslevel == ACCESS_USER){
       dex32_setbase(USER_TSS, process);
-      switchuserprocess();
+      switchuserprocess();                //defined in kernel/startup/asmlib.asm
       setattb(USER_TSS,0xE9); //run a user process
-   }else{
-      //switch to a kernel mode process
+   }else{//switch to a kernel mode process
       dex32_setbase(SYS_TSS, process);
-      switchprocess();
+      switchprocess();                    //defined in kernel/startup/asmlib.asm
       setattb(SYS_TSS,0x89); //run a kernel process
    };
 
@@ -1393,7 +1393,7 @@ void process_init(){
    asm volatile ("fninit");
    asm volatile ("fnsave ps_kernelfpustate");
     
-   //add the first process in memory which is the process kernel
+   //Add the first process in memory which is the process kernel
    kernel=&sPCB;
    memset(kernel,0,sizeof(PCB386));
    kernel->next=kernel;
@@ -1404,7 +1404,7 @@ void process_init(){
    kernel->accesslevel=ACCESS_SYS;
    kernel->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
    kernel->knext=knext;
-   kernel->outdev=consoleDDL;
+   kernel->outdev=consoleDDL;                         //the console defined in kernel32.c
    kernel->pagedirloc=pagedir1;
 
    //initialize the current FPU state
@@ -1456,7 +1456,7 @@ void process_init(){
 
    //directly manipulate the keyboard handler PCB. uses dot(.)
    keyPCB.next=0;
-   keyPCB.processid=1;
+   keyPCB.processid=2;
    strcpy(keyPCB.name,"keybhandler");
    keyPCB.accesslevel=ACCESS_SYS;
    keyPCB.priority=0;
@@ -1481,7 +1481,7 @@ void process_init(){
 
    //directly manipulate the mouse handler PCB. uses dot(.)
    mousePCB.next=0;
-   mousePCB.processid=1;
+   mousePCB.processid=3;
    strcpy(mousePCB.name,"mousehandler");
    mousePCB.accesslevel=ACCESS_SYS;
    mousePCB.priority=0;
@@ -1507,7 +1507,7 @@ void process_init(){
 
    /*set up the PCB of the pagefault handler*/
    pfPCB.next=0;
-   pfPCB.processid=1;
+   pfPCB.processid=4;
    strcpy(pfPCB.name,"dex32_pfhandler");
    pfPCB.accesslevel=ACCESS_SYS;
    pfPCB.priority=0;
@@ -1540,10 +1540,11 @@ void process_init(){
    semaphore_head->next=0;
    semaphore_head->prev=0;
 
-   //initialize current_process
+   //initialize current_process, which is the kernel
    current_process = kernel;
    current_process->workdir = vfs_root;
-   ps_scheduler_install();
+
+   ps_scheduler_install();    //defined in kernel/process/scheduler.c
 
 #ifdef DEBUG_STARTUP
    printf("process manager: done.\n");
@@ -1552,6 +1553,6 @@ void process_init(){
    processmgr_busy.busy = 0;
    processmgr_busy.wait = 0;
     
-   printf("starting process manager...\n");
+   printf("Starting process manager...\n");
 };
 
