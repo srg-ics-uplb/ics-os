@@ -108,8 +108,10 @@ int user_fork(){
    hdl = pd_forkmodule(current_process->processid);
     
    taskswitch();  
-   id = pd_dispatched(hdl);
+   //id = pd_dispatched(hdl);
    //id = pd_ok(hdl);
+   while (!(id = pd_dispatched(hdl))) //wait for the process to be dispatched
+      ; 
 
    if (curval != current_process->processid){ //this is the child
       //If this is the child process, the processid when this function
@@ -119,7 +121,7 @@ int user_fork(){
    };
       
    if (curval == current_process->processid){ // this is the parent
-      pd_ok(hdl);
+      //pd_ok(hdl);
       retval = id;
    };
       

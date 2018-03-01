@@ -366,8 +366,10 @@ void dex32_startup(){
 #define STARTUP_DELAY 400
 
 /*This function is the first function that is called by the taskswitcher
- * see process/process.c
-  incidentally it is also the first process that gets run*/
+ see process/process.c
+ incidentally it is also the first process that gets run
+ it is the equivalent of the init() process in *nix systems
+*/
 void dex_init(){
    char temp[255],spk;
    int consolepid,i,baremode = 0;
@@ -420,15 +422,15 @@ void dex_init(){
    getmonthname(date.month,temp);
    printf("[OK]\n");   
 
-   printf("Installing floppy driver...");
    //Install the built-in floppy disk driver
+   printf("Installing floppy driver...");
    floppy_install("fd0"); 
    printf("[OK]\n");   
     
-   printf("Initializing IDE drivers...\n");
    /*Install the IDE, ATA-2/4 compliant driver in order to be able to
       use CD-ROMS and harddisks. This will also create logical drives from
       the partition tables if needed.*/
+   printf("Initializing IDE drivers...\n");
    ide_init();
    printf("[OK]\n");   
 
@@ -452,9 +454,9 @@ void dex_init(){
    //set the current directory of the init process to the vfs root
    current_process->workdir= vfs_root;
     
-   printf("Initializing the task manager...");
    //Initialize the task manager - a module program that monitors processes
-   //for the user's convenience
+   //for the user's convenience, as kernel thread
+   printf("Initializing the task manager...");
    tm_pid=createkthread((void*)dex32_tm_updateinfo,"dex32_taskmanager",3500);
    printf("[OK]\n");   
 
@@ -466,8 +468,8 @@ void dex_init(){
    printf("[OK]\n");   
 
    
-   printf("Initializng the null block device...");
    //Install a null block device
+   printf("Initializng the null block device...");
    devfs_initnull();
    printf("[OK]\n");   
     
@@ -527,13 +529,14 @@ void dex_init(){
    //set the console for this process
    Dex32SetProcessDDL(consoleDDL, getprocessid());
     
-    /*Run the process dispatcher.
+   /* Run the process dispatcher.
       The process dispatcher is responsible for running new modules/process.
       It is the only one that could disable paging without crashing the system since
       its stack, data and code segments are located in virtual memory that is at the
       same location as the physical memory
-      see pdispatch.c/pdispatch.h for details*/
-   process_dispatcher();
+      see pdispatch.c/pdispatch.h for details
+   */
+   process_dispatcher();   // defined in kernel/process/pdispatch.c
     ;
 };
 

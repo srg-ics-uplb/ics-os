@@ -134,78 +134,69 @@ int pd_ok(int handle){
 //turning paging off and living to tell the tale. This is because its
 //stack segment is located at a 1-to-1 virtual to physical memory area. Although
 //It may not be able to use the kernel heap when it disables paging.
-void process_dispatcher()
-  {
-    createp_queue *ptr;
-    DWORD sender,message,data;
-    DWORD pid;
-       while (1)
-            {
-               if (pd_head!=0)
-               {
-                DWORD flag,pid;
-                PCB386 *parent = ps_findprocess(pd_head->parent);
-               
+void process_dispatcher(){
+   createp_queue *ptr;
+   DWORD sender,message,data;
+   DWORD pid;
+   
+   while (1){
+      if (pd_head != 0){
+         DWORD flag,pid;
+
+         PCB386 *parent = ps_findprocess(pd_head->parent);
                 
-                //use the working directory of the requesting process
-                //so that file operations used by the module loader like
-                //loadDLL works correctly
-                current_process->workdir = parent->workdir;
+         //use the working directory of the requesting process
+         //so that file operations used by the module loader like
+         //loadDLL works correctly
+         current_process->workdir = parent->workdir;
                 
-                //A Fork process command was requested
-                if (pd_head->type == FORK_MODULE)
-                  {
-                        #ifdef DEBUG_FORK
-                        printf("process dispatcher received fork request\n");
-                        #endif            
-                        pd_head->dispatched=0;
-                        pd_head->processid = forkprocess(parent);
-                        pd_head->dispatched=1;                  
-                        #ifdef DEBUG_FORK
-                        printf("fork request done.\n");
-                        #endif
-                  }
-                     else
-                 //A Normal Createprocess command was requested    
-                 {
-                        pd_head->dispatched=0;
-                        pd_head->processid = dex32_loader(pd_head->name,pd_head->image,pd_head->loadaddress,
+         //A Fork process command was requested
+         if (pd_head->type == FORK_MODULE){
+            #ifdef DEBUG_FORK
+               printf("process dispatcher received fork request\n");
+            #endif            
+            pd_head->dispatched=0;
+            pd_head->processid = forkprocess(parent);
+            pd_head->dispatched=1;                  
+            #ifdef DEBUG_FORK
+               printf("fork request done.\n");
+            #endif
+         }else{    //A Normal createprocess() was requested    
+            pd_head->dispatched=0;
+            pd_head->processid = dex32_loader(pd_head->name,pd_head->image,pd_head->loadaddress,
                                     pd_head->mode,pd_head->parameter,pd_head->workdir,parent);
-                        pd_head->dispatched=1;
-                        ptr=pd_head;
-                 };  
+            pd_head->dispatched=1;
+            ptr=pd_head;
+         };  
                  
-                 pd_head=pd_head->next;
+         pd_head=pd_head->next;
                 
-                };
+      };
                 
-                if (getmessage(&sender,&message,&data)!=0)
-                   {
-                       if (message == MES_SHUTDOWN)
-                          {
-                             int total = 0, i;
-                             PCB386 *ptr;        
-                             printf("Kernel received MES_SHUTDOWN.\n");
+      if (getmessage(&sender,&message,&data)!=0){
+         if (message == MES_SHUTDOWN){
+            int total = 0, i;
+            PCB386 *ptr;        
+            printf("Kernel received MES_SHUTDOWN.\n");
                              
-                             printf("Sending all processes the SHUTDOWN MESSAGE..\n");
-                             forceflush = 1;
-                             broadcastmessage(0,MES_SHUTDOWN,0);
-                             total = get_processlist(&ptr);
-                             printf("Killing all processes\n");
-                             for (i=0; i < total; i++)
-                                   if (ptr[i].processid!=0)
-                                   {
-                                       if (ptr[i].accesslevel == ACCESS_SYS)
-                                          dex32_killkthread(ptr[i].processid);
-                                       else
-                                       ps_user_kill(ptr[i].processid);
-                                   };
+            printf("Sending all processes the SHUTDOWN MESSAGE..\n");
+            forceflush = 1;
+            broadcastmessage(0,MES_SHUTDOWN,0);
+            total = get_processlist(&ptr);
+            printf("Killing all processes\n");
+            for (i=0; i < total; i++)
+               if (ptr[i].processid!=0){
+                  if (ptr[i].accesslevel == ACCESS_SYS)
+                     dex32_killkthread(ptr[i].processid);
+                  else
+                     ps_user_kill(ptr[i].processid);
+               };
                             
-                             printf("System halted. You may now turn off your computer.\n");
-                             while (1);
-                          };
-                   };
-             };   
-   };
+               printf("System halted. You may now turn off your computer.\n");
+            while (1);
+         };
+      };
+   };   
+};
                
    
