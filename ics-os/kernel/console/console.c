@@ -26,6 +26,7 @@
 */
 
 #include "console.h"
+
   
 /*A console mode get string function terminates
 upon receving \r */
