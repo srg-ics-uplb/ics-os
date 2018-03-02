@@ -1336,7 +1336,7 @@ void show_process(){
    textbackground(BLACK);
    printf("Processes in memory:\n\n");
    textcolor(MAGENTA);
-   printf("%-5s %-17s %-10s %-17s %6s %5s %10s\n","ID","Name","User Level","Owner","Size","AT","CT");
+   printf("%-5s %-17s %-9s %-13s %6s %5s %10s\n","ID","Name","Mode","Parent","Size","AT","CT");
    textcolor(WHITE);
     
    /*Tell the scheduler to give us an array of PCBs which contain the PCBs of the processes
@@ -1373,13 +1373,16 @@ void show_process(){
       else
          textcolor(GREEN);
             
-      printf(" %-17s",ptr[i].name);
+      if ( ptr[i].status & PS_ATTB_THREAD )     //This is a thread
+         printf(" %-14s[T]",ptr[i].name);
+      else
+         printf(" %-14s   ",ptr[i].name);
       textcolor(WHITE);
       strcpy(levelstr,"?");
 
       //determine the access level and then show it on the screen
       if (ptr[i].accesslevel == ACCESS_SYS) 
-         strcpy(levelstr,"supervisor");
+         strcpy(levelstr,"kernel");
       else if (ptr[i].accesslevel == ACCESS_USER) 
          strcpy(levelstr,"user");
 
@@ -1398,11 +1401,11 @@ void show_process(){
         
       sync_leavecrit(&processmgr_busy);
         
-      printf(" %-10s %-17s %5dK %5ds %5ds(%2d)%%\n",levelstr,temp,psize,
-      ptr[i].arrivaltime/100, ptr[i].totalcputime/100, percent_cpu_time);
+      printf(" %-9s %-13s %5dK %5ds %5ds(%2d)%%\n",levelstr,temp,psize,
+         ptr[i].arrivaltime/100, ptr[i].totalcputime/100, percent_cpu_time);
    };
 
-   printf("\nTotal            : %d processes (%d KB)\n",total,totalsize);
+   printf("\nTotal              : %d processes (%d KB)\n",total,totalsize);
    printf("Time Since Startup : %d\n", ticks / context_switch_rate);
    printf("Legend: AT = Arrival Time, CT = CPU Time, %%CT = Percent CPU Time\n");
     
@@ -1476,7 +1479,7 @@ void process_init(){
    kernel->before=kernel;
    kernel->processid=0;                              //process id is 0
    kernel->meminfo=0;
-   strcpy(kernel->name,"dex_kernel-beta");           //sPCB
+   strcpy(kernel->name,"dex_kernel");           //sPCB
    kernel->accesslevel=ACCESS_SYS;
    kernel->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
    kernel->knext=knext;
@@ -1507,8 +1510,8 @@ void process_init(){
    schedp=&schedpPCB;
    memset(schedp,0,sizeof(PCB386));
     
-   schedp->processid=1;                              //process id is 1
-   strcpy(schedp->name,"dex32_sched");               //schedpPCB
+   schedp->processid=1;                            //process id is 1
+   strcpy(schedp->name,"scheduler");               //schedpPCB
    schedp->accesslevel=ACCESS_SYS;
    schedp->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
    schedp->knext=knext;

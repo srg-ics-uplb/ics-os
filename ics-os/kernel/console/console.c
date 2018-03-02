@@ -846,7 +846,7 @@ int console_execute(const char *str){
 int console_new(){
    //create a new console         
    char consolename[255];
-   sprintf(consolename,"dex32_console(%d)", console_first);    
+   sprintf(consolename,"console(%d)", console_first);    
    return createkthread((void*)console, consolename, 200000);
 };
 

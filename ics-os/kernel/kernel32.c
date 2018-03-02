@@ -457,14 +457,14 @@ void dex_init(){
    //Initialize the task manager - a module program that monitors processes
    //for the user's convenience, as kernel thread
    printf("Initializing the task manager...");
-   tm_pid=createkthread((void*)dex32_tm_updateinfo,"dex32_taskmanager",3500);
+   tm_pid=createkthread((void*)dex32_tm_updateinfo,"task_mgr",3500);
    printf("[OK]\n");   
 
 
    //create the IO manager thread which handles all I/O to and from
    //block devices like the hard disk, floppy, CD-ROM etc. see iosched.c
    printf("Initializing the disk manager...");
-   createkthread((void*)iomgr_diskmgr,"iomgr_diskmgr",200000);
+   createkthread((void*)iomgr_diskmgr,"disk_mgr",200000);
    printf("[OK]\n");   
 
    
@@ -506,7 +506,7 @@ void dex_init(){
    printf("Running foreground manager thread\n");
     
    //create the foreground manager
-   fg_pid = createkthread((void*)fg_updateinfo,"fg_manager",20000);
+   fg_pid = createkthread((void*)fg_updateinfo,"fg_mgr",20000);
     
    if (baremode) 
       console_first++;
