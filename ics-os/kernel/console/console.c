@@ -836,7 +836,7 @@ int console_execute(const char *str){
    }else{         //treat the command as an executable
       if (u!=0){
          if (!user_execp(u, 0, str))
-            printf("Unknown command or executable.\n");
+            printf("Command or executable not found.\n");
       }
    }
    //normal termination

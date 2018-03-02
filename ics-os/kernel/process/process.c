@@ -1336,7 +1336,7 @@ void show_process(){
    textbackground(BLACK);
    printf("Processes in memory:\n\n");
    textcolor(MAGENTA);
-   printf("%-5s %-17s %-9s %-13s %6s %5s %10s\n","ID","Name","Mode","Parent","Size","AT","CT");
+   printf("%-5s %-17s %-11s %-14s %6s %6s %11s\n","PID","Name","Privilege","PPID","Size","AT","CT");
    textcolor(WHITE);
     
    /*Tell the scheduler to give us an array of PCBs which contain the PCBs of the processes
@@ -1374,9 +1374,10 @@ void show_process(){
          textcolor(GREEN);
             
       if ( ptr[i].status & PS_ATTB_THREAD )     //This is a thread
-         printf(" %-14s[T]",ptr[i].name);
+         printf(" %-14s(t)",ptr[i].name);
       else
          printf(" %-14s   ",ptr[i].name);
+
       textcolor(WHITE);
       strcpy(levelstr,"?");
 
@@ -1387,7 +1388,9 @@ void show_process(){
          strcpy(levelstr,"user");
 
       //obtain the name of the parent process
-      dex32_getname(ptr[i].owner,sizeof(temp),temp);
+      //dex32_getname(ptr[i].owner,sizeof(temp),temp);
+      
+      sprintf(temp,"%d",ptr[i].owner);
 
       /*compute for the percent CPU time*/
       percent_cpu_time = (ptr[i].totalcputime - ptr[i].lastcputime) * 100 / grandtotalcputime;
@@ -1401,7 +1404,7 @@ void show_process(){
         
       sync_leavecrit(&processmgr_busy);
         
-      printf(" %-9s %-13s %5dK %5ds %5ds(%2d)%%\n",levelstr,temp,psize,
+      printf(" %-11s %-14s %5dK %5ds %5ds(%2d)%%\n",levelstr,temp,psize,
          ptr[i].arrivaltime/100, ptr[i].totalcputime/100, percent_cpu_time);
    };
 
