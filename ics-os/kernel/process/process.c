@@ -203,25 +203,24 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    
    temp->status      |= PS_ATTB_THREAD; 
   
-   //temp->knext       = current_process->knext;
+   temp->knext       = current_process->knext;
    //temp->pagedirloc  = (DWORD)current_process->pagedirloc;
    
-   temp->knext       = knext;
+   //temp->knext       = knext;
    temp->pagedirloc  = (DWORD)current_process->pagedirloc;
 
    //set up the initial values of the CPU registers for this process
    memset(temp,0,sizeof(saveregs));
-   temp->stackptr    = malloc(stacksize);
  
    //Option 1: Use the passed parameter as stack
-   temp->stackptr    = stack;
-   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
-   temp->stackptr    = (void*)temp->regs.ESP;
-   
-   //Option 2: Allocate stack internally
-   //temp->stackptr    = malloc(stacksize);
+   //temp->stackptr    = stack;
    //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
    //temp->stackptr    = (void*)temp->regs.ESP;
+   
+   //Option 2: Allocate stack internally
+   temp->stackptr    = malloc(stacksize);
+   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   temp->stackptr    = (void*)temp->regs.ESP;
 
    temp->regs.CR3    = (DWORD)current_process->pagedirloc;
    temp->regs.ES     = USER_DATA;
@@ -230,8 +229,8 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.DS     = USER_DATA;
    temp->regs.FS     = USER_DATA;
    temp->regs.GS     = USER_DATA;
+  
    temp->regs.SS0    = SYS_STACK_SEL;
-
    temp->stackptr0   = malloc(SYSCALL_STACK);
    temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
    temp->regs.EFLAGS = current_process->regs.EFLAGS;
