@@ -179,18 +179,16 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    return temp->processid;
 };
 
-//FIXME:
+//FIXME: rewrite by jach
 DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
-
    DWORD cpuflags;
    PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
    memset(temp,0,sizeof(PCB386));
    temp->before=current_process;
-   strcpy(temp->name,"athread");
+   temp->processid   = nextprocessid++;
+   sprintf(temp->name,"%s.thread.%d",current_process->name,temp->processid);
    totalprocesses++;
    temp->size        = sizeof(PCB386);
-   temp->status      |= PS_ATTB_THREAD;
-   temp->processid   = nextprocessid++;
    temp->accesslevel = ACCESS_USER;
    temp->meminfo     = current_process->meminfo;
    temp->owner       = getprocessid();
@@ -205,14 +203,26 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    
    temp->status      |= PS_ATTB_THREAD; 
   
-   temp->knext       = current_process->knext;
-   temp->pagedirloc  = current_process->pagedirloc;
+   //temp->knext       = current_process->knext;
+   //temp->pagedirloc  = (DWORD)current_process->pagedirloc;
+   
+   temp->knext       = knext;
+   temp->pagedirloc  = (DWORD)current_process->pagedirloc;
 
    //set up the initial values of the CPU registers for this process
    memset(temp,0,sizeof(saveregs));
-   temp->regs.EIP    = (DWORD)ptr;
-   temp->regs.ESP    = (DWORD)(stack+stacksize-4);
+   temp->stackptr    = malloc(stacksize);
+ 
+   //Option 1: Use the passed parameter as stack
+   temp->stackptr    = stack;
+   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
    temp->stackptr    = (void*)temp->regs.ESP;
+   
+   //Option 2: Allocate stack internally
+   //temp->stackptr    = malloc(stacksize);
+   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   //temp->stackptr    = (void*)temp->regs.ESP;
+
    temp->regs.CR3    = (DWORD)current_process->pagedirloc;
    temp->regs.ES     = USER_DATA;
    temp->regs.SS     = USER_DATA;
@@ -221,12 +231,14 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.FS     = USER_DATA;
    temp->regs.GS     = USER_DATA;
    temp->regs.SS0    = SYS_STACK_SEL;
+
    temp->stackptr0   = malloc(SYSCALL_STACK);
    temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
    temp->regs.EFLAGS = current_process->regs.EFLAGS;
    
    /*critical section...*/
    sync_entercrit(&processmgr_busy);
+
    dex32_stopints(&cpuflags);
     
    //add to the process list

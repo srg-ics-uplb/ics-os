@@ -634,8 +634,8 @@ int console_execute(const char *str){
    }else
    if (strcmp(u,"cls") == 0){          //-- Clears the screen. 
       //clrscr();
-      char *stk = (char *)malloc(10240);
-      createuthread((void *)runner,stk,10240);
+      char *stk=malloc(10240);
+      createkthread(runner,stk,10240);
    }else
    if (strcmp(u,"help") == 0){         //-- Displays this help screen.
       console_execute("type /icsos/icsos.hlp");
