@@ -189,6 +189,7 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    strcpy(temp->name,"athread");
    totalprocesses++;
    temp->size        = sizeof(PCB386);
+   temp->status      |= PS_ATTB_THREAD;
    temp->processid   = nextprocessid++;
    temp->accesslevel = ACCESS_USER;
    temp->meminfo     = current_process->meminfo;
@@ -220,15 +221,13 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.FS     = USER_DATA;
    temp->regs.GS     = USER_DATA;
    temp->regs.SS0    = SYS_STACK_SEL;
-
-
-   /*critical section...*/
-   sync_entercrit(&processmgr_busy);
-   dex32_stopints(&cpuflags);
-   
    temp->stackptr0   = malloc(SYSCALL_STACK);
    temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
    temp->regs.EFLAGS = current_process->regs.EFLAGS;
+   
+   /*critical section...*/
+   sync_entercrit(&processmgr_busy);
+   dex32_stopints(&cpuflags);
     
    //add to the process list
    ps_enqueue(temp);
