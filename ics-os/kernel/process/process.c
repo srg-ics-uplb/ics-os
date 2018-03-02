@@ -179,10 +179,11 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    return temp->processid;
 };
 
-//FIXME: rewrite by jach
+//FIXME: somewhat working by jach
 DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    DWORD cpuflags;
    PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
+
    memset(temp,0,sizeof(PCB386));
    temp->before=current_process;
    temp->processid   = nextprocessid++;
