@@ -179,7 +179,7 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    return temp->processid;
 };
 
-//FIXME: somewhat working by jach
+//FIXME: not working by jach
 DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    DWORD cpuflags;
    PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
@@ -205,23 +205,20 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->status      |= PS_ATTB_THREAD; 
   
    temp->knext       = current_process->knext;
-   //temp->pagedirloc  = (DWORD)current_process->pagedirloc;
-   
-   //temp->knext       = knext;
    temp->pagedirloc  = (DWORD)current_process->pagedirloc;
-
+   
    //set up the initial values of the CPU registers for this process
    memset(temp,0,sizeof(saveregs));
  
    //Option 1: Use the passed parameter as stack
-   //temp->stackptr    = stack;
-   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
-   //temp->stackptr    = (void*)temp->regs.ESP;
-   
-   //Option 2: Allocate stack internally
-   temp->stackptr    = malloc(stacksize);
+   temp->stackptr    = stack;
    temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
    temp->stackptr    = (void*)temp->regs.ESP;
+   
+   //Option 2: Allocate stack internally
+   //temp->stackptr    = malloc(stacksize);
+   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   //temp->stackptr    = (void*)temp->regs.ESP;
 
    temp->regs.CR3    = (DWORD)current_process->pagedirloc;
    temp->regs.ES     = USER_DATA;
@@ -238,15 +235,13 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    
    /*critical section...*/
    sync_entercrit(&processmgr_busy);
-
    dex32_stopints(&cpuflags);
     
-   //add to the process list
+   //add to the process list, must be sync
    ps_enqueue(temp);
 
-   dex32_restoreints(cpuflags);
-    
    //end of critical section
+   dex32_restoreints(cpuflags);
    sync_leavecrit(&processmgr_busy);
  
    return temp->processid;
@@ -336,7 +331,10 @@ DWORD forkprocess(PCB386 *parent){
 };
 
 
-//The main procedure that is responsible for spawning all processes
+/*
+ * Function that is responsible for spawning processes.
+ * Called by the different modules
+ */
 DWORD createprocess(
                      void *ptr,
                      char *name, 
@@ -574,32 +572,35 @@ int getmessage(DWORD *source, DWORD *mes, DWORD *data){
    return 1;
 };
 
-/*creates a kernel thread*/
+/*
+ *Creates a kernel thread
+*/
 DWORD createkthread(void *ptr,char *name,DWORD stacksize){
-   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
+ 
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));         //allocate PCB for the thread
    DWORD cpuflags;
     
-   memset(temp,0,sizeof(PCB386));
-   temp->before=current_process;
-   strcpy(temp->name,name);
-   totalprocesses++;
+   memset(temp,0,sizeof(PCB386));                        //Initialize the PCB
+   temp->before=current_process;                         //Point the 'before' to the parent 
+   strcpy(temp->name,name);                              //Set the name of the thread
+   totalprocesses++;                                     //Increment the total number of processes
    temp->size        = sizeof(PCB386);
-   temp->processid   = nextprocessid++;
-   temp->accesslevel = ACCESS_SYS;
-   temp->owner       = getprocessid();
-   temp->status     |= PS_ATTB_THREAD; 
-   temp->knext       = knext;
-   temp->pagedirloc  = pagedir1;
-   temp->workdir     = current_process->workdir;
+   temp->processid   = nextprocessid++;                  //Set the thread id
+   temp->accesslevel = ACCESS_SYS;                       //Set the access level to system or kernel
+   temp->owner       = getprocessid();                   //The owner of this thread is the current process
+   temp->status     |= PS_ATTB_THREAD;                   //This is a thread  
+   temp->knext       = knext;                            //Set the the top of the heap of this thread to same as kernel
+   temp->pagedirloc  = pagedir1;                         //Set the pagedir for this thread to the first page directory
+   temp->workdir     = current_process->workdir;         //Set the working directory of this thread to same as owner
 
    //set up the initial values of the CPU registers for this process
-   memset(temp,0,sizeof(saveregs));
-   temp->regs.EIP    = (DWORD)ptr;
-   temp->stackptr    = malloc(stacksize);
+   memset(temp,0,sizeof(saveregs));                      //This works because "regs" is the first field in the structure
+   temp->regs.EIP    = (DWORD)ptr;                       //Set the function to be executed by this thread
+   temp->stackptr    = malloc(stacksize);                   //Set up the stack for this thread
    temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
    temp->stackptr    = (void*)temp->regs.ESP;
-   temp->regs.CR3    = (DWORD)pagedir1;
-   temp->regs.ES     = SYS_DATA_SEL;
+   temp->regs.CR3    = (DWORD)pagedir1;                  //Set paging 
+   temp->regs.ES     = SYS_DATA_SEL;                     //Set the segment registers to appropriate selectors
    temp->regs.SS     = SYS_STACK_SEL;
    temp->regs.CS     = SYS_CODE_SEL;
    temp->regs.DS     = SYS_DATA_SEL;
@@ -607,19 +608,17 @@ DWORD createkthread(void *ptr,char *name,DWORD stacksize){
    temp->regs.GS     = SYS_DATA_SEL;
    temp->regs.EFLAGS = 0x200;
 
-   temp->arrivaltime = getprecisetime(); 
+   temp->arrivaltime = getprecisetime();                 //Store the arrival/creation time of this thread 
    temp->stdin       = current_process->stdin;
 
    /*critical section...*/
-   sync_entercrit(&processmgr_busy);
+   sync_entercrit(&processmgr_busy);                     //Access to the process list must sync                                
    dex32_stopints(&cpuflags);
     
    //add to the process list
-   ps_enqueue(temp);
+   ps_enqueue(temp);                                     //Add the thread to the process list for scheduling
 
    dex32_restoreints(cpuflags);
-    
-   //end of critical section
    sync_leavecrit(&processmgr_busy);
     
    return temp->processid;

@@ -638,7 +638,7 @@ int console_execute(const char *str){
    if (strcmp(u,"cls") == 0){          //-- Clears the screen. 
       //clrscr();
       char *stk=malloc(10240);
-      createkthread(runner,stk,10240);
+      createuthread(runner,stk,10240);
    }else
    if (strcmp(u,"help") == 0){         //-- Displays this help screen.
       console_execute("type /icsos/icsos.hlp");
@@ -836,7 +836,7 @@ int console_execute(const char *str){
    }else{         //treat the command as an executable
       if (u!=0){
          if (!user_execp(u, 0, str))
-            printf("Unknown console command or executable not found.\n");
+            printf("Unknown command or executable.\n");
       }
    }
    //normal termination

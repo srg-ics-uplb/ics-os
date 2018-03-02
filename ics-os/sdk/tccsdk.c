@@ -1374,7 +1374,7 @@ int sleep(unsigned int ms){
 /* User thread function (not yet working) */
 
 /* Creates and starts a thread. returns thread id (jach) */
-int thread_create(void *f){
+int thread_create(void *(f)()){
    char *stk;
    stk = (char *)malloc(10240);   
    return dexsdk_systemcall(0xB,(void*)f,stk,10240,0,0);
