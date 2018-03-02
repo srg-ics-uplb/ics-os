@@ -99,7 +99,7 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 
-.text           0x0000000000100000    0x25f91
+.text           0x0000000000100000    0x25fa1
  *(.text)
  .text          0x0000000000100000      0x2ce startup.o
                 0x0000000000100000                startup
@@ -139,7 +139,7 @@ Linker script and memory map
                 0x00000000001006ac                itoa
                 0x0000000000100733                gotoxy
                 0x000000000010077d                move_cursor
- .text          0x0000000000100891    0x20085 kernel32.o
+ .text          0x0000000000100891    0x200a0 kernel32.o
                 0x0000000000100891                inportb
                 0x00000000001008a6                inportl
                 0x00000000001008bb                outportl
@@ -572,338 +572,338 @@ Linker script and memory map
                 0x0000000000116396                getprocessid
                 0x00000000001163a6                getpprocessid
                 0x00000000001163b6                createthread
-                0x0000000000116649                createuthread
-                0x00000000001168e1                ps_enqueue
-                0x000000000011691b                ps_dequeue
-                0x0000000000116955                forkprocess
-                0x0000000000116b15                createprocess
-                0x0000000000116ee7                dex32_asyncproc
-                0x00000000001170c4                ps_seterror
-                0x00000000001170d8                ps_geterror
-                0x00000000001170e8                broadcastmessage
-                0x0000000000117151                sendmessage
-                0x0000000000117176                sendmessageEX
-                0x0000000000117278                getmessage
-                0x0000000000117375                createkthread
-                0x0000000000117586                ps_changename
-                0x00000000001175de                dex32_setservice
-                0x0000000000117634                dex32_exitprocess
-                0x0000000000117653                dex32_killkthread
-                0x00000000001176b0                sleep
-                0x00000000001176c4                kill_process
-                0x00000000001178f6                kill_thread
-                0x0000000000117974                kill_children
-                0x00000000001179fc                exit
-                0x0000000000117a30                ps_user_kill
-                0x0000000000117a5a                create_semaphore
-                0x0000000000117af0                get_processlist
-                0x0000000000117bb7                findprocessname
-                0x0000000000117c5e                ps_findprocess
-                0x0000000000117c85                dex32_getname
-                0x0000000000117d0e                dex32_getparametersinfo
-                0x0000000000117d4c                dex32_wait
-                0x0000000000117d9a                dex32_waitpid
-                0x0000000000117db8                findsemaphore
-                0x0000000000117def                get_semaphore
-                0x0000000000117e40                set_semaphore
-                0x0000000000117e9a                free_semaphore
-                0x0000000000117f16                dex32_killkthread_name
-                0x0000000000118048                addmemusage
-                0x0000000000118085                getprocessmemory
-                0x00000000001180db                freeprocessmemory
-                0x0000000000118128                copyprocessmemory
-                0x0000000000118172                halt
-                0x0000000000118177                ps_switchto
-                0x0000000000118227                taskswitch
-                0x0000000000118239                taskswitcher
-                0x00000000001183f0                show_process_stat
-                0x00000000001186c3                process_pid_sorter
-                0x0000000000118707                show_process
-                0x0000000000118b45                totalprocess
-                0x0000000000118b78                getprocessinfo
-                0x0000000000118bce                dex32_locktasks
-                0x0000000000118be2                dex32_unlocktasks
-                0x0000000000118bf6                systemcall
-                0x0000000000118c0f                process_init
-                0x0000000000119326                dex32_getversion
-                0x0000000000119330                api_addsystemcall
-                0x00000000001193aa                api_removesystemcall
-                0x0000000000119425                api_init
-                0x0000000000119c67                api_syscall
-                0x0000000000119dde                int_enable_irq
-                0x0000000000119de8                int_disable_irq
-                0x0000000000119dee                int_save_int_vect
-                0x0000000000119df4                int_restore_int_vect
-                0x0000000000119dfa                pio_set_iobase_addr
-                0x0000000000119e99                pio_set_memory_addr
-                0x0000000000119f44                pio_inbyte
-                0x0000000000119f7a                pio_outbyte
-                0x0000000000119fb5                pio_inword
-                0x0000000000119fde                pio_outword
-                0x000000000011a002                pio_drq_block_in
-                0x000000000011a084                pio_drq_block_out
-                0x000000000011a106                pio_rep_inbyte
-                0x000000000011a15e                pio_rep_outbyte
-                0x000000000011a1b6                pio_rep_inword
-                0x000000000011a20e                pio_rep_outword
-                0x000000000011a266                pio_rep_indword
-                0x000000000011a298                pio_rep_outdword
-                0x000000000011a2ca                WAIT400NS
-                0x000000000011a372                reg_config
-                0x000000000011a6ec                reg_reset
-                0x000000000011a8bc                reg_non_data_lba
-                0x000000000011a90c                reg_non_data
-                0x000000000011aba4                reg_pio_data_in_lba
-                0x000000000011ac00                reg_pio_data_in
-                0x000000000011af29                reg_pio_data_out_lba
-                0x000000000011af85                reg_pio_data_out
-                0x000000000011b315                reg_packet
-                0x000000000011b9de                sub_zero_return_data
-                0x000000000011ba07                sub_setup_command
-                0x000000000011bc6f                sub_trace_command
-                0x000000000011be36                sub_select
-                0x000000000011c074                sub_atapi_delay
-                0x000000000011c0c0                sub_xfer_delay
-                0x000000000011c0dc                tmr_read_bios_timer
-                0x000000000011c111                tmr_set_timeout
-                0x000000000011c151                tmr_chk_timeout
-                0x000000000011c1a4                partition_interpret_table
-                0x000000000011c274                ide_interpret_config
-                0x000000000011c56a                ide_irqhandler
-                0x000000000011c57a                ide_getdriveinfo
-                0x000000000011c580                ide_readsectors
-                0x000000000011c639                ide_writesectors
-                0x000000000011c6f2                switchbyte
-                0x000000000011c71b                ide_cdrom_lock
-                0x000000000011c784                ide_cdrom_unlock
-                0x000000000011c7ed                ide_cdrom_eject
-                0x000000000011c856                ide_cdrom_load
-                0x000000000011c8bf                ide_cdromreadsectors
-                0x000000000011c9bf                ide_cdromgetblocksize
-                0x000000000011c9c9                ide_uni_get_bytes_per_block
-                0x000000000011ca37                ide_uni_get_total_sectors
-                0x000000000011cac5                ide_uni_read_block
-                0x000000000011cbb5                ide_uni_write_block
-                0x000000000011cc81                ide_read_block_partition
-                0x000000000011cd1e                ide_write_block_partition
-                0x000000000011cdbb                ide_identify_partition_type
-                0x000000000011ce5e                ide_registerpartitions
-                0x000000000011d047                ide_sendmessage
-                0x000000000011d621                ide_setupinterface
-                0x000000000011dc41                ide_init
-                0x000000000011dcb2                vfs_addpathcut
-                0x000000000011de71                vfs_removepathcut
-                0x000000000011df32                vfs_showpathcuts
-                0x000000000011df9f                vfs_getpathcut
-                0x000000000011dfe2                vfs_ispathcut
-                0x000000000011e016                vfs_listdir
-                0x000000000011e0e2                vfs_attbstr
-                0x000000000011e17f                rmdir
-                0x000000000011e1b3                vfs_rmdir
-                0x000000000011e2fd                malloc
-                0x000000000011e375                realloc
-                0x000000000011e44f                free
-                0x000000000011e4cb                alloc_init
-                0x000000000011e504                stopints
-                0x000000000011e50b                startints
-                0x000000000011e512                wbinvd
-                0x000000000011e51a                hlt
-                0x000000000011e521                mem_interpretmemory
-                0x000000000011e5dc                mem_detectmemory
-                0x000000000011e6d4                mempop
-                0x000000000011e714                mempush
-                0x000000000011e78b                clearpagetable
-                0x000000000011e7bf                maplineartophysical
-                0x000000000011e886                maplineartophysical2
-                0x000000000011e9cc                getvirtaddress
-                0x000000000011e9f3                getvirtaddress2
-                0x000000000011ea26                xmaplineartophysical
-                0x000000000011eae0                dex32_stopints
-                0x000000000011eafc                dex32_restoreints
-                0x000000000011eb13                getphys
-                0x000000000011eb86                getpagetablephys
-                0x000000000011ebba                dex32_freeuserpagetable
-                0x000000000011ecdc                freeuserheap
-                0x000000000011ed4b                freelinearloc
-                0x000000000011edc5                freemultiple
-                0x000000000011edfb                getlinearloc
-                0x000000000011eebc                getmultiple
-                0x000000000011eefe                setpageattb
-                0x000000000011ef42                dex32_setpageattb
-                0x000000000011efb1                dex32_setpageattbblock
-                0x000000000011f029                dex32_getfreepages
-                0x000000000011f033                setgdtentry
-                0x000000000011f095                addgdt
-                0x000000000011f13a                setgdt
-                0x000000000011f1e4                setattb
-                0x000000000011f214                setcallgate
-                0x000000000011f2b1                dex32_setbase
-                0x000000000011f309                setinterruptvector
-                0x000000000011f38d                obtainpage
-                0x000000000011f3aa                commit
-                0x000000000011f452                commitb
-                0x000000000011f4c7                sbrk
-                0x000000000011f558                dex32_sbrk
-                0x000000000011f5f4                dex32_copy_on_write
-                0x000000000011f5fa                dex32_copy_pagedirU
-                0x000000000011f68e                dex32_copy_pg
-                0x000000000011f8b8                dex32_copy_pagedir
-                0x000000000011f8f9                dex32_commitblock
-                0x000000000011f971                dex32_reserveblock
-                0x000000000011f9e9                dex32_reserve
-                0x000000000011fa86                dex32_commit
-                0x000000000011fb66                dex32copyblock
-                0x000000000011fbcf                mem_init
-                0x000000000011fd22                mem_register
-                0x000000000011fd9e                dex_malloc
-                0x000000000011ff30                dex_free
-                0x000000000011ff6a                dexmalloc_sendmessage
-                0x000000000011ffe3                dexmalloc_init
-                0x0000000000120078                vmm_pagein
-                0x0000000000120091                vmm_init
-                0x0000000000120122                main
-                0x0000000000120283                dex32_startup
-                0x000000000012042a                dex_init
-                0x0000000000120910                end_func
- .text          0x0000000000120916      0x346 scheduler.o
-                0x0000000000120916                scheduler
-                0x000000000012097a                sched_attach
-                0x0000000000120999                sched_getcurrentprocess
-                0x00000000001209a3                sched_gethead
-                0x00000000001209ad                sched_enqueue
-                0x0000000000120a3b                sched_dequeue
-                0x0000000000120a75                sched_findprocess
-                0x0000000000120ae4                sched_listprocess
-                0x0000000000120b84                ps_scheduler_install
- .text          0x0000000000120c5c      0x769 iomgr.o
-                0x0000000000120c5c                iomgr_init
-                0x0000000000120d06                iomgr_flushmgr
-                0x0000000000120d30                iomgr_diskmgr
-                0x0000000000120fb8                IOmgr_obtainjob
-                0x00000000001210b8                dex32_IOcomplete
-                0x0000000000121122                dex32_closeIO
-                0x000000000012115f                dex32_requestIO
- .text          0x00000000001213c5     0x34e6 fat.o
-                0x00000000001213c5                obtain_next_cluster
-                0x000000000012152d                fat_write_cluster
-                0x00000000001216e0                clustertoblock
-                0x00000000001217b7                fat_sectors_per_fat
-                0x00000000001217e3                readBPB
-                0x000000000012182c                interpretBPB
-                0x0000000000121893                fat_diskdiagnostics
-                0x0000000000121968                loadfat
-                0x00000000001219c4                loaddirectory
-                0x00000000001219fe                debug_printbuf
-                0x0000000000121a3c                fat_readcluster
-                0x0000000000121aa9                fat_writecluster
-                0x0000000000121b16                fat_writeblock
-                0x0000000000121b78                fat_loaddirectoryfromcluster
-                0x0000000000121cfa                fat_validatefilename
-                0x0000000000121daf                loadroot
-                0x0000000000121ea4                strtofile12
-                0x0000000000121ff7                file12tostr
-                0x0000000000122118                fat_writefileEX
-                0x00000000001221cf                fat_createfileEX
-                0x0000000000122223                fat_addsectorsEX
-                0x0000000000122263                fat_getfreeblocks
-                0x000000000012231d                fat_getbytesperblock
-                0x000000000012234a                fat_getfileblocks
-                0x00000000001223c1                getdirsectorsize
-                0x00000000001223eb                get_sector_fromcluster
-                0x0000000000122475                update_dirs
-                0x00000000001225fb                update_fats
-                0x0000000000122689                update_dirs_fats
-                0x00000000001226c0                fat_getsectorsizeEX
-                0x00000000001227e5                fat_rewritefileEX
-                0x0000000000122834                fat_modifyattb
-                0x000000000012294a                fat_addsectors
-                0x0000000000122b0b                fat_deletefile
-                0x0000000000122ca0                fat_rewritefile
-                0x0000000000122e0f                fat_createfile
-                0x00000000001235a9                fat_mount_root
-                0x000000000012374e                unicodetoascii
-                0x00000000001237b0                fat_mountdirectory
-                0x000000000012383b                fat_mount
-                0x0000000000123c91                obtaincluster
-                0x0000000000123ce5                obtainfreecluster
-                0x0000000000123d1e                fillsectorinfo
-                0x0000000000123ec6                writefile12EX2
-                0x00000000001241b6                fat_openfileEX
-                0x000000000012425e                loadfile12EX2
-                0x000000000012464a                loadfile12
-                0x000000000012467a                fat_get_eoc
-                0x00000000001246ab                fat_get_fat_type
-                0x00000000001247d1                fat_register
- .text          0x00000000001248ab      0x8f7 iso9660.o
-                0x00000000001248ab                iso9660_loaddirectory
-                0x0000000000124945                iso9660_mountroot
-                0x0000000000124c78                iso9660_convertname
-                0x0000000000124cbf                iso9660_iso_unicodetoascii
-                0x0000000000124d32                iso9660_getbytesperblock
-                0x0000000000124d3c                iso9660_openfile
-                0x0000000000124e2c                iso9660_unmount
-                0x0000000000124e52                iso9660_mountdirectory
-                0x0000000000124eb8                iso9660_isjoliet
-                0x0000000000124f0e                iso9660_mount
-                0x00000000001250fb                iso9660_init
- .text          0x00000000001251a2      0x94f devfs.o
-                0x00000000001251a2                devfs_getbytesperblock
-                0x00000000001251ac                devfs_rewritefile
-                0x00000000001251b2                devfs_writefile
-                0x000000000012548a                devfs_openfile
-                0x00000000001257ff                devfs_mountroot
-                0x00000000001259af                devfs_initnull
-                0x0000000000125a2e                devfs_init
- *fill*         0x0000000000125af1        0xf 
- .text          0x0000000000125b00      0x224 irqwrap.o
-                0x0000000000125b00                syscallwrapper
-                0x0000000000125b0f                CPUintwrapper
-                0x0000000000125b17                fdcwrapper
-                0x0000000000125b21                copwrapper
-                0x0000000000125b29                timerwrapper
-                0x0000000000125b43                kbdwrapper
-                0x0000000000125b5b                mousewrapper
-                0x0000000000125b79                irq1wrapper
-                0x0000000000125b96                irq2wrapper
-                0x0000000000125bb3                irq3wrapper
-                0x0000000000125bd0                irq4wrapper
-                0x0000000000125bed                irq5wrapper
-                0x0000000000125c0a                irq6wrapper
-                0x0000000000125c27                irq7wrapper
-                0x0000000000125c44                irq8wrapper
-                0x0000000000125c61                irq9wrapper
-                0x0000000000125c7e                irq10wrapper
-                0x0000000000125c9b                irq11wrapper
-                0x0000000000125cb8                irq12wrapper
-                0x0000000000125cd5                div_wrapper
-                0x0000000000125ce8                gpfwrapper
-                0x0000000000125cfb                invalidtsswrapper
-                0x0000000000125d0e                pfwrapper
- .text          0x0000000000125d24      0x26d devmgr_error.o
-                0x0000000000125d24                get_function_name
-                0x0000000000125f91                textEnd = .
+                0x000000000011662a                createuthread
+                0x00000000001168fc                ps_enqueue
+                0x0000000000116936                ps_dequeue
+                0x0000000000116970                forkprocess
+                0x0000000000116b30                createprocess
+                0x0000000000116f02                dex32_asyncproc
+                0x00000000001170df                ps_seterror
+                0x00000000001170f3                ps_geterror
+                0x0000000000117103                broadcastmessage
+                0x000000000011716c                sendmessage
+                0x0000000000117191                sendmessageEX
+                0x0000000000117293                getmessage
+                0x0000000000117390                createkthread
+                0x00000000001175a1                ps_changename
+                0x00000000001175f9                dex32_setservice
+                0x000000000011764f                dex32_exitprocess
+                0x000000000011766e                dex32_killkthread
+                0x00000000001176cb                sleep
+                0x00000000001176df                kill_process
+                0x0000000000117911                kill_thread
+                0x000000000011798f                kill_children
+                0x0000000000117a17                exit
+                0x0000000000117a4b                ps_user_kill
+                0x0000000000117a75                create_semaphore
+                0x0000000000117b0b                get_processlist
+                0x0000000000117bd2                findprocessname
+                0x0000000000117c79                ps_findprocess
+                0x0000000000117ca0                dex32_getname
+                0x0000000000117d29                dex32_getparametersinfo
+                0x0000000000117d67                dex32_wait
+                0x0000000000117db5                dex32_waitpid
+                0x0000000000117dd3                findsemaphore
+                0x0000000000117e0a                get_semaphore
+                0x0000000000117e5b                set_semaphore
+                0x0000000000117eb5                free_semaphore
+                0x0000000000117f31                dex32_killkthread_name
+                0x0000000000118063                addmemusage
+                0x00000000001180a0                getprocessmemory
+                0x00000000001180f6                freeprocessmemory
+                0x0000000000118143                copyprocessmemory
+                0x000000000011818d                halt
+                0x0000000000118192                ps_switchto
+                0x0000000000118242                taskswitch
+                0x0000000000118254                taskswitcher
+                0x000000000011840b                show_process_stat
+                0x00000000001186de                process_pid_sorter
+                0x0000000000118722                show_process
+                0x0000000000118b60                totalprocess
+                0x0000000000118b93                getprocessinfo
+                0x0000000000118be9                dex32_locktasks
+                0x0000000000118bfd                dex32_unlocktasks
+                0x0000000000118c11                systemcall
+                0x0000000000118c2a                process_init
+                0x0000000000119341                dex32_getversion
+                0x000000000011934b                api_addsystemcall
+                0x00000000001193c5                api_removesystemcall
+                0x0000000000119440                api_init
+                0x0000000000119c82                api_syscall
+                0x0000000000119df9                int_enable_irq
+                0x0000000000119e03                int_disable_irq
+                0x0000000000119e09                int_save_int_vect
+                0x0000000000119e0f                int_restore_int_vect
+                0x0000000000119e15                pio_set_iobase_addr
+                0x0000000000119eb4                pio_set_memory_addr
+                0x0000000000119f5f                pio_inbyte
+                0x0000000000119f95                pio_outbyte
+                0x0000000000119fd0                pio_inword
+                0x0000000000119ff9                pio_outword
+                0x000000000011a01d                pio_drq_block_in
+                0x000000000011a09f                pio_drq_block_out
+                0x000000000011a121                pio_rep_inbyte
+                0x000000000011a179                pio_rep_outbyte
+                0x000000000011a1d1                pio_rep_inword
+                0x000000000011a229                pio_rep_outword
+                0x000000000011a281                pio_rep_indword
+                0x000000000011a2b3                pio_rep_outdword
+                0x000000000011a2e5                WAIT400NS
+                0x000000000011a38d                reg_config
+                0x000000000011a707                reg_reset
+                0x000000000011a8d7                reg_non_data_lba
+                0x000000000011a927                reg_non_data
+                0x000000000011abbf                reg_pio_data_in_lba
+                0x000000000011ac1b                reg_pio_data_in
+                0x000000000011af44                reg_pio_data_out_lba
+                0x000000000011afa0                reg_pio_data_out
+                0x000000000011b330                reg_packet
+                0x000000000011b9f9                sub_zero_return_data
+                0x000000000011ba22                sub_setup_command
+                0x000000000011bc8a                sub_trace_command
+                0x000000000011be51                sub_select
+                0x000000000011c08f                sub_atapi_delay
+                0x000000000011c0db                sub_xfer_delay
+                0x000000000011c0f7                tmr_read_bios_timer
+                0x000000000011c12c                tmr_set_timeout
+                0x000000000011c16c                tmr_chk_timeout
+                0x000000000011c1bf                partition_interpret_table
+                0x000000000011c28f                ide_interpret_config
+                0x000000000011c585                ide_irqhandler
+                0x000000000011c595                ide_getdriveinfo
+                0x000000000011c59b                ide_readsectors
+                0x000000000011c654                ide_writesectors
+                0x000000000011c70d                switchbyte
+                0x000000000011c736                ide_cdrom_lock
+                0x000000000011c79f                ide_cdrom_unlock
+                0x000000000011c808                ide_cdrom_eject
+                0x000000000011c871                ide_cdrom_load
+                0x000000000011c8da                ide_cdromreadsectors
+                0x000000000011c9da                ide_cdromgetblocksize
+                0x000000000011c9e4                ide_uni_get_bytes_per_block
+                0x000000000011ca52                ide_uni_get_total_sectors
+                0x000000000011cae0                ide_uni_read_block
+                0x000000000011cbd0                ide_uni_write_block
+                0x000000000011cc9c                ide_read_block_partition
+                0x000000000011cd39                ide_write_block_partition
+                0x000000000011cdd6                ide_identify_partition_type
+                0x000000000011ce79                ide_registerpartitions
+                0x000000000011d062                ide_sendmessage
+                0x000000000011d63c                ide_setupinterface
+                0x000000000011dc5c                ide_init
+                0x000000000011dccd                vfs_addpathcut
+                0x000000000011de8c                vfs_removepathcut
+                0x000000000011df4d                vfs_showpathcuts
+                0x000000000011dfba                vfs_getpathcut
+                0x000000000011dffd                vfs_ispathcut
+                0x000000000011e031                vfs_listdir
+                0x000000000011e0fd                vfs_attbstr
+                0x000000000011e19a                rmdir
+                0x000000000011e1ce                vfs_rmdir
+                0x000000000011e318                malloc
+                0x000000000011e390                realloc
+                0x000000000011e46a                free
+                0x000000000011e4e6                alloc_init
+                0x000000000011e51f                stopints
+                0x000000000011e526                startints
+                0x000000000011e52d                wbinvd
+                0x000000000011e535                hlt
+                0x000000000011e53c                mem_interpretmemory
+                0x000000000011e5f7                mem_detectmemory
+                0x000000000011e6ef                mempop
+                0x000000000011e72f                mempush
+                0x000000000011e7a6                clearpagetable
+                0x000000000011e7da                maplineartophysical
+                0x000000000011e8a1                maplineartophysical2
+                0x000000000011e9e7                getvirtaddress
+                0x000000000011ea0e                getvirtaddress2
+                0x000000000011ea41                xmaplineartophysical
+                0x000000000011eafb                dex32_stopints
+                0x000000000011eb17                dex32_restoreints
+                0x000000000011eb2e                getphys
+                0x000000000011eba1                getpagetablephys
+                0x000000000011ebd5                dex32_freeuserpagetable
+                0x000000000011ecf7                freeuserheap
+                0x000000000011ed66                freelinearloc
+                0x000000000011ede0                freemultiple
+                0x000000000011ee16                getlinearloc
+                0x000000000011eed7                getmultiple
+                0x000000000011ef19                setpageattb
+                0x000000000011ef5d                dex32_setpageattb
+                0x000000000011efcc                dex32_setpageattbblock
+                0x000000000011f044                dex32_getfreepages
+                0x000000000011f04e                setgdtentry
+                0x000000000011f0b0                addgdt
+                0x000000000011f155                setgdt
+                0x000000000011f1ff                setattb
+                0x000000000011f22f                setcallgate
+                0x000000000011f2cc                dex32_setbase
+                0x000000000011f324                setinterruptvector
+                0x000000000011f3a8                obtainpage
+                0x000000000011f3c5                commit
+                0x000000000011f46d                commitb
+                0x000000000011f4e2                sbrk
+                0x000000000011f573                dex32_sbrk
+                0x000000000011f60f                dex32_copy_on_write
+                0x000000000011f615                dex32_copy_pagedirU
+                0x000000000011f6a9                dex32_copy_pg
+                0x000000000011f8d3                dex32_copy_pagedir
+                0x000000000011f914                dex32_commitblock
+                0x000000000011f98c                dex32_reserveblock
+                0x000000000011fa04                dex32_reserve
+                0x000000000011faa1                dex32_commit
+                0x000000000011fb81                dex32copyblock
+                0x000000000011fbea                mem_init
+                0x000000000011fd3d                mem_register
+                0x000000000011fdb9                dex_malloc
+                0x000000000011ff4b                dex_free
+                0x000000000011ff85                dexmalloc_sendmessage
+                0x000000000011fffe                dexmalloc_init
+                0x0000000000120093                vmm_pagein
+                0x00000000001200ac                vmm_init
+                0x000000000012013d                main
+                0x000000000012029e                dex32_startup
+                0x0000000000120445                dex_init
+                0x000000000012092b                end_func
+ .text          0x0000000000120931      0x346 scheduler.o
+                0x0000000000120931                scheduler
+                0x0000000000120995                sched_attach
+                0x00000000001209b4                sched_getcurrentprocess
+                0x00000000001209be                sched_gethead
+                0x00000000001209c8                sched_enqueue
+                0x0000000000120a56                sched_dequeue
+                0x0000000000120a90                sched_findprocess
+                0x0000000000120aff                sched_listprocess
+                0x0000000000120b9f                ps_scheduler_install
+ .text          0x0000000000120c77      0x769 iomgr.o
+                0x0000000000120c77                iomgr_init
+                0x0000000000120d21                iomgr_flushmgr
+                0x0000000000120d4b                iomgr_diskmgr
+                0x0000000000120fd3                IOmgr_obtainjob
+                0x00000000001210d3                dex32_IOcomplete
+                0x000000000012113d                dex32_closeIO
+                0x000000000012117a                dex32_requestIO
+ .text          0x00000000001213e0     0x34e6 fat.o
+                0x00000000001213e0                obtain_next_cluster
+                0x0000000000121548                fat_write_cluster
+                0x00000000001216fb                clustertoblock
+                0x00000000001217d2                fat_sectors_per_fat
+                0x00000000001217fe                readBPB
+                0x0000000000121847                interpretBPB
+                0x00000000001218ae                fat_diskdiagnostics
+                0x0000000000121983                loadfat
+                0x00000000001219df                loaddirectory
+                0x0000000000121a19                debug_printbuf
+                0x0000000000121a57                fat_readcluster
+                0x0000000000121ac4                fat_writecluster
+                0x0000000000121b31                fat_writeblock
+                0x0000000000121b93                fat_loaddirectoryfromcluster
+                0x0000000000121d15                fat_validatefilename
+                0x0000000000121dca                loadroot
+                0x0000000000121ebf                strtofile12
+                0x0000000000122012                file12tostr
+                0x0000000000122133                fat_writefileEX
+                0x00000000001221ea                fat_createfileEX
+                0x000000000012223e                fat_addsectorsEX
+                0x000000000012227e                fat_getfreeblocks
+                0x0000000000122338                fat_getbytesperblock
+                0x0000000000122365                fat_getfileblocks
+                0x00000000001223dc                getdirsectorsize
+                0x0000000000122406                get_sector_fromcluster
+                0x0000000000122490                update_dirs
+                0x0000000000122616                update_fats
+                0x00000000001226a4                update_dirs_fats
+                0x00000000001226db                fat_getsectorsizeEX
+                0x0000000000122800                fat_rewritefileEX
+                0x000000000012284f                fat_modifyattb
+                0x0000000000122965                fat_addsectors
+                0x0000000000122b26                fat_deletefile
+                0x0000000000122cbb                fat_rewritefile
+                0x0000000000122e2a                fat_createfile
+                0x00000000001235c4                fat_mount_root
+                0x0000000000123769                unicodetoascii
+                0x00000000001237cb                fat_mountdirectory
+                0x0000000000123856                fat_mount
+                0x0000000000123cac                obtaincluster
+                0x0000000000123d00                obtainfreecluster
+                0x0000000000123d39                fillsectorinfo
+                0x0000000000123ee1                writefile12EX2
+                0x00000000001241d1                fat_openfileEX
+                0x0000000000124279                loadfile12EX2
+                0x0000000000124665                loadfile12
+                0x0000000000124695                fat_get_eoc
+                0x00000000001246c6                fat_get_fat_type
+                0x00000000001247ec                fat_register
+ .text          0x00000000001248c6      0x8f7 iso9660.o
+                0x00000000001248c6                iso9660_loaddirectory
+                0x0000000000124960                iso9660_mountroot
+                0x0000000000124c93                iso9660_convertname
+                0x0000000000124cda                iso9660_iso_unicodetoascii
+                0x0000000000124d4d                iso9660_getbytesperblock
+                0x0000000000124d57                iso9660_openfile
+                0x0000000000124e47                iso9660_unmount
+                0x0000000000124e6d                iso9660_mountdirectory
+                0x0000000000124ed3                iso9660_isjoliet
+                0x0000000000124f29                iso9660_mount
+                0x0000000000125116                iso9660_init
+ .text          0x00000000001251bd      0x94f devfs.o
+                0x00000000001251bd                devfs_getbytesperblock
+                0x00000000001251c7                devfs_rewritefile
+                0x00000000001251cd                devfs_writefile
+                0x00000000001254a5                devfs_openfile
+                0x000000000012581a                devfs_mountroot
+                0x00000000001259ca                devfs_initnull
+                0x0000000000125a49                devfs_init
+ *fill*         0x0000000000125b0c        0x4 
+ .text          0x0000000000125b10      0x224 irqwrap.o
+                0x0000000000125b10                syscallwrapper
+                0x0000000000125b1f                CPUintwrapper
+                0x0000000000125b27                fdcwrapper
+                0x0000000000125b31                copwrapper
+                0x0000000000125b39                timerwrapper
+                0x0000000000125b53                kbdwrapper
+                0x0000000000125b6b                mousewrapper
+                0x0000000000125b89                irq1wrapper
+                0x0000000000125ba6                irq2wrapper
+                0x0000000000125bc3                irq3wrapper
+                0x0000000000125be0                irq4wrapper
+                0x0000000000125bfd                irq5wrapper
+                0x0000000000125c1a                irq6wrapper
+                0x0000000000125c37                irq7wrapper
+                0x0000000000125c54                irq8wrapper
+                0x0000000000125c71                irq9wrapper
+                0x0000000000125c8e                irq10wrapper
+                0x0000000000125cab                irq11wrapper
+                0x0000000000125cc8                irq12wrapper
+                0x0000000000125ce5                div_wrapper
+                0x0000000000125cf8                gpfwrapper
+                0x0000000000125d0b                invalidtsswrapper
+                0x0000000000125d1e                pfwrapper
+ .text          0x0000000000125d34      0x26d devmgr_error.o
+                0x0000000000125d34                get_function_name
+                0x0000000000125fa1                textEnd = .
 
-.eh_frame       0x0000000000125f94     0x613c
- .eh_frame      0x0000000000125f94     0x5674 kernel32.o
- .eh_frame      0x000000000012b608      0x120 scheduler.o
+.eh_frame       0x0000000000125fa4     0x613c
+ .eh_frame      0x0000000000125fa4     0x5674 kernel32.o
+ .eh_frame      0x000000000012b618      0x120 scheduler.o
                                         0x138 (size before relaxing)
- .eh_frame      0x000000000012b728       0xdc iomgr.o
+ .eh_frame      0x000000000012b738       0xdc iomgr.o
                                          0xf4 (size before relaxing)
- .eh_frame      0x000000000012b804      0x664 fat.o
+ .eh_frame      0x000000000012b814      0x664 fat.o
                                         0x67c (size before relaxing)
- .eh_frame      0x000000000012be68      0x160 iso9660.o
+ .eh_frame      0x000000000012be78      0x160 iso9660.o
                                         0x178 (size before relaxing)
- .eh_frame      0x000000000012bfc8       0xe8 devfs.o
+ .eh_frame      0x000000000012bfd8       0xe8 devfs.o
                                         0x100 (size before relaxing)
- .eh_frame      0x000000000012c0b0       0x20 devmgr_error.o
+ .eh_frame      0x000000000012c0c0       0x20 devmgr_error.o
                                          0x38 (size before relaxing)
 
-.iplt           0x000000000012c0d0        0x0
- .iplt          0x000000000012c0d0        0x0 startup.o
+.iplt           0x000000000012c0e0        0x0
+ .iplt          0x000000000012c0e0        0x0 startup.o
 
-.rel.dyn        0x000000000012c0d0        0x0
- .rel.iplt      0x000000000012c0d0        0x0 startup.o
- .rel.text      0x000000000012c0d0        0x0 startup.o
+.rel.dyn        0x000000000012c0e0        0x0
+ .rel.iplt      0x000000000012c0e0        0x0 startup.o
+ .rel.text      0x000000000012c0e0        0x0 startup.o
 
 .data           0x000000000012c0e0     0x5b94
  *(.data)

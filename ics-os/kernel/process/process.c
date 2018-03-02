@@ -136,12 +136,12 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    memset(temp,0,sizeof(saveregs));
    temp->regs.EIP    = (DWORD)ptr;
    //set up stack
-   temp->stackptr    = malloc(stacksize);
-   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
-   temp->stackptr    = (void*)temp->regs.ESP;
-
-   //temp->regs.ESP    = (DWORD)(stack+stacksize-4);
+   //temp->stackptr    = malloc(stacksize);
+   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
    //temp->stackptr    = (void*)temp->regs.ESP;
+
+   temp->regs.ESP    = (DWORD)(stack+stacksize-4);
+   temp->stackptr    = (void*)temp->regs.ESP;
 
    temp->regs.CR3    = (DWORD)current_process->pagedirloc;
    temp->regs.ES     = USER_DATA;
@@ -201,8 +201,13 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    //set up the initial values of the CPU registers for this process
    memset(temp,0,sizeof(saveregs));
    temp->regs.EIP    = (DWORD)ptr;
-   temp->regs.ESP    = (DWORD)(stack+stacksize-4);
+
+   temp->stackptr    = malloc(stacksize);
+   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
    temp->stackptr    = (void*)temp->regs.ESP;
+   //temp->stackptr    = stack;
+   //temp->regs.ESP    = (DWORD)(stack+stacksize-4);
+   //temp->stackptr    = (void*)temp->regs.ESP;
 
    temp->regs.CR3    = (DWORD)current_process->pagedirloc;
    temp->regs.ES     = USER_DATA;
@@ -211,27 +216,30 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.DS     = USER_DATA;
    temp->regs.FS     = USER_DATA;
    temp->regs.GS     = USER_DATA;
+   temp->regs.EFLAGS = current_process->regs.EFLAGS;
+   //temp->regs.EFLAGS = 0x200;
+
+   current_process->childwait++;
 
    temp->arrivaltime = getprecisetime(); 
    temp->stdin       = current_process->stdin;
+   temp->stdout      = current_process->stdout;
+   temp->outdev      = current_process->outdev;
 
    temp->meminfo     = current_process->meminfo;
    temp->workdir     = current_process->workdir;
-   temp->stdout      = current_process->stdout;
-   temp->outdev      = current_process->outdev;
-   
+
    temp->regs.SS0    = SYS_STACK_SEL;
-   
    //set up the initial stack pointer for system calls
    temp->stackptr0   = malloc(SYSCALL_STACK);
    temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
-   temp->regs.EFLAGS = current_process->regs.EFLAGS;
-   
+/*   
    //initialize the current FPU state
    memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
-
+*/
    /*critical section...*/
-   //sync_entercrit(&processmgr_busy);
+   sync_entercrit(&processmgr_busy);
+
    dex32_stopints(&cpuflags);
     
    //add to the process list
@@ -240,8 +248,8 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    dex32_restoreints(cpuflags);
     
    //end of critical section
-   //sync_leavecrit(&processmgr_busy);
-   
+   sync_leavecrit(&processmgr_busy);
+    
    return temp->processid;
 }
 
