@@ -26,4 +26,6 @@ env_strings *env_head = 0;       //head of the list
 
 /* function prototypes*/
 void env_showenv();
+char *env_getenv(const char *name, char *buf);
+int env_setenv(const char *name, const char *value, int replace);
 #endif

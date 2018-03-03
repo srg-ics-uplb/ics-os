@@ -1,5 +1,6 @@
 ICS-OS Commands
 ---------------
+cc- Builds a C program (invokes tcc.exe). Args: <name.exe> <name.c>
 cd- Changes working directory. Args: <directory>
 cls- Clears the screen. 
 copy- Copy source to destination: Args: <source> <destination>
