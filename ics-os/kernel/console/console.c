@@ -816,17 +816,30 @@ int console_execute(const char *str){
       demo_graphics();
    }else
    if (strcmp(u,"cc") == 0){   //-- Builds a C program (invokes tcc.exe). Args: <name.exe> <name.c>
-      char src[30],exe[30],cmdline[256];
-      char sdk_home[128];
 
+      char src[30],exe[30],cmdline[256],path[256];
+      char sdk_home[128]="";
       env_getenv("SDK_HOME",sdk_home);
-      u=strtok(0," ");
-      strcpy(exe,u);
-      u=strtok(0," ");
-      strcpy(src,u);
-      sprintf(cmdline,"/icsos/apps/tcc.exe -o%s %s -B%s %s/tccsdk.c %s/crt1.c",exe,src,sdk_home,sdk_home,sdk_home);
-      user_execp("/icsos/apps/tcc.exe",0,cmdline);
-
+      env_getenv("PATH",path);
+      if ( (strcmp(sdk_home,"")==0) || strcmp(path,"")==0 ){
+         printf("Please set the SDK_HOME and PATH environment variables first.\n");
+      }else{
+         u=strtok(0," ");
+         if (u!=0){
+            strcpy(exe,u);
+            u=strtok(0," ");
+            if (u!=0){
+               strcpy(src,u);
+               sprintf(cmdline,"%s/tcc.exe -o%s %s -B%s %s/tccsdk.c %s/crt1.c",
+                        path,exe,src,sdk_home,sdk_home,sdk_home);
+               user_execp("/icsos/apps/tcc.exe",0,cmdline);
+            }else{
+               printf("Usage: cc <name.exe> <name.c>\n");
+            }
+         }else{
+               printf("Usage: cc <name.exe> <name.c>\n");
+         }
+      }
    }else
    if (u[0] == '$'){                      //-- Sends message to a device.
       int i, devid;
@@ -848,8 +861,18 @@ int console_execute(const char *str){
 
    }else{         //treat the command as an executable
       if (u!=0){
-         if (!user_execp(u, 0, str))
-            printf("Command or executable not found.\n");
+         char path[256], tmp[256];
+         env_getenv("PATH",path);     
+         if (strcmp(path,"")==0){
+            if (!user_execp(u, 0, str)){
+               printf("Command or executable not found.\n");
+            }
+         }else{
+            sprintf(tmp,"%s/%s",path,u);
+            if (!user_execp(tmp, 0, str)){
+               printf("Command or executable not found.\n");
+            }
+         }
       }
    }
    //normal termination
