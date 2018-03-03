@@ -1371,6 +1371,10 @@ int sleep(unsigned int ms){
    return dexsdk_systemcall(0xF,(unsigned int)ms,0,0,0,0);     
 }
 
+int wait(){
+   return dexsdk_systemcall(0xC,0,0,0,0,0);     
+}
+
 /* User thread function (not yet working) */
 
 /* Creates and starts a thread. returns thread id (jach) */

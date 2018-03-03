@@ -119,9 +119,9 @@ int user_fork(){
     
    taskswitch();  
    //id = pd_dispatched(hdl);
-   //id = pd_ok(hdl);
-   while (!(id = pd_dispatched(hdl))) //wait for the process to be dispatched
-      ; 
+   id = pd_ok(hdl);
+   //while (!(id = pd_dispatched(hdl))) //wait for the process to be dispatched
+   //   ; 
 
    if (curval != current_process->processid){ //this is the child
       //If this is the child process, the processid when this function
@@ -864,7 +864,9 @@ int console_execute(const char *str){
          char path[256], tmp[256];
          env_getenv("PATH",path);     
          if (strcmp(path,"")==0){
-            if (!user_execp(u, 0, str)){
+            strcpy(path,"/icsos/apps");
+            sprintf(tmp,"%s/%s",path,u);
+            if (!user_execp(tmp, 0, str)){
                printf("Command or executable not found.\n");
             }
          }else{
