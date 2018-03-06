@@ -635,10 +635,10 @@ int console_execute(const char *str){
    if (strcmp(u,"procs") == 0 || strcmp(u,"ps") == 0){  //-- List the running processes. "ps" can also be used.
       show_process();
    }else
-   if (strcmp(u,"cls") == 0){          //-- Clears the screen. 
-      //clrscr();
-      char *stk=malloc(10240);
-      createuthread(runner,stk,10240);
+   if (strcmp(u,"cls") == 0 || strcmp(u,"clear") == 0){          //-- Clears the screen. 
+      clrscr();
+      //char *stk=malloc(10240);
+      //createuthread(runner,stk,10240);
    }else
    if (strcmp(u,"help") == 0){         //-- Displays this help screen.
       console_execute("type /icsos/icsos.hlp");
@@ -816,7 +816,6 @@ int console_execute(const char *str){
       demo_graphics();
    }else
    if (strcmp(u,"cc") == 0){   //-- Builds a C program (invokes tcc.exe). Args: <name.exe> <name.c>
-
       char src[30],exe[30],cmdline[256],path[256];
       char sdk_home[128]="";
       env_getenv("SDK_HOME",sdk_home);
