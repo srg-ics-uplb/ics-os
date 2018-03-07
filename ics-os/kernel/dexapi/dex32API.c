@@ -174,6 +174,8 @@ void api_init(){
    api_addsystemcall(0x9C,kb_ready,0,0);
    api_addsystemcall(0x9D,write_text,0,0);
    api_addsystemcall(0x9E,write_char,0,0);
+   api_addsystemcall(0x9F,env_getenv,0,0);
+   api_addsystemcall(0xA0,env_setenv,0,0);
 };
 
 

@@ -1371,13 +1371,18 @@ int sleep(unsigned int ms){
    return dexsdk_systemcall(0xF,(unsigned int)ms,0,0,0,0);     
 }
 
+int wait(){
+   return dexsdk_systemcall(0xC,0,0,0,0,0);     
+}
+
 /* User thread function (not yet working) */
 
 /* Creates and starts a thread. returns thread id (jach) */
-int thread_create(void *(f)()){
-   char *stk;
-   stk = (char *)malloc(10240);   
-   return dexsdk_systemcall(0xB,(void*)f,stk,10240,0,0);
+int thread_create(void (*f)()){
+   char *stk = (char *)malloc(10240);   
+   return dexsdk_systemcall(0xB,f,stk,10240,0,0);
 }
 
-
+char *getenv(char *name, char *buf){
+   return dexsdk_systemcall(0x9F,name,buf,0,0,0);
+}
