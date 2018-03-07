@@ -1376,13 +1376,19 @@ int wait(){
 }
 
 /* User thread function (not yet working) */
-
 /* Creates and starts a thread. returns thread id (jach) */
-int thread_create(void (*f)()){
-   char *stk = (char *)malloc(10240);   
-   return dexsdk_systemcall(0xB,f,stk,10240,0,0);
+//int thread_create(void (*f)()){
+//   char *stk = (char *)malloc(10240);   
+//   return dexsdk_systemcall(0xB,f,stk,10240,0,0);
+//}
+
+char *getenv(char *name, char *buff){
+   return dexsdk_systemcall(0x9F,(char *)name,(char *)buff,0,0,0);
 }
 
-char *getenv(char *name, char *buf){
-   return dexsdk_systemcall(0x9F,name,buf,0,0,0);
+char *setenv(char *name, char *value,int replace){
+   return dexsdk_systemcall(0xA0,(char *)name,(char *)value,(int)replace,0,0);
 }
+
+
+
