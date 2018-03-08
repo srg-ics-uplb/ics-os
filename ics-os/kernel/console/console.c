@@ -860,7 +860,7 @@ int console_execute(const char *str){
 
    }else{         //treat the command as an executable
       if (u!=0){
-         char path[256], tmp[256];
+         char path[256]="", tmp[256];
          env_getenv("PATH",path);     
          if (strcmp(path,"")==0){
             strcpy(path,"/icsos/apps");
