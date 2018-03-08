@@ -29,7 +29,8 @@
 #include "../dextypes.h"
 #include "../vfs/vfs_core.h"
 #include "../console/dex_DDL.h"
-                                
+
+//access levels used in accesslevel field of PCB                                
 #define ACCESS_SYS 0
 #define ACCESS_USER 1
 #define ACCESS_DRIVER 2
@@ -180,7 +181,7 @@ typedef struct _PCB386 {
 
    vfs_node *workdir;  //points to the vfs_node of the working directory 
 
-   DWORD accesslevel;  //the security bits for this process
+   DWORD accesslevel;  //the security bits for this process (kernel/system or user)
 
    DWORD priority;     //the process priority
 

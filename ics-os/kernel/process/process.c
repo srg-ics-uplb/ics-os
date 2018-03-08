@@ -1336,7 +1336,7 @@ void show_process(){
    textbackground(BLACK);
    printf("Processes in memory:\n\n");
    textcolor(MAGENTA);
-   printf("%-5s %-17s %-11s %-14s %6s %6s %11s\n","PID","Name","Privilege","PPID","Size","AT","CT");
+   printf("%-5s %-17s %-11s %-14s %6s %6s %11s\n","PID","Name","Access Lvl","PPID","Size","AT","CT");
    textcolor(WHITE);
     
    /*Tell the scheduler to give us an array of PCBs which contain the PCBs of the processes
@@ -1476,25 +1476,25 @@ void process_init(){
    asm volatile ("fnsave ps_kernelfpustate");
     
    //Add the first process in memory which is the process kernel
-   kernel=&sPCB;
-   memset(kernel,0,sizeof(PCB386));
-   kernel->next=kernel;
-   kernel->before=kernel;
-   kernel->processid=0;                              //process id is 0
-   kernel->meminfo=0;
-   strcpy(kernel->name,"dex_kernel");           //sPCB
-   kernel->accesslevel=ACCESS_SYS;
-   kernel->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
-   kernel->knext=knext;
-   kernel->outdev=consoleDDL;                         //the console defined in kernel32.c
-   kernel->pagedirloc=pagedir1;
+   kernel=&sPCB;                                         //get a reference to the PCB
+   memset(kernel,0,sizeof(PCB386));                      //initialize by zeroing it out
+   kernel->next=kernel;                                  //next points to itself
+   kernel->before=kernel;                                //before points to itself
+   kernel->processid=0;                                  //process id is 0
+   kernel->meminfo=0;                                    //no memory information
+   strcpy(kernel->name,"dex_kernel");                    //sPCB
+   kernel->accesslevel=ACCESS_SYS;                       //kernel mode
+   kernel->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE; //it cannot be locked and unloaded, its the kernel!
+   kernel->knext=knext;                                  //top of the heap
+   kernel->outdev=consoleDDL;                            //the console defined in kernel32.c, output of kernel goes here
+   kernel->pagedirloc=pagedir1;                          //set page directory to the first location
 
    //initialize the current FPU state
    memcpy(&kernel->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
     
-   memset(&kernel->regs,0,sizeof(saveregs));
-   kernel->regs.EIP=(DWORD)dex_init;                 //dex_init() in kernel32.c
-   kernel->regs.ESP= DISPATCHER_STACK_LOC;
+   memset(&kernel->regs,0,sizeof(saveregs));             //initialize the execution context 
+   kernel->regs.EIP=(DWORD)dex_init;                     //dex_init() in kernel32.c
+   kernel->regs.ESP= DISPATCHER_STACK_LOC;               //set the values of the registers for kernel mode process selector
    kernel->regs.CR3=pagedir1;
    kernel->regs.ES=SYS_DATA_SEL;
    kernel->regs.SS=SYS_STACK_SEL;
@@ -1505,22 +1505,23 @@ void process_init(){
    kernel->regs.ESP0= DISPATCHER_STACK_LOC;
    kernel->regs.SS0= SYS_DATA_SEL;
    kernel->regs.EFLAGS=0x200;
-   memcpy(&kernelPCB,kernel,sizeof(PCB386));
+   memcpy(&kernelPCB,kernel,sizeof(PCB386));             //create a copy of the kernel PCB
    setgdt(SYS_TSS,&kernelPCB.regs,103,0x89,0);
-   sched_phead=kernel;
 
+   sched_phead=kernel;                                   //set the head of the ready queue to the kernel                          
+
+   /*----------------------------------------------------------------------------*/
    /*Set up the PCB of the scheduler*/
    schedp=&schedpPCB;
    memset(schedp,0,sizeof(PCB386));
-    
-   schedp->processid=1;                            //process id is 1
-   strcpy(schedp->name,"scheduler");               //schedpPCB
+   schedp->processid=1;                                  //process id is 1
+   strcpy(schedp->name,"scheduler");                     //schedpPCB
    schedp->accesslevel=ACCESS_SYS;
    schedp->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
    schedp->knext=knext;
    schedp->pagedirloc=pagedir1;
    schedp->outdev = consoleDDL;
-   schedp->regs.EIP=(DWORD)taskswitcher;             //taskswitcher() defined here.
+   schedp->regs.EIP=(DWORD)taskswitcher;                 //taskswitcher() defined here.
    schedp->regs.ESP= SCHED_STACK_LOC;
    schedp->regs.ES=SYS_DATA_SEL;
    schedp->regs.SS=SYS_STACK_SEL;
@@ -1534,8 +1535,9 @@ void process_init(){
    schedp->regs.ESP0= SCHED_STACK_LOC;
    setgdt(SCHED_TSS,&(schedp->regs),103,0x89,0);
 
-   loadtsr();  //terminate and stay resident 
+   loadtsr();  //terminate and stay resident the scheduler 
 
+   //--------------------------------------------------------------------------------------
    //directly manipulate the keyboard handler PCB. uses dot(.)
    keyPCB.next=0;
    keyPCB.processid=2;
@@ -1561,6 +1563,7 @@ void process_init(){
    keyPCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
    setgdt(KEYB_TSS,&(keyPCB.regs),103,0x89,0);
 
+   //------------------------------------------------------------------------------------
    //directly manipulate the mouse handler PCB. uses dot(.)
    mousePCB.next=0;
    mousePCB.processid=3;
@@ -1586,7 +1589,7 @@ void process_init(){
    mousePCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
    setgdt(MOUSE_TSS,&(mousePCB.regs),103,0x89,0);
 
-
+   //------------------------------------------------------------------------------------
    /*set up the PCB of the pagefault handler*/
    pfPCB.next=0;
    pfPCB.processid=4;
@@ -1597,7 +1600,7 @@ void process_init(){
    pfPCB.knext=knext;
    pfPCB.pagedirloc=pagedir1;
    memset(&pfPCB.regs,0,sizeof(saveregs));
-   pfPCB.regs.EIP=(DWORD)pfwrapper;                  //define in irqwrap.asm
+   pfPCB.regs.EIP=(DWORD)pfwrapper;                            //defined in irqwrap.asm
    pfPCB.regs.ESP=0x7FFFE;
    pfPCB.regs.ES=SYS_DATA_SEL;
    pfPCB.regs.SS=SYS_STACK_SEL;
@@ -1615,6 +1618,7 @@ void process_init(){
    setgdt(USER_STACK,0,0xFFFFF,0xF2,0xCF);
    setgdt(USER_TSS,0,103,0xE9,0);
    setcallgate(DEX_SYSCALL,SYS_CODE_SEL,systemcall,0,3);
+
 
    //set up the semaphore manager
    semaphore_head=(semaphore*)malloc(sizeof(semaphore));
