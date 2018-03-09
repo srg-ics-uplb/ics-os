@@ -1,5 +1,5 @@
 /*
-t
+
   Name: DEX-OS 1.0 Beta Kernel Main file
   Copyright: 
   Author: Joseph Emmanuel Dayo
@@ -396,6 +396,7 @@ void dex_init(){
    //kb_addhotkey('\t', KBD_META_ALT, fg_toggle);
    kb_addhotkey(KEY_F12, 0xFF, fg_next); //move accross the consoles
    kb_addhotkey(KEY_F11, 0xFF, fg_prev);
+   kb_addhotkey(KEY_F2, 0xFF, console_new);
    kb_addhotkey('\t', KBD_META_ALT, fg_toggle);
     
    keyboardflush();

@@ -1323,7 +1323,7 @@ void show_process_stat(int pid){
       if (pid ==  ptr[i].processid){
          printf("=========================================================\n");
          printf("Name: %s\n", ptr[i].name);
-         printf("Parent: %d\n ", ptr[i].owner);
+         printf("Parent PID: %d\n", ptr[i].owner);
          printf("EIP=0x%s\n",itoa(ptr[i].regs.EIP,temp,16));
          printf("EAX=0x%s EBX=0x%s ECX=0x%s EDX=0x%s\n",itoa(ptr[i].regs.EAX,temp,16),
                   itoa(ptr[i].regs.EBX,temp1,16),itoa(ptr[i].regs.ECX,temp2,16),

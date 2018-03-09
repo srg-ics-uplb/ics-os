@@ -1378,15 +1378,15 @@ int wait(){
 /* Creates and starts a thread. returns thread id (jach) */
 int thread_create(void *f){
    unsigned char *stk = (unsigned char *)malloc(10240);   
-   return dexsdk_systemcall(0xB,f,stk,10240,0,0);
+   return dexsdk_systemcall(0xB,(DWORD)f,(DWORD)stk,10240,0,0);
 }
 
 char *getenv(char *name, char *buff){
-   return dexsdk_systemcall(0x9F,(char *)name,(char *)buff,0,0,0);
+   return dexsdk_systemcall(0x9F,(DWORD)name,(DWORD)buff,0,0,0);
 }
 
 char *setenv(char *name, char *value,int replace){
-   return dexsdk_systemcall(0xA0,(char *)name,(char *)value,(int)replace,0,0);
+   return dexsdk_systemcall(0xA0,(DWORD)name,(DWORD)value,(DWORD)replace,0,0);
 }
 
 
