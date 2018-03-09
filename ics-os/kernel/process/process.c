@@ -215,7 +215,7 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->pagedirloc  = (DWORD)current_process->pagedirloc;
    
 
-   //Data unique to each thread
+   //Data unique to each thread (registers and stack)
    //set up the initial values of the CPU registers for this thread.
    memset(temp,0,sizeof(saveregs));
    temp->regs.EIP    = (DWORD)ptr;                       //Set the function to be executed by this thread
@@ -241,10 +241,10 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.GS     = USER_DATA;
  
    //allocate syscall stack 
-   temp->regs.SS0    = SYS_STACK_SEL;
-   temp->stackptr0   = malloc(SYSCALL_STACK);
-   temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
-   temp->regs.EFLAGS = current_process->regs.EFLAGS;
+   //temp->regs.SS0    = SYS_STACK_SEL;
+   //temp->stackptr0   = malloc(SYSCALL_STACK);
+   //temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
+   //temp->regs.EFLAGS = current_process->regs.EFLAGS;
    
    /*Try to enter critical section...*/
    sync_entercrit(&processmgr_busy);
