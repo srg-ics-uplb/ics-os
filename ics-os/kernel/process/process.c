@@ -290,6 +290,7 @@ DWORD forkprocess(PCB386 *parent){
 #endif
 
    dex32_stopints(&flags);
+
    memcpy(pcb,parent,sizeof(PCB386));
    strcat(pcb->name,".fork");
    totalprocesses++;
