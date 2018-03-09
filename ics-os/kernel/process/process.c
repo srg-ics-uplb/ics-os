@@ -721,41 +721,42 @@ void sleep(DWORD val){
     current_process->waiting = val;
 };
 
-/*called when another process wants to kill another.
-  Also performs garbage collection (reclaims memory 
-  used by the application).*/
+/* Called when another process wants to kill another.
+ * Also performs garbage collection (reclaims memory 
+ * used by the application).
+*/
 DWORD kill_process(DWORD processid){
    PCB386 *ptr,*parentptr=0;
-   sync_entercrit(&processmgr_busy);
-   ptr = bridges_ps_findprocess(processid);
-   if (ptr!=-1){
+   sync_entercrit(&processmgr_busy);                           //Try to enter the critical section
+
+   ptr = bridges_ps_findprocess(processid);                    //obtain a handle to the PCB given id
+   if (ptr!=-1){                                               //PCB exists
       if (! (ptr->status&PS_ATTB_UNLOADABLE) ){
          PCB386 *parent;
-         kill_children(processid); //kill child processes first
+         kill_children(processid);                             //kill children processes first
 
-         if (ptr->accesslevel == ACCESS_SYS){   //a kernel thread?
-            dex32_killkthread(ptr);
+         if (ptr->accesslevel == ACCESS_SYS){                  //A kernel process/thread?
+            dex32_killkthread(ptr);                            //special handling for kernel threads
             sync_leavecrit(&processmgr_busy);
             return 1;
          };
 
-         if ( ptr->status&PS_ATTB_THREAD ){ //a thread process? If yes then redirect to another procedure
-            kill_thread(ptr);
+         if ( ptr->status&PS_ATTB_THREAD ){                    //just a thread 
+            kill_thread(ptr);                                                    
             sync_leavecrit(&processmgr_busy);
             return 1;
          };
 
-         while (closeallfiles(ptr->processid)==1)
+         while (closeallfiles(ptr->processid)==1)              //close all opened files
             ;
 
-         parent=ps_findprocess(ptr->owner);
+         //locate the parent process and decrement its waiting
+         //status...important for the dex32_wait() function
+         parent=ps_findprocess(ptr->owner);                    //parent should no longer wait for this process
          if (parent!=-1){
             parent->childwait=0;
          };
 
-
-         //locate the parent process and decrement its waiting
-         //status...important for the dex32_wait() function
 
          if (ptr->accesslevel == ACCESS_SYS)
             free(ptr->stackptr);
@@ -792,7 +793,7 @@ DWORD kill_process(DWORD processid){
 };
 
 
-//used to kill kernel threads
+//used to threads
 DWORD kill_thread(PCB386 *ptr){
    DWORD flags;
    dex32_stopints(&flags);
