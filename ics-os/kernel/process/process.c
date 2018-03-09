@@ -222,9 +222,9 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
 
    //stack 
    //Option 1: Use the passed parameter as stack
-   //temp->stackptr    = (DWORD)stack;
-   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
-   //temp->stackptr    = (void*)temp->regs.ESP;
+   temp->stackptr    = (DWORD)stack;
+   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   temp->stackptr    = (void*)temp->regs.ESP;
    
    //Option 2: Allocate stack internally
    temp->stackptr    = malloc(stacksize);
@@ -241,10 +241,10 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.GS     = USER_DATA;
  
    //allocate syscall stack 
-   //temp->regs.SS0    = SYS_STACK_SEL;
-   //temp->stackptr0   = malloc(SYSCALL_STACK);
-   //temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
-   //temp->regs.EFLAGS = current_process->regs.EFLAGS;
+   temp->regs.SS0    = SYS_STACK_SEL;
+   temp->stackptr0   = malloc(SYSCALL_STACK);
+   temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
+   temp->regs.EFLAGS = current_process->regs.EFLAGS;
    
    /*Try to enter critical section...*/
    sync_entercrit(&processmgr_busy);
@@ -256,7 +256,8 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    //end of critical section
    dex32_restoreints(cpuflags);
    sync_leavecrit(&processmgr_busy);
- 
+
+   //return the thread id 
    return temp->processid;
 }
 
