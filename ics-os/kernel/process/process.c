@@ -1184,7 +1184,7 @@ void halt(){
 };
 
 
-//Context switching
+//Context switching, dispatcher
 //switched to another process using the TSS switching method
 // 1/25/2004: Also added the capability to save the FPU registers to prevent
 //            applications that use the FPU from doing unexpected things
@@ -1198,12 +1198,12 @@ void ps_switchto(PCB386 *process){
    //switch to a user process
    if (process->accesslevel == ACCESS_USER){
       dex32_setbase(USER_TSS, process);
-      switchuserprocess();                //defined in kernel/startup/asmlib.asm
-      setattb(USER_TSS,0xE9); //run a user process
+      switchuserprocess();                            //defined in kernel/startup/asmlib.asm
+      setattb(USER_TSS,0xE9);                         //run a user process
    }else{//switch to a kernel mode process
       dex32_setbase(SYS_TSS, process);
-      switchprocess();                    //defined in kernel/startup/asmlib.asm
-      setattb(SYS_TSS,0x89); //run a kernel process
+      switchprocess();                                //defined in kernel/startup/asmlib.asm
+      setattb(SYS_TSS,0x89);                          //run a kernel process
    };
 
    //save the state of the floating point unit
@@ -1219,7 +1219,7 @@ inline void taskswitch(){
    asm volatile ("int $0x20");
 };
 
-//The taskswitcher() is basically the program that runs all the time.
+//The taskswitcher() is basically the program that runs all the time, aka cpu scheduler.
 //It is  responsible for switching to various processes and terminating them.
 void taskswitcher(){
    char temp[255];
@@ -1254,8 +1254,7 @@ void taskswitcher(){
          //set the current process to the ready process
          current_process = readyprocess;
 
-         //tell the cpu to give control to readyprocess
-         //the context switch
+         //give control to readyprocess,the context switch
          ps_switchto(readyprocess);
 
          /*Make sure the taskwitcher was really called by the timer, since
