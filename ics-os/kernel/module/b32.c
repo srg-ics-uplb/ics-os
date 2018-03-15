@@ -31,11 +31,11 @@
 #define B32_HEAPSIZE  0xFFFF
 
 typedef struct  {
-DWORD zmagic;
-DWORD entrypoint;
-DWORD symbol_table;
-DWORD image_size;
-} B32_fileheader;
+   DWORD zmagic;
+   DWORD entrypoint;
+   DWORD symbol_table;
+   DWORD image_size;
+}B32_fileheader;
 
 typedef struct  {
 char func_name[256];
@@ -130,7 +130,7 @@ int b32_loadusermodule(
                
                    entrypoint=fhdr->entrypoint;
                    ret=createprocess(entrypoint,module_name,pagedir,memptr,stackloc,
-                   0x2000,SYSCALL_STACK,signal,p,workdir,parent);
+                        0x2000,SYSCALL_STACK,signal,p,workdir,parent);
                    dex32_freeuserpagetable(pagedir1);             
                    
                dex32_restoreints(flags);

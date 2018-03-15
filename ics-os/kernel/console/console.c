@@ -101,6 +101,8 @@ int delfile(char *fname){
    return fdelete(f);
 };
 
+
+//process creation via fork callable through API
 int user_fork(){
    int curval = current_process->processid;
    int childready = 0, retval = 0;
@@ -118,10 +120,12 @@ int user_fork(){
    hdl = pd_forkmodule(current_process->processid);
     
    taskswitch();  
-   //id = pd_dispatched(hdl);
-   id = pd_ok(hdl);
-   //while (!(id = pd_dispatched(hdl))) //wait for the process to be dispatched
-   //   ; 
+
+   //id = pd_ok(hdl);
+
+   id = pd_dispatched(hdl);
+   while (!(id = pd_dispatched(hdl))) //wait for the process to be dispatched
+      ; 
 
    if (curval != current_process->processid){ //this is the child
       //If this is the child process, the processid when this function
@@ -175,11 +179,14 @@ int user_execp(char *fname, DWORD mode, char *params){
          #ifdef DEBUG-USER_PROCESS
          printf("execp(): parent waiting for child to finish\n");
          #endif
-        
+    
+         //loop until new process has been dispatched    
          while (!(id = pd_ok(hdl))) 
             ; //process already running?
          
          fg_setmykeyboard(id);
+
+
          dex32_waitpid(id,0);
 
          //dex32_wait();

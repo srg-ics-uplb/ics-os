@@ -65,7 +65,10 @@ int addmodule(char *name, char *image, char *loadaddress, int mode, char *parame
    return pd_head->handle;
 };
 
-//called by modules or applications to fork this current process  
+/*
+ * Called in user_fork() from kernel/console/console.c
+ * Creates a node that is added to pd_head for a forked process
+ */
 int pd_forkmodule(int parent){
    DWORD flags;
    createp_queue *tmp;
@@ -77,11 +80,11 @@ int pd_forkmodule(int parent){
       pd_head=(createp_queue*)malloc(sizeof(createp_queue));
       pd_head->next=0;
    }else{
-      //pd_head->next=pd_head;
-      //pd_head=(createp_queue*)malloc(sizeof(createp_queue));
-      tmp=pd_head;
+      pd_head->next=pd_head;
       pd_head=(createp_queue*)malloc(sizeof(createp_queue));
-      pd_head->next=tmp;
+      //tmp=pd_head;
+      //pd_head=(createp_queue*)malloc(sizeof(createp_queue));
+      //pd_head->next=tmp;
    };
        
    pd_head->handle = (DWORD)pd_head;
@@ -89,7 +92,7 @@ int pd_forkmodule(int parent){
    pd_head->type = FORK_MODULE;
    pd_head->dispatched = 0;
    pd_head->parent = parent;
-       
+   
    restoreflags(flags);
    return pd_head->handle;
 };

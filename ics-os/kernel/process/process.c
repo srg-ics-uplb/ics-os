@@ -312,7 +312,9 @@ DWORD forkprocess(PCB386 *parent){
 #endif
 
    disablepaging();
+
    dex32_copy_pg(pagedir,parentpd);
+
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR_VIR,(DWORD)pagedir    /*,stackbase*/,1);
 
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR2_VIR,
@@ -333,7 +335,7 @@ DWORD forkprocess(PCB386 *parent){
    //(forked processes have the same virtual memory map at time of fork)
    copyprocessmemory(parent->meminfo,&pcb->meminfo);
 
-   //add to the process list
+   //add to the ready queue
    ps_enqueue(pcb);
 
    dex32_restoreints(flags);
