@@ -139,23 +139,32 @@ int user_fork(){
    return retval;
 };
 
+
+/**
+ * Reads an executable and makes a pocess
+ */
 int user_execp(char *fname, DWORD mode, char *params){
    DWORD id,size;
    char *buf;
    vfs_stat filestat;
-   file_PCB *f = openfilex(fname, 0);
+   file_PCB *f = openfilex(fname, 0);              //Open the executable
   
-   if (f!=0){
-      fstat(f,&filestat);
-      size = filestat.st_size;
-      buf = (char*)malloc(filestat.st_size+511);
+   if (f!=0){                                      //The executable was successfully opened
+      fstat(f,&filestat);                          //Get some statistics about the executable
+      size = filestat.st_size;                     //Store the size of the executable
+      buf = (char*)malloc(filestat.st_size+511);   //Allocate memory for the executable
+      
       //tell the vfs to increase buffersize to speed up reads
       vfs_setbuffer(f, 0, filestat.st_size, FILE_IOFBF);
-      if (fread(buf, size, 1, f) == size){
+
+      if (fread(buf, size, 1, f) == size){         //A successful read of the executable
          char temp[255];
          #ifdef DEBUG_USER_PROCESS
          printf("execp(): adding module..\n");
          #endif
+
+        
+         //Calls addmodule from kernel/process/pdispatch.c 
          int hdl= addmodule(fname, buf, userspace, mode, params, showpath(temp), getprocessid());
         
          #ifdef DEBUG_USER_PROCESS
@@ -858,7 +867,7 @@ int console_execute(const char *str){
          printf("console: cannot find device.\n");
       }   
 
-   }else{         //treat the command as an executable
+   }else{         //ok it is not a command, maybe it's an executable?
       if (u!=0){
          char path[256]="", tmp[256];
          env_getenv("PATH",path);     

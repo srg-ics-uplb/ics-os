@@ -25,16 +25,19 @@
 */
 
 
-//called by modules or applications to add a process with the image of the
-//executable file as parameters
-int addmodule(char *name,char *image,char *loadaddress,int mode,char *parameter,
-                char *workdir,int parent){
-   //Make sure no one else is in its critical section
+/* called by modules or applications to add a process with the image of the
+ * executable file as parameters
+ * 
+ */
+int addmodule(char *name, char *image, char *loadaddress, int mode, char *parameter,
+                char *workdir, int parent){
+
+   //Make sure no one else is in its critical section by disabling interrupts
    DWORD flags;
    storeflags(&flags);
    stopints();
    
-   if (pd_head == 0){
+   if (pd_head == 0){                                                    
       pd_head=(createp_queue*)malloc(sizeof(createp_queue));
       pd_head->next=0;
    }
@@ -134,6 +137,7 @@ int pd_ok(int handle){
 //turning paging off and living to tell the tale. This is because its
 //stack segment is located at a 1-to-1 virtual to physical memory area. Although
 //It may not be able to use the kernel heap when it disables paging.
+// called in dex32_startup() from kernel/kernel32.c
 void process_dispatcher(){
    createp_queue *ptr;
    DWORD sender,message,data;
@@ -163,8 +167,8 @@ void process_dispatcher(){
             #endif
          }else{    //A Normal createprocess() was requested    
             pd_head->dispatched=0;
-            pd_head->processid = dex32_loader(pd_head->name,pd_head->image,pd_head->loadaddress,
-                                    pd_head->mode,pd_head->parameter,pd_head->workdir,parent);
+            pd_head->processid = dex32_loader(pd_head->name, pd_head->image, pd_head->loadaddress,
+                                    pd_head->mode, pd_head->parameter, pd_head->workdir,parent);
             pd_head->dispatched=1;
             ptr=pd_head;
          };  

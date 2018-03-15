@@ -27,6 +27,9 @@
 #define NEW_MODULE 0
 #define FORK_MODULE 1
 
+/**
+ * Process queue
+ */
 
 typedef struct _createp_queue{
    int handle;
