@@ -140,14 +140,14 @@ int pd_ok(int handle){
 //turning paging off and living to tell the tale. This is because its
 //stack segment is located at a 1-to-1 virtual to physical memory area. Although
 //It may not be able to use the kernel heap when it disables paging.
-// called in dex32_startup() from kernel/kernel32.c
+//called in dex32_startup() from kernel/kernel32.c. It is the last task of dex_init()
 void process_dispatcher(){
    createp_queue *ptr;
    DWORD sender,message,data;
    DWORD pid;
-   
+  
    while (1){
-      if (pd_head != 0){
+      if (pd_head != 0){      //while there is an entry in process dispatcher queue, pd_head
          DWORD flag,pid;
 
          PCB386 *parent = ps_findprocess(pd_head->parent);
@@ -157,8 +157,8 @@ void process_dispatcher(){
          //loadDLL works correctly
          current_process->workdir = parent->workdir;
                 
-         //A Fork process command was requested
-         if (pd_head->type == FORK_MODULE){
+         //A fork process command was requested
+         if (pd_head->type == FORK_MODULE){              //FORK_MODULE. Perform a forkprocess()
             #ifdef DEBUG_FORK
                printf("process dispatcher received fork request\n");
             #endif            
@@ -168,7 +168,7 @@ void process_dispatcher(){
             #ifdef DEBUG_FORK
                printf("fork request done.\n");
             #endif
-         }else{    //A Normal createprocess() was requested    
+         }else{                 //NEW_MODULE. Perform a createprocess(),implicitly called in module loaders     
             pd_head->dispatched=0;
             pd_head->processid = dex32_loader(pd_head->name, pd_head->image, pd_head->loadaddress,
                                     pd_head->mode, pd_head->parameter, pd_head->workdir,parent);
