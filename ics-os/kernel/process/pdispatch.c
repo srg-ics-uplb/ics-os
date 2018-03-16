@@ -37,32 +37,35 @@ int addmodule(char *name, char *image, char *loadaddress, int mode, char *parame
    storeflags(&flags);
    stopints();
    
-   if (pd_head == 0){                                                    
+   if (pd_head == 0){               //create a new head node since it does not exist                                           
       pd_head=(createp_queue*)malloc(sizeof(createp_queue));
       pd_head->next=0;
    }
-   else{
+   else{                            //add a new node to the head
       pd_head->next=pd_head;
       pd_head=(createp_queue*)malloc(sizeof(createp_queue));
    };
-   
-   pd_head->handle=(DWORD)pd_head;
-   pd_head->image=image;
 
-   pd_head->type = NEW_MODULE;
-   if (parameter!=0)
+   //At this point the new node has been created to 
+   //set the values of the fields
+   pd_head->handle=(DWORD)pd_head;  //Set the handle to the adddress, unique to node
+   pd_head->image=image;            //Set the program image
+
+   pd_head->type = NEW_MODULE;      //NEW_MODULE means PCB is not a copy of parent
+
+   if (parameter != 0)              //Set the command line arguments
       strcpy(pd_head->parameter,parameter);
        
-   pd_head->mode=mode;
-   pd_head->loadaddress = loadaddress;
-   pd_head->dispatched=0;
-   pd_head->parent=parent;
-   strcpy(pd_head->name,name);
-   strcpy(pd_head->workdir,workdir);
+   pd_head->mode=mode;              //Set the mode
+   pd_head->loadaddress = loadaddress; //Set the load address
+   pd_head->dispatched = 0;         //Set to 0 since no process for this node has been created
+   pd_head->parent = parent;        //Set the parent
+   strcpy(pd_head->name, name);     //Set the name
+   strcpy(pd_head->workdir, workdir);  //Set the working dir
        
     
-   restoreflags(flags);
-   return pd_head->handle;
+   restoreflags(flags);             //We're done adding the new node to pd_head
+   return pd_head->handle;          //return the handle
 };
 
 /*

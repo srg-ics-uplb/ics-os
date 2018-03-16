@@ -40,14 +40,13 @@ sched->exthdr.busywait = 0;
 return returnval;
 };
 
-inline PCB386 *bridges_ps_findprocess(int pid)
-{
-PCB386 *returnval;
-devmgr_scheduler_extension *sched = extension_table[CURRENT_SCHEDULER].iface;
-sched->exthdr.busywait = 1;
-returnval = sched->ps_findprocess(pid);
-sched->exthdr.busywait = 0;
-return returnval;
+inline PCB386 *bridges_ps_findprocess(int pid){
+   PCB386 *returnval;
+   devmgr_scheduler_extension *sched = extension_table[CURRENT_SCHEDULER].iface;
+   sched->exthdr.busywait = 1;
+   returnval = sched->ps_findprocess(pid);
+   sched->exthdr.busywait = 0;
+   return returnval;
 };
 
 DWORD bridges_link(devmgr_generic *dev, void **function,
