@@ -79,6 +79,8 @@ int pd_forkmodule(int parent){
    storeflags(&flags);
    stopints();
 
+
+   //Create a node
    if(pd_head==0){
       pd_head=(createp_queue*)malloc(sizeof(createp_queue));
       pd_head->next=0;
@@ -90,11 +92,11 @@ int pd_forkmodule(int parent){
       //pd_head->next=tmp;
    };
        
-   pd_head->handle = (DWORD)pd_head;
-   pd_head->image = 0;
-   pd_head->type = FORK_MODULE;
-   pd_head->dispatched = 0;
-   pd_head->parent = parent;
+   pd_head->handle      = (DWORD)pd_head;
+   pd_head->image       = 0;
+   pd_head->type        = FORK_MODULE;
+   pd_head->dispatched  = 0;
+   pd_head->parent      = parent;
    
    restoreflags(flags);
    return pd_head->handle;

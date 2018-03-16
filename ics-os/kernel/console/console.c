@@ -102,13 +102,16 @@ int delfile(char *fname){
 };
 
 
-//process creation via fork callable through API
+/*
+ * Forks a new process
+ */
 int user_fork(){
    int curval = current_process->processid;
    int childready = 0, retval = 0;
    int hdl;
    int id;
    DWORD flags;
+
    #ifdef DEBUG_FORK
    printf("user_fork called\n");
    #endif
@@ -180,13 +183,13 @@ int user_execp(char *fname, DWORD mode, char *params){
          printf("execp(): parent waiting for child to finish\n");
          #endif
     
-         //loop until new process has been dispatched    
+         //loop until the new process has been dispatched    
          while (!(id = pd_ok(hdl))) 
-            ; //process already running?
+            ;
          
          fg_setmykeyboard(id);
 
-
+         //wait for the child process to finish
          dex32_waitpid(id,0);
 
          //dex32_wait();
