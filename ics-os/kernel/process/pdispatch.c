@@ -109,29 +109,34 @@ int pd_dispatched(int handle){
       ;
    
    pd_busy = 1;  
-   if (ptr->dispatched){
+   if (ptr->dispatched){      //Is the process for this node has dispatched
       if (ptr->processid == 0) 
-         retval=-1; /*pid of 0? Error loading executable?(only the kernel has a pid of 0) */
+         retval = -1; /*pid of 0? Error loading executable?(only the kernel has a pid of 0) */
       else
-         retval=ptr->processid;
+         retval=ptr->processid;  //Return the process id of the process that was created for this node
    };
      
    pd_busy = 0;
    return retval;
 };
 
-//Determines if a process has already been dispatched, and frees up 
-//memory used by the createp_queue data structure
+/**
+ *Check to see if a process for a node identified 
+ *by handle has been dispatched. Frees the node if yes.
+ * 
+ */
 int pd_ok(int handle){
    createp_queue *ptr=(createp_queue*)handle;
+
    int retval = pd_dispatched(handle);
  
    while (pd_busy)
       ;
    
    pd_busy = 1;
-   if (retval!=0 && retval !=-1) 
-      free(ptr);
+
+   if (retval !=0 && retval != -1)  //Ok a process has been created 
+      free(ptr);                    //deallocate the space for the node,
   
    pd_busy = 0;   
    return retval;
@@ -153,37 +158,42 @@ void process_dispatcher(){
       if (pd_head != 0){      //while there is an entry in process dispatcher queue, pd_head
          DWORD flag,pid;
 
-         PCB386 *parent = ps_findprocess(pd_head->parent);
+         PCB386 *parent = ps_findprocess(pd_head->parent);     //find the parent process
                 
          //use the working directory of the requesting process
          //so that file operations used by the module loader like
          //loadDLL works correctly
          current_process->workdir = parent->workdir;
                 
-         //A fork process command was requested
-         if (pd_head->type == FORK_MODULE){              //FORK_MODULE. Perform a forkprocess()
+         //Check the type of the node which determines how the process will be created.
+         if (pd_head->type == FORK_MODULE){        //a FORK_MODULE. Perform a forkprocess()
             #ifdef DEBUG_FORK
                printf("process dispatcher received fork request\n");
             #endif            
-            pd_head->dispatched=0;
+
+            pd_head->dispatched=0;  //not yet dispatched
             pd_head->processid = forkprocess(parent);
-            pd_head->dispatched=1;                  
+            pd_head->dispatched=1;  //ok a process has been created                  
+
             #ifdef DEBUG_FORK
                printf("fork request done.\n");
             #endif
-         }else{                 //NEW_MODULE. Perform a createprocess(),implicitly called in module loaders     
-            pd_head->dispatched=0;
+         }else{               //a NEW_MODULE. Perform a createprocess(),implicitly called in module loaders     
+
+            pd_head->dispatched=0;  //not yet dispatched
             pd_head->processid = dex32_loader(pd_head->name, pd_head->image, pd_head->loadaddress,
-                                    pd_head->mode, pd_head->parameter, pd_head->workdir,parent);
-            pd_head->dispatched=1;
+                                    pd_head->mode, pd_head->parameter, pd_head->workdir, parent);
+            pd_head->dispatched=1;  //ok a process has been created
+
             ptr=pd_head;
          };  
                  
          pd_head=pd_head->next;
                 
       };
-                
-      if (getmessage(&sender,&message,&data)!=0){
+
+      //check for a shutdown message
+      if (getmessage(&sender, &message, &data)!=0){
          if (message == MES_SHUTDOWN){
             int total = 0, i;
             PCB386 *ptr;        
@@ -191,7 +201,7 @@ void process_dispatcher(){
                              
             printf("Sending all processes the SHUTDOWN MESSAGE..\n");
             forceflush = 1;
-            broadcastmessage(0,MES_SHUTDOWN,0);
+            broadcastmessage(0, MES_SHUTDOWN,0);
             total = get_processlist(&ptr);
             printf("Killing all processes\n");
             for (i=0; i < total; i++)

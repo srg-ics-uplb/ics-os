@@ -1363,7 +1363,7 @@ int exec(char *fname,unsigned short  mode, char *params){
 }
 
 int execp(char *fname,unsigned short mode, char *params){
-   return dexsdk_systemcall(0x5B,(int)fname,mode,(int)params,0,0);     
+   return dexsdk_systemcall(0x5B,(int)fname, mode,(int)params,0,0);     
 }
 
 void sleep(unsigned int ms){
