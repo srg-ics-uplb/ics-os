@@ -25,6 +25,33 @@
 
 #include "process.h"
 
+/*
+int lock_var = 0; // actual lock global variable used to provide synchronization
+int value; // variable contain lock value merely to explain current state
+
+void mutex_lock()
+{
+    __asm  // Inline assembly is written this way in c
+    {
+        mov eax, 1   // EAX is a 32 bit register in which we are assigning 1
+        xchg eax, lock_var // Exchange eax and lock_var atomically
+        mov value, eax // merely saving for printing purpose
+    }
+}
+
+void mutex_unlock()
+{
+    __asm
+    {
+        mov eax, 0
+        xchg eax, lock_var  // This could have been a single assignment lock_var = 0
+        mov value, eax // But we are merely using xchg again to see the previous value
+    }
+}
+
+*/
+
+
 //the global list of semaphores
 semaphore *semaphore_head;
 
@@ -1220,8 +1247,9 @@ inline void taskswitch(){
    asm volatile ("int $0x20");
 };
 
-//The taskswitcher() is basically the program that runs all the time, aka cpu scheduler.
-//It is  responsible for switching to various processes and terminating them.
+//The taskswitcher() is basically the program that runs all the time, aka CPU scheduler.
+//It selects the process to execute on the CPU. The selection of the 
+//next process to run is delegated to an scheduler extension.
 void taskswitcher(){
    char temp[255];
    DWORD cputime=0;
@@ -1243,10 +1271,10 @@ void taskswitcher(){
             //obtain next job from the scheduler
             //readyprocess=extension_current->ps_scheduler->scheduler(&kernelPCB);
 
-            //get handle to the current scheduler
+            //get handle to the current scheduler extension
             devmgr_scheduler_extension *cursched = (devmgr_scheduler_extension*)extension_table[CURRENT_SCHEDULER].iface;
 
-            //get the ready process
+            //get the ready process returned by the scheduler extension
             readyprocess = (PCB386*)bridges_link((devmgr_generic*)cursched, &cursched->scheduler,
                                                    current_process,0,0,0,0,0);
          };
@@ -1255,7 +1283,7 @@ void taskswitcher(){
          //set the current process to the ready process
          current_process = readyprocess;
 
-         //give control to readyprocess,the context switch
+         //give control to readyprocess, the context switch
          ps_switchto(readyprocess);
 
          /*Make sure the taskwitcher was really called by the timer, since
@@ -1274,14 +1302,15 @@ void taskswitcher(){
          readyprocess->totalcputime++;
             
          //A process wants to get immediate control, usually set by
-         //device drivers that are hooked to IRQs
+         //device drivers that are hooked to IRQs or high priority process
+         //The pid of the high priority process is sigpriority 
          if (sigpriority){
             PCB386 *priorityprocess = ps_findprocess(sigpriority);
             if (priorityprocess!=-1){
-               //give the process to the CPU       
+               //give the high priotiry process to the CPU       
                ps_switchto(priorityprocess);       
             };
-            sigpriority = 0;
+            sigpriority = 0;     //reset the variable
          };
       }while(sigwait);
 
@@ -1295,11 +1324,12 @@ void taskswitcher(){
       };
 
       //do clean up for terminate process
+      //a request to terminate a process is received, pid of process to end is the value of sigterm
       if (sigterm && !flushing){
          flushok = 0;
          kill_process(sigterm);
          flushok = 1;
-         sigterm = 0;
+         sigterm = 0;      //reset the variable
       };
 
       if (sched_sysmes[0]){
@@ -1307,6 +1337,7 @@ void taskswitcher(){
          sched_sysmes[0]=0;
       };
 
+      //Shutdown sequence initiated
       if (sigshutdown){
          broadcastmessage(1, SIG_KILL, 0);
       };

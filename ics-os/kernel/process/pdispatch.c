@@ -80,7 +80,7 @@ int pd_forkmodule(int parent){
    stopints();
 
 
-   //Create a node
+   //Create a createp_queue node for the child
    if(pd_head==0){
       pd_head=(createp_queue*)malloc(sizeof(createp_queue));
       pd_head->next=0;
@@ -93,8 +93,8 @@ int pd_forkmodule(int parent){
    };
        
    pd_head->handle      = (DWORD)pd_head;
-   pd_head->image       = 0;                    //no image since fork
    pd_head->type        = FORK_MODULE;          //FORK_MODULE means create a copy of parent PCB
+   pd_head->image       = 0;                    //no image since fork module
    pd_head->dispatched  = 0;                    //No process has been dispatched yet for this node
    pd_head->parent      = parent;               //Set the parent
    
@@ -113,6 +113,7 @@ int pd_dispatched(int handle){
    
    //we're in the critcal section
    pd_busy = 1;  
+
    if (ptr->dispatched){      //Is the process for this node has dispatched
       if (ptr->processid == 0) 
          retval = -1; /*pid of 0? Error loading executable?(only the kernel has a pid of 0) */
@@ -145,9 +146,10 @@ int pd_ok(int handle){
    //we're in the critical section
    pd_busy = 1;
 
-   if (retval !=0 && retval != -1)  //Ok a process has been created for the node  
+   if (retval !=0 && retval != -1)  //Ok a process has been dispatched for the node  
       free(ptr);                    //deallocate the space for the node
-  
+ 
+   //we're out of the critical section 
    pd_busy = 0;   
 
    return retval;

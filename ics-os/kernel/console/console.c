@@ -120,15 +120,18 @@ int user_fork(){
    storeflags(&flags);
    startints();
    
+   //Calls pd_forkmodule() from kernel/process/pdispatch.c 
    hdl = pd_forkmodule(current_process->processid);
-    
+
+   //inform the CPU scheduler, hopefully to schedule process_dispatcher() 
    taskswitch();  
 
-   //id = pd_ok(hdl);
-
+   //id = pd_ok(hdl); 
    id = pd_dispatched(hdl);
-   while (!(id = pd_dispatched(hdl))) //wait for the process to be dispatched
+   while (!(id = pd_dispatched(hdl))){ //wait for the process to be dispatched before returning
+      //taskswitch(); //try to wakeup process_dispatcher() 
       ; 
+   }
 
    if (curval != current_process->processid){ //this is the child
       //If this is the child process, the processid when this function
@@ -138,7 +141,7 @@ int user_fork(){
    };
       
    if (curval == current_process->processid){ // this is the parent
-      pd_ok(hdl);
+      pd_ok(hdl);          //free the createp_queue node used by the child
       retval = id;
    };
       
@@ -148,7 +151,7 @@ int user_fork(){
 
 
 /**
- * Reads an executable and makes a pocess
+ * Function that reads an executable and creates a new process for it.
  */
 int user_execp(char *fname, DWORD mode, char *params){
    DWORD id,size;
@@ -171,14 +174,15 @@ int user_execp(char *fname, DWORD mode, char *params){
          #endif
 
         
-         //Calls addmodule from kernel/process/pdispatch.c 
+         //Calls addmodule() from kernel/process/pdispatch.c 
          int hdl= addmodule(fname, buf, userspace, mode, params, showpath(temp), getprocessid());
         
          #ifdef DEBUG_USER_PROCESS
          printf("execp(): done.\n");
          #endif
 
-         taskswitch();
+         taskswitch();     //inform the CPU scheduler, hopefully to schedule process_dispatcher()
+
          #ifdef DEBUG-USER_PROCESS
          printf("execp(): parent waiting for child to finish\n");
          #endif
