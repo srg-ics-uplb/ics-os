@@ -281,28 +281,27 @@ DWORD ps_dequeue(PCB386 *process){
 //duplicates a process using COPY_ON_WRITE methods *NOT YET WORKING!!*
 DWORD forkprocess(PCB386 *parent){
    int pages;
-   DWORD *pagedir,pg,flags;
+   DWORD *pagedir,*pg,flags;
    DWORD parentpd = parent->pagedirloc;
-   PCB386 *pcb = (PCB386*) malloc(sizeof(PCB386));
+   PCB386 *pcb;
     
 #ifdef DEBUG_FORK
    printf("fork process has been called.\n");
 #endif
 
-   dex32_stopints(&flags);
-
-   memcpy(pcb,parent,sizeof(PCB386));
-   strcat(pcb->name,".fork");
-   totalprocesses++;
-   pcb->size       = sizeof(PCB386);
-   pcb->processid  = nextprocessid++;
-   pcb->owner      = parent->processid;
+   pcb = (PCB386*) malloc(sizeof(PCB386));//Allocate space for PCB
+   dex32_stopints(&flags);                //disable interrupts
+   memcpy(pcb,parent,sizeof(PCB386));     //Initialize the new process by copying the parent process' PCB
+   strcat(pcb->name,".fork");             //Add a 'fork' suffix to indicate that it was created by fork
+   totalprocesses++;                      //Increase the total number of processes in the system
+   pcb->size       = sizeof(PCB386);      //Save the size of the PCB
+   pcb->processid  = nextprocessid++;     //Set the process if of the new process
+   pcb->owner      = parent->processid;   //Set the parent to the process id of the parent
 
    /*Allocate a new page directory*/
    pagedir=(DWORD*)mempop(); //obtain a physical address from the memory manager
    pg=(DWORD*)getvirtaddress((DWORD)pagedir); //convert physical address to a virtual address
-   //initialize the new pagedirectory
-   memset(pg,0,0x1000);
+   memset(pg,0,0x1000); //initialize the new page directory
 
    pcb->regs.CR3   = pagedir;
    pcb->pagedirloc = pagedir;
@@ -378,7 +377,7 @@ DWORD createprocess(
    strcpy(temp->name,name);                           //set the name of the process
    totalprocesses++;                                  //increase the total number of processes in the system
    temp->size         = sizeof(PCB386);               //set the size to the size of the PCB
-   temp->processid    = nextprocessid++;              //set the process of this process
+   temp->processid    = nextprocessid++;              //set the process id of this process
    temp->accesslevel  = ACCESS_USER;                  //Indicates that the process is a USER process
    temp->meminfo      = pmem;                         //set the memory information
    temp->owner        = parent->processid;            //set the parent id
