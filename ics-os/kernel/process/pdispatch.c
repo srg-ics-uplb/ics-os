@@ -103,32 +103,33 @@ int pd_forkmodule(int parent){
 };
 
 //Determines if a process has already been dispatched for a given createp_queue node.
+//returns the process id of the process created
 int pd_dispatched(int handle){
    createp_queue *ptr=(createp_queue*)handle;
    int retval=0;
  
-   //attempt to access the queue 
+   //make sure no other process is accessing the pd_head 
    while (pd_busy)
       ;
    
-   //we're in the critcal section
+   //we're in the critical section, block other process from accessing pd_head
    pd_busy = 1;  
 
-   if (ptr->dispatched){      //Is the process for this node has dispatched
+   if (ptr->dispatched){      //Is the process for this node has been dispatched
       if (ptr->processid == 0) 
          retval = -1; /*pid of 0? Error loading executable?(only the kernel has a pid of 0) */
       else
          retval=ptr->processid;  //Return the process id of the process that was created for this node
    };
    
-   //give chance to others to access the queue  
+   //give chance to others to access the pd_head 
    pd_busy = 0;
    return retval;
 };
 
 /**
- *Check to see if a process for a node identified 
- *by handle has been dispatched. Frees the node if yes.
+ *Check to see if a process for a node, identified 
+ *by handle, has been dispatched. Frees the node if yes.
  *Calls pd_dispatched()
  */
 int pd_ok(int handle){
@@ -139,17 +140,17 @@ int pd_ok(int handle){
    //Has the process been dispatched for the node?
    int retval = pd_dispatched(handle);
 
-   //attempt to use the queue
+   //make sure no other process is accessing the pd_head 
    while (pd_busy)
       ;
    
-   //we're in the critical section
+   //we're in the critical section, block other process from accessing pd_head
    pd_busy = 1;
 
    if (retval !=0 && retval != -1)  //Ok a process has been dispatched for the node  
-      free(ptr);                    //deallocate the space for the node
+      free(ptr);                    //deallocate the space for the node in the queue
  
-   //we're out of the critical section 
+   //give chance to others to access the pd_head 
    pd_busy = 0;   
 
    return retval;

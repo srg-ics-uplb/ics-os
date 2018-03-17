@@ -308,7 +308,7 @@ DWORD ps_dequeue(PCB386 *process){
 //duplicates a process using COPY_ON_WRITE methods *NOT YET WORKING!!*
 DWORD forkprocess(PCB386 *parent){
    int pages;
-   DWORD *pagedir,*pg,flags;
+   DWORD *pagedir,pg,flags;
    DWORD parentpd = parent->pagedirloc;
    PCB386 *pcb;
     

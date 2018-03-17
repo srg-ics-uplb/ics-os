@@ -107,6 +107,7 @@ int delfile(char *fname){
  */
 int user_fork(){
    int curval = current_process->processid;
+
    int childready = 0, retval = 0;
    int hdl;
    int id;
@@ -129,7 +130,7 @@ int user_fork(){
    //id = pd_ok(hdl); 
    id = pd_dispatched(hdl);
    while (!(id = pd_dispatched(hdl))){ //wait for the process to be dispatched before returning
-      //taskswitch(); //try to wakeup process_dispatcher() 
+      taskswitch(); //try to wakeup process_dispatcher() 
       ; 
    }
 
@@ -689,7 +690,7 @@ int console_execute(const char *str){
          printf("mount successful.\n");  
          //fat12_mount_root(root,floppy_deviceid);
    }else
-   if (strcmp(u,"path") == 0){         //-- Shows the current working directory.
+   if (strcmp(u,"pwd") == 0){         //-- Shows the current working directory.
       char temp[255];
       printf("%s\n",showpath(temp));
    }else

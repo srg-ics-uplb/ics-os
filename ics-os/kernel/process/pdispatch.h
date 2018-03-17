@@ -54,7 +54,8 @@ typedef struct _createp_queue{
 createp_queue *pd_head=0;              //The head of the process dispatcher queue which is global
 DWORD pd_handlecounter=0;
 
-int pd_busy=0,pd_ready=0;              //flags
+int pd_busy = 0;                       //lock to access pd_head 
+int pd_ready =0;                       
 
 int addmodule(char *name,char *image,char *loadaddress,int mode,char *parameter,char *workdir,int parent);
 int pd_forkmodule(int parent);

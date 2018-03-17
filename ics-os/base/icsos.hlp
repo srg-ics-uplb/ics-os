@@ -28,11 +28,11 @@ mount- Mounts a device. Args: fat/cdfs <partition/device> <mount point>
 mouse-  Activate the mouse
 newconsole- Creates a new console.  
 off- Power off the machine.
-path- Shows the current working directory.
 pause- Waits for a key press
 pcut- Creates a path alias. Args: <alias:> [path]
 procinfo- Show process information. Args: <pid>
 procs- List the running processes. "ps" can also be used.
+pwd- Shows the current working directory.
 rempcut- Removes a path alias. Args: <alias:>
 ren- Renames a file. Args: <oldname> <newname>
 rmdir- Removes a directory and all its subdirectories. Args: <dirname>
