@@ -93,23 +93,25 @@ int pd_forkmodule(int parent){
    };
        
    pd_head->handle      = (DWORD)pd_head;
-   pd_head->image       = 0;
-   pd_head->type        = FORK_MODULE;
-   pd_head->dispatched  = 0;
-   pd_head->parent      = parent;
+   pd_head->image       = 0;                    //no image since fork
+   pd_head->type        = FORK_MODULE;          //FORK_MODULE means create a copy of parent PCB
+   pd_head->dispatched  = 0;                    //No process has been dispatched yet for this node
+   pd_head->parent      = parent;               //Set the parent
    
-   restoreflags(flags);
+   restoreflags(flags);                         //restore the flags
    return pd_head->handle;
 };
 
-//Determines if a process has already been dispatched.
+//Determines if a process has already been dispatched for a given createp_queue node.
 int pd_dispatched(int handle){
    createp_queue *ptr=(createp_queue*)handle;
    int retval=0;
-  
+ 
+   //attempt to access the queue 
    while (pd_busy)
       ;
    
+   //we're in the critcal section
    pd_busy = 1;  
    if (ptr->dispatched){      //Is the process for this node has dispatched
       if (ptr->processid == 0) 
@@ -117,7 +119,8 @@ int pd_dispatched(int handle){
       else
          retval=ptr->processid;  //Return the process id of the process that was created for this node
    };
-     
+   
+   //give chance to others to access the queue  
    pd_busy = 0;
    return retval;
 };
@@ -125,22 +128,28 @@ int pd_dispatched(int handle){
 /**
  *Check to see if a process for a node identified 
  *by handle has been dispatched. Frees the node if yes.
- * 
+ *Calls pd_dispatched()
  */
 int pd_ok(int handle){
+
+   //get a pointer to the node
    createp_queue *ptr=(createp_queue*)handle;
 
+   //Has the process been dispatched for the node?
    int retval = pd_dispatched(handle);
- 
+
+   //attempt to use the queue
    while (pd_busy)
       ;
    
+   //we're in the critical section
    pd_busy = 1;
 
-   if (retval !=0 && retval != -1)  //Ok a process has been created 
-      free(ptr);                    //deallocate the space for the node,
+   if (retval !=0 && retval != -1)  //Ok a process has been created for the node  
+      free(ptr);                    //deallocate the space for the node
   
    pd_busy = 0;   
+
    return retval;
 };
 
