@@ -1354,28 +1354,40 @@ int fork(){
    return dexsdk_systemcall(0x90,0,0,0,0,0);   
 }
 
+int getpid(){
+   return dexsdk_systemcall(0x2,0,0,0,0,0);
+};
+
 int exec(char *fname,unsigned short  mode, char *params){
    return dexsdk_systemcall(0x5C,(int)fname,mode,(int)params,0,0);     
 }
 
 int execp(char *fname,unsigned short mode, char *params){
-   return dexsdk_systemcall(0x5B,(int)fname,mode,(int)params,0,0);     
+   return dexsdk_systemcall(0x5B,(int)fname, mode,(int)params,0,0);     
 }
 
-//not working yet
-int sleep(unsigned int ms){
-   return dexsdk_systemcall(0xF,(unsigned int)ms,0,0,0,0);     
+void sleep(unsigned int ms){
+    dexsdk_systemcall(0x9B,ms,0,0,0,0);
+}
+
+int wait(){
+   return dexsdk_systemcall(0xC,0,0,0,0,0);     
 }
 
 /* User thread function (not yet working) */
-
 /* Creates and starts a thread. returns thread id (jach) */
 int thread_create(void *f){
-    unsigned char *stack;
-
-    stack=(unsigned char *)malloc(1000000);
-
-    return dexsdk_systemcall(0xB,&f,stack,100000,0,0);
+   unsigned char *stk = (unsigned char *)malloc(10240);   
+   return dexsdk_systemcall(0xB,(int)f,(int)stk,10240,0,0);
 }
+
+char *getenv(char *name, char *buff){
+   return dexsdk_systemcall(0x9F,(int)name,(int)buff,0,0,0);
+}
+
+char *setenv(char *name, char *value,int replace){
+   return dexsdk_systemcall(0xA0,(int)name,(int)value,(int)replace,0,0);
+}
+
 
 

@@ -26,6 +26,16 @@
 */
 
 #include "console.h"
+
+void runner(){
+   int i=0;
+   while(1){
+      i++;
+      i--;
+   }
+   //printf("Hello user thread!\n");
+}
+
   
 /*A console mode get string function terminates
 upon receving \r */
@@ -91,12 +101,18 @@ int delfile(char *fname){
    return fdelete(f);
 };
 
+
+/*
+ * Forks a new process
+ */
 int user_fork(){
    int curval = current_process->processid;
+
    int childready = 0, retval = 0;
    int hdl;
    int id;
    DWORD flags;
+
    #ifdef DEBUG_FORK
    printf("user_fork called\n");
    #endif
@@ -105,21 +121,28 @@ int user_fork(){
    storeflags(&flags);
    startints();
    
+   //Calls pd_forkmodule() from kernel/process/pdispatch.c 
    hdl = pd_forkmodule(current_process->processid);
-    
+
+   //inform the CPU scheduler, hopefully to schedule process_dispatcher() 
    taskswitch();  
+
+   //id = pd_ok(hdl); 
    id = pd_dispatched(hdl);
-    //while (!(id=pd_dispatched(hdl)))
-    //  ;
-    
+   while (!(id = pd_dispatched(hdl))){ //wait for the process to be dispatched before returning
+      taskswitch(); //try to wakeup process_dispatcher() 
+      ; 
+   }
+
    if (curval != current_process->processid){ //this is the child
       //If this is the child process, the processid when this function
       //was called is not equal to the current processid.
+      //pd_ok(hdl);
       retval = 0;
    };
       
    if (curval == current_process->processid){ // this is the parent
-      pd_ok(hdl);
+      pd_ok(hdl);          //free the createp_queue node used by the child
       retval = id;
    };
       
@@ -127,38 +150,51 @@ int user_fork(){
    return retval;
 };
 
+
+/**
+ * Function that reads an executable and creates a new process for it.
+ */
 int user_execp(char *fname, DWORD mode, char *params){
    DWORD id,size;
    char *buf;
    vfs_stat filestat;
-   file_PCB *f = openfilex(fname, 0);
+   file_PCB *f = openfilex(fname, 0);              //Open the executable
   
-   if (f!=0){
-      fstat(f,&filestat);
-      size = filestat.st_size;
-      buf = (char*)malloc(filestat.st_size+511);
+   if (f!=0){                                      //The executable was successfully opened
+      fstat(f,&filestat);                          //Get some statistics about the executable
+      size = filestat.st_size;                     //Store the size of the executable
+      buf = (char*)malloc(filestat.st_size+511);   //Allocate memory for the executable
+      
       //tell the vfs to increase buffersize to speed up reads
       vfs_setbuffer(f, 0, filestat.st_size, FILE_IOFBF);
-      if (fread(buf, size, 1, f) == size){
+
+      if (fread(buf, size, 1, f) == size){         //A successful read of the executable
          char temp[255];
          #ifdef DEBUG_USER_PROCESS
          printf("execp(): adding module..\n");
          #endif
+
+        
+         //Calls addmodule() from kernel/process/pdispatch.c 
          int hdl= addmodule(fname, buf, userspace, mode, params, showpath(temp), getprocessid());
         
          #ifdef DEBUG_USER_PROCESS
          printf("execp(): done.\n");
          #endif
 
-         taskswitch();
+         taskswitch();     //inform the CPU scheduler, hopefully to schedule process_dispatcher()
+
          #ifdef DEBUG-USER_PROCESS
          printf("execp(): parent waiting for child to finish\n");
          #endif
-        
+    
+         //loop until the new process has been dispatched    
          while (!(id = pd_ok(hdl))) 
-            ; //process already running?
+            ;
          
          fg_setmykeyboard(id);
+
+         //wait for the child process to finish
          dex32_waitpid(id,0);
 
          //dex32_wait();
@@ -623,8 +659,10 @@ int console_execute(const char *str){
    if (strcmp(u,"procs") == 0 || strcmp(u,"ps") == 0){  //-- List the running processes. "ps" can also be used.
       show_process();
    }else
-   if (strcmp(u,"cls") == 0){          //-- Clears the screen. 
+   if (strcmp(u,"cls") == 0 || strcmp(u,"clear") == 0){          //-- Clears the screen. 
       clrscr();
+      //char *stk=malloc(10240);
+      //createuthread(runner,stk,10240);
    }else
    if (strcmp(u,"help") == 0){         //-- Displays this help screen.
       console_execute("type /icsos/icsos.hlp");
@@ -652,7 +690,7 @@ int console_execute(const char *str){
          printf("mount successful.\n");  
          //fat12_mount_root(root,floppy_deviceid);
    }else
-   if (strcmp(u,"path") == 0){         //-- Shows the current working directory.
+   if (strcmp(u,"pwd") == 0){         //-- Shows the current working directory.
       char temp[255];
       printf("%s\n",showpath(temp));
    }else
@@ -801,6 +839,31 @@ int console_execute(const char *str){
    if (strcmp(u,"demo_graphics") == 0){   //-- Runs the graphics demonstration.
       demo_graphics();
    }else
+   if (strcmp(u,"cc") == 0){   //-- Builds a C program (invokes tcc.exe). Args: <name.exe> <name.c>
+      char src[30],exe[30],cmdline[256],path[256];
+      char sdk_home[128]="";
+      env_getenv("SDK_HOME",sdk_home);
+      env_getenv("PATH",path);
+      if ( (strcmp(sdk_home,"")==0) || strcmp(path,"")==0 ){
+         printf("Please set the SDK_HOME and PATH environment variables first.\n");
+      }else{
+         u=strtok(0," ");
+         if (u!=0){
+            strcpy(exe,u);
+            u=strtok(0," ");
+            if (u!=0){
+               strcpy(src,u);
+               sprintf(cmdline,"%s/tcc.exe -o%s %s -B%s %s/tccsdk.c %s/crt1.c",
+                        path,exe,src,sdk_home,sdk_home,sdk_home);
+               user_execp("/icsos/apps/tcc.exe",0,cmdline);
+            }else{
+               printf("Usage: cc <name.exe> <name.c>\n");
+            }
+         }else{
+               printf("Usage: cc <name.exe> <name.c>\n");
+         }
+      }
+   }else
    if (u[0] == '$'){                      //-- Sends message to a device.
       int i, devid;
       char devicename[255],*cmd;
@@ -819,10 +882,22 @@ int console_execute(const char *str){
          printf("console: cannot find device.\n");
       }   
 
-   }else{         //treat the command as an executable
+   }else{         //ok it is not a command, maybe it's an executable?
       if (u!=0){
-         if (!user_execp(u, 0, str))
-            printf("Undefined console command.\n");
+         char path[256]="", tmp[256];
+         env_getenv("PATH",path);     
+         if (strcmp(path,"")==0){
+            strcpy(path,"/icsos/apps");
+            sprintf(tmp,"%s/%s",path,u);
+            if (!user_execp(tmp, 0, str)){
+               printf("Command or executable not found.\n");
+            }
+         }else{
+            sprintf(tmp,"%s/%s",path,u);
+            if (!user_execp(tmp, 0, str)){
+               printf("Command or executable not found.\n");
+            }
+         }
       }
    }
    //normal termination
@@ -832,7 +907,7 @@ int console_execute(const char *str){
 int console_new(){
    //create a new console         
    char consolename[255];
-   sprintf(consolename,"dex32_console(%d)", console_first);    
+   sprintf(consolename,"console(%d)", console_first);    
    return createkthread((void*)console, consolename, 200000);
 };
 

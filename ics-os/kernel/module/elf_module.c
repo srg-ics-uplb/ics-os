@@ -326,14 +326,14 @@ int elf_loadmodule(char *module_name,char *elf_image,
         printf("number of program headers:[%d]\n",totalheaders);
 
   
-      //pagedir=pagedir1; //allocate space for the pagedirectory
+       //pagedir=pagedir1; //allocate space for the pagedirectory
        if (mode == ELF_USERSO || mode == ELF_SYSSO || elfheader->e_type == ET_DYN)
        {
           pagedir = pagedir1;
        }
-          else
+       else
        {  
-       //Allocate a new page directory and initialize it.
+          //Allocate a new page directory and initialize it.
           pagedir=(DWORD*)mempop();
           pg=(DWORD*)getvirtaddress((DWORD)pagedir);
           memset(pg,0,0x1000);

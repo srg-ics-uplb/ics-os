@@ -31,6 +31,8 @@ global reset_gdtr
 section .text
 
 [BITS 32]
+;
+;
 startup:   
 ;jmp not_multiboot
 jmp multiboot

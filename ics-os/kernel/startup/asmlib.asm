@@ -35,7 +35,30 @@ extern tlb_address
 extern pcibiosentry
 extern pcibios
 
+
+global lock_var
+lock_var dw 0
+
+global lock_val
+lock_val dw 0
+
+
+
 SECTION .text
+
+global mutex_lock
+mutex_lock:
+   mov eax, 1
+   xchg eax, [lock_var]
+   mov [lock_val], eax
+   ret
+
+global mutex_unlock
+mutex_unlock:
+   mov eax, 0
+   xchg eax, [lock_var]
+   mov [lock_val], eax
+   ret 
 
 ;int pci_finddevice(WORD deviceid,WORD vendorid, WORD index,char ;*busnumber, WORD *devnumber)
 
@@ -1077,4 +1100,4 @@ APM_CS32        equ 0xC0
 APM_DS          equ 0xC8
 APM_CS16        equ 0xD0
 KEYB_TSS        equ 0xD8
-MOUSE_TSS	equ 0xE0
+MOUSE_TSS	    equ 0xE0

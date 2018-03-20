@@ -131,44 +131,38 @@ void exc_showdump(DWORD location,int type,DWORD pf_info)
    
    DDLprintf(&showdumpout,"\n============ <Memory Access Information>=================\n");
    DDLprintf(&showdumpout,"Tried to access invalid memory location: 0x%x\n",location);
-
    DDLprintf(&showdumpout,"Page directory entry at that address is: 0x%x\n",direntry);
-
    DDLprintf(&showdumpout,"Page table entry at that address is    : 0x%x\n",pageentry);
    DDLprintf(&showdumpout,"Address of faulting instruction is     : 0x%x\n",current_process->regs.EIP);
-   DDLprintf(&showdumpout,"Kernel Pagedirectory : 0x%x  Process Pagedirectory: 0x%x",pagedir1,current_process->regs.CR3);
-   
-   DDLprintf(&showdumpout,"\n============ <Register values at time of fault>==========\n");
+   DDLprintf(&showdumpout,"Kernel Page Directory : 0x%x  Process Page Directory: 0x%x",pagedir1,current_process->regs.CR3);
 
+   DDLprintf(&showdumpout,"\n============ <Register values at time of fault>==========\n");
    DDLprintf(&showdumpout,"EAX=0x%x EBX=0x%x ECX=0x%x EDX=0x%x ",current_process->regs.EAX,
-   current_process->regs.EBX,current_process->regs.ECX,current_process->regs.EDX);
+         current_process->regs.EBX,current_process->regs.ECX,current_process->regs.EDX);
 
    DDLprintf(&showdumpout,"EBP=0x%x EDI=0x%x \nESI=0x%x ESP=0x%x ",
-   current_process->regs.EBP,current_process->regs.EDI,
-   current_process->regs.ESI,current_process->regs.ESP);
+         current_process->regs.EBP,current_process->regs.EDI,
+         current_process->regs.ESI,current_process->regs.ESP);
    
    DDLprintf(&showdumpout,"CS=0x%x DS=0x%x ES=0x%x SS=0x%x ",
-   current_process->regs.CS,current_process->regs.DS,current_process->regs.ES,
-   current_process->regs.SS);
+      current_process->regs.CS,current_process->regs.DS,current_process->regs.ES,
+      current_process->regs.SS);
    
    DDLprintf(&showdumpout,"FS=0x%x GS=0x%x \n",current_process->regs.FS,current_process->regs.GS);
    
    exc_dumpflags(&showdumpout,current_process->regs.EFLAGS);
-   
-   
     
    DDLprintf(&showdumpout,"\n\nAPI call information\n");
    DDLprintf(&showdumpout,"=========================================================\n"); 
    DDLprintf(&showdumpout,"Process Top of Heap location: 0x%x\n",(DWORD)current_process->knext);
    DDLprintf(&showdumpout,"Kernel Top of Heap location: 0x%x\n",ktopheap);
-   DDLprintf(&showdumpout,"last system calls:(1) : 0x%x ,(2-last): 0x%x\n",
-   current_process->cursyscall[0],current_process->cursyscall[1]);
-   DDLprintf(&showdumpout,"context information:  device # %d(%s), function # %d(%s)\n",
+   DDLprintf(&showdumpout,"Last system calls:(1) : 0x%x ,(2-last): 0x%x\n",
+      current_process->cursyscall[0],current_process->cursyscall[1]);
+   DDLprintf(&showdumpout,"Context information:  device # %d(%s), function # %d(%s)\n",
              current_process->context,
              devmgr_getname(current_process->context),
              current_process->function,
              get_function_name(current_process->context,current_process->function));
-
 
 
    if (current_process->op_success==1) DDLprintf(&showdumpout,"syscall terminated normally\n");
@@ -278,24 +272,20 @@ DWORD pagefaulthandler(DWORD location,DWORD fault_info)
   };
 
   
-  //This function is called when DEX is trying to recover from a fault
-  void exc_recover()
-  {
-     if (current_process->processid==0)
-    {
-     printf("dex32_kernel: kernel mode page fault.\n");
-     printf("recovery mode active. system may become unstable.\n");
-     printf("System Halted\n");
-     while (1);
-    }
-     else
-    {
-     printf("dex32_kernel: user mode page fault.\n");
-     printf("recovery mode active. system may become unstable.\n");
-     printf("shutting down application..\n");
-     //remove process from the process queue
-     exit(0);
-     startints();
-    };
-  };
+//This function is called when DEX is trying to recover from a fault
+void exc_recover(){
+   if (current_process->processid==0){
+      printf("dex32_kernel: kernel mode page fault.\n");
+      printf("recovery mode active. system may become unstable.\n");
+      printf("System Halted\n");
+      while (1);
+   }else{
+      printf("dex32_kernel: user mode page fault.\n");
+      printf("recovery mode active. system may become unstable.\n");
+      printf("shutting down application..\n");
+      //remove process from the process queue
+      exit(0);
+      startints();
+   };
+};
 

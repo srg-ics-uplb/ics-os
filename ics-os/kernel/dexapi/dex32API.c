@@ -77,7 +77,7 @@ void api_init(){
    api_addsystemcall(8, clrscr,0,0);
    api_addsystemcall(9, dex32_sbrk,0,0);
    api_addsystemcall(0xA,gettext,0,0);
-   api_addsystemcall(0xB,createthread,0,0);
+   api_addsystemcall(0xB,createuthread,0,0);
    api_addsystemcall(0xC,dex32_wait,0,0);
    api_addsystemcall(0xD,textcolor,0,0);
    api_addsystemcall(0xE,textbackground,0,0);
@@ -174,6 +174,8 @@ void api_init(){
    api_addsystemcall(0x9C,kb_ready,0,0);
    api_addsystemcall(0x9D,write_text,0,0);
    api_addsystemcall(0x9E,write_char,0,0);
+   api_addsystemcall(0x9F,env_getenv,0,0);
+   api_addsystemcall(0xA0,env_setenv,0,0);
 };
 
 

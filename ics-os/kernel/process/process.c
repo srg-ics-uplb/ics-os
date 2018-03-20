@@ -25,6 +25,33 @@
 
 #include "process.h"
 
+/*
+int lock_var = 0; // actual lock global variable used to provide synchronization
+int value; // variable contain lock value merely to explain current state
+
+void mutex_lock()
+{
+    __asm  // Inline assembly is written this way in c
+    {
+        mov eax, 1   // EAX is a 32 bit register in which we are assigning 1
+        xchg eax, lock_var // Exchange eax and lock_var atomically
+        mov value, eax // merely saving for printing purpose
+    }
+}
+
+void mutex_unlock()
+{
+    __asm
+    {
+        mov eax, 0
+        xchg eax, lock_var  // This could have been a single assignment lock_var = 0
+        mov value, eax // But we are merely using xchg again to see the previous value
+    }
+}
+
+*/
+
+
 //the global list of semaphores
 semaphore *semaphore_head;
 
@@ -103,7 +130,7 @@ DWORD getpprocessid(){
     return current_process->owner;
 }
 
-/*creates a USER thread (In DEX this is process which shares the same memory space as its parent
+/*creates a USER thread (In DEX this is process which shares the same memory space as its parent, BUGGY
  * process, but has its own stack pointer)
  *
  * ptr - function to execute in the thread. 
@@ -114,37 +141,31 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
 
    int pages;
    DWORD flags;
-    
-   //create new PCB for the thread
-   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
-   memset(temp,0,sizeof(PCB386));
-
-   totalprocesses++;
    
    //save flags 
    dex32_stopints(&flags);
-    
-   temp->size=sizeof(PCB386);
-   temp->before=current_process;
-    
+   
+ 
+   //create new PCB for the thread
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
+   memset(temp,0,sizeof(PCB386));
    sprintf(temp->name,"%s.thread",current_process->name);
+   totalprocesses++;
+   temp->size        = sizeof(PCB386);
    temp->processid   = nextprocessid++;
    temp->accesslevel = ACCESS_USER;
-   temp->status      |= PS_ATTB_THREAD;
-
-   current_process->childwait++;
-
-   temp->meminfo     = current_process->meminfo;
    temp->owner       = getprocessid();
-   temp->workdir     = current_process->workdir;
-   temp->stdout      = current_process->stdout;
-   temp->outdev      = current_process->outdev;
+   temp->status      |= PS_ATTB_THREAD;
    temp->knext       = current_process->knext; 
    temp->pagedirloc  = current_process->pagedirloc;
-    
+
    /*Set up initial contents of the CPU registers*/
    memset(temp,0,sizeof(saveregs));
    temp->regs.EIP    = (DWORD)ptr;
+   //set up stack
+   //temp->stackptr    = malloc(stacksize);
+   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   //temp->stackptr    = (void*)temp->regs.ESP;
 
    temp->regs.ESP    = (DWORD)(stack+stacksize-4);
    temp->stackptr    = (void*)temp->regs.ESP;
@@ -156,6 +177,16 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.DS     = USER_DATA;
    temp->regs.FS     = USER_DATA;
    temp->regs.GS     = USER_DATA;
+
+ 
+   temp->before=current_process;
+   current_process->childwait++;
+
+   temp->meminfo     = current_process->meminfo;
+   temp->workdir     = current_process->workdir;
+   temp->stdout      = current_process->stdout;
+   temp->outdev      = current_process->outdev;
+ 
    temp->regs.SS0    = SYS_STACK_SEL;
 
    //set up the initial stack pointer for system calls
@@ -165,7 +196,7 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
     
    //initialize the current FPU state
    memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
-    
+   
    //Tell the scheduler to add it to the process queue, ready queue
    ps_enqueue(temp);
     
@@ -174,6 +205,88 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
 
    return temp->processid;
 };
+
+
+/**
+ * Creates a user thread. A user thread has access to all 
+ * the information about the user process. Unique to a thread 
+ * is the registers and stack.
+ *
+ *  FIXME: by jach. not working. :(
+ */
+DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
+   DWORD cpuflags;
+
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));            //Allocate PCB for the user thread
+   memset(temp,0,sizeof(PCB386));                           //Initialize it
+   temp->before      = current_process;                     //
+   temp->processid   = nextprocessid++;                     //Assign the process id for this thread
+   sprintf(temp->name,"%s.t.%d",current_process->name,temp->processid); //set the thread name
+   totalprocesses++;                                        //Increment the total number of processes
+   temp->size        = sizeof(PCB386);                      //set the size of the PCB
+   temp->accesslevel = ACCESS_USER;                         //indicate that it is a user thread
+   temp->meminfo     = current_process->meminfo;            //memory info is the same as process
+   temp->owner       = getprocessid();                      //set the pid of the owner to the process
+   temp->arrivaltime = getprecisetime();                    //set the arrival time of the thread 
+   temp->stdin       = current_process->stdin;              //stdin and stdout same as process
+   temp->stdout      = current_process->stdout;
+   memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
+   temp->workdir     = current_process->workdir;            //workdir same as process
+   temp->outdev      = current_process->outdev;             //outdev same as process
+   
+   current_process->childwait++;
+   
+   temp->status      |= PS_ATTB_THREAD;                     //this is a thread 
+  
+   temp->knext       = current_process->knext;              //set the memory heap, page dir to the process
+   temp->pagedirloc  = (DWORD)current_process->pagedirloc;
+   
+
+   //Data unique to each thread (registers and stack)
+   //set up the initial values of the CPU registers for this thread.
+   memset(temp,0,sizeof(saveregs));
+   temp->regs.EIP    = (DWORD)ptr;                       //Set the function to be executed by this thread
+
+   //stack 
+   //Option 1: Use the passed parameter as stack
+   temp->stackptr    = (DWORD)stack;
+   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   temp->stackptr    = (void*)temp->regs.ESP;
+   
+   //Option 2: Allocate stack internally
+   temp->stackptr    = malloc(stacksize);
+   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   temp->stackptr    = (void*)temp->regs.ESP;
+
+   //segment registers
+   temp->regs.CR3    = (DWORD)current_process->pagedirloc;
+   temp->regs.ES     = USER_DATA;
+   temp->regs.SS     = USER_DATA;
+   temp->regs.CS     = USER_CODE;
+   temp->regs.DS     = USER_DATA;
+   temp->regs.FS     = USER_DATA;
+   temp->regs.GS     = USER_DATA;
+ 
+   //allocate syscall stack 
+   temp->regs.SS0    = SYS_STACK_SEL;
+   temp->stackptr0   = malloc(SYSCALL_STACK);
+   temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
+   temp->regs.EFLAGS = current_process->regs.EFLAGS;
+   
+   /*Try to enter critical section...*/
+   sync_entercrit(&processmgr_busy);
+   dex32_stopints(&cpuflags);
+    
+   //add to the process list, critical section: must be sync
+   ps_enqueue(temp);
+
+   //end of critical section
+   dex32_restoreints(cpuflags);
+   sync_leavecrit(&processmgr_busy);
+
+   //return the thread id 
+   return temp->processid;
+}
 
 //Tells the scheduler to queue a process, uses aspect-oriented programming
 DWORD ps_enqueue(PCB386 *process){
@@ -197,25 +310,25 @@ DWORD forkprocess(PCB386 *parent){
    int pages;
    DWORD *pagedir,pg,flags;
    DWORD parentpd = parent->pagedirloc;
-   PCB386 *pcb = (PCB386*) malloc(sizeof(PCB386));
+   PCB386 *pcb;
     
 #ifdef DEBUG_FORK
    printf("fork process has been called.\n");
 #endif
 
-   dex32_stopints(&flags);
-   memcpy(pcb,parent,sizeof(PCB386));
-   strcat(pcb->name,".fork");
-   totalprocesses++;
-   pcb->size       = sizeof(PCB386);
-   pcb->processid  = nextprocessid++;
-   pcb->owner      = parent->processid;
+   pcb = (PCB386*) malloc(sizeof(PCB386));//Allocate space for PCB
+   dex32_stopints(&flags);                //disable interrupts
+   memcpy(pcb,parent,sizeof(PCB386));     //Initialize the new process by copying the parent process' PCB
+   strcat(pcb->name,".fork");             //Add a 'fork' suffix to indicate that it was created by fork
+   totalprocesses++;                      //Increase the total number of processes in the system
+   pcb->size       = sizeof(PCB386);      //Save the size of the PCB
+   pcb->processid  = nextprocessid++;     //Set the process if of the new process
+   pcb->owner      = parent->processid;   //Set the parent to the process id of the parent
 
    /*Allocate a new page directory*/
    pagedir=(DWORD*)mempop(); //obtain a physical address from the memory manager
    pg=(DWORD*)getvirtaddress((DWORD)pagedir); //convert physical address to a virtual address
-   //initialize the new pagedirectory
-   memset(pg,0,0x1000);
+   memset(pg,0,0x1000); //initialize the new page directory
 
    pcb->regs.CR3   = pagedir;
    pcb->pagedirloc = pagedir;
@@ -225,13 +338,19 @@ DWORD forkprocess(PCB386 *parent){
 #endif
 
    disablepaging();
+
    dex32_copy_pg(pagedir,parentpd);
+
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR_VIR,(DWORD)pagedir    /*,stackbase*/,1);
+
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR2_VIR,
-   (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+                        (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_PAGEDIR3_VIR,
-   (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+                        (DWORD)pagedir[SYS_PAGEDIR_VIR >> 22]&0xFFFFF000,1);
+
    maplineartophysical((DWORD*)pagedir,(DWORD)SYS_KERPDIR_VIR,(DWORD)pagedir1    /*,stackbase*/,1);
+
    enablepaging();
     
 #ifdef DEBUG_FORK
@@ -242,7 +361,7 @@ DWORD forkprocess(PCB386 *parent){
    //(forked processes have the same virtual memory map at time of fork)
    copyprocessmemory(parent->meminfo,&pcb->meminfo);
 
-   //add to the process list
+   //add to the ready queue
    ps_enqueue(pcb);
 
    dex32_restoreints(flags);
@@ -255,7 +374,14 @@ DWORD forkprocess(PCB386 *parent){
 };
 
 
-//The main procedure that is responsible for spawning all processes
+/*
+ * Function that is responsible for creating USER processes.
+ * Called by the different modules. The modules represent the 
+ * supported executable formats: PE, ELF, COFF, B32, etc. (see kernel/module)
+ * This function creates a new PCB and set some of the fields
+ * of the new PCB to the values passed as parameters.
+ *
+ */
 DWORD createprocess(
                      void *ptr,
                      char *name, 
@@ -271,20 +397,21 @@ DWORD createprocess(
                   ){
    int pages;
    DWORD flags , *pg;
-   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
-   memset(temp,0,sizeof(PCB386));
-   temp->before=current_process;
-   strcpy(temp->name,name);
-   totalprocesses++;
-   temp->size         = sizeof(PCB386);
-   temp->processid    = nextprocessid++;
-   temp->accesslevel  = ACCESS_USER;
-   temp->meminfo      = pmem;
-   temp->owner        = parent->processid;
+
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));      //allocate the PCB for the process
+   memset(temp,0,sizeof(PCB386));                     //Initialize by zeroing it out
+   temp->before=current_process;                      //add it after the current process 
+   strcpy(temp->name,name);                           //set the name of the process
+   totalprocesses++;                                  //increase the total number of processes in the system
+   temp->size         = sizeof(PCB386);               //set the size to the size of the PCB
+   temp->processid    = nextprocessid++;              //set the process id of this process
+   temp->accesslevel  = ACCESS_USER;                  //Indicates that the process is a USER process
+   temp->meminfo      = pmem;                         //set the memory information
+   temp->owner        = parent->processid;            //set the parent id
    temp->dex32_signal = dex32_signal;
    temp->op_success   = 1; 
-   temp->arrivaltime  = getprecisetime(); 
-   temp->stdin        = parent->stdin;
+   temp->arrivaltime  = getprecisetime();             //set the time the process was created 
+   temp->stdin        = parent->stdin;                //set stdin to be the same as parent
    memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
 
    //get the working directory of this process
@@ -297,22 +424,23 @@ DWORD createprocess(
       if (temp->workdir == 0) 
          temp->workdir =parent->workdir;
    };
-   //use the same screen as the one who called
+
+   //use the same screen as the one who called, the parent
    temp->outdev=parent->outdev;
 
    //find the parent process and increment it's waiting state
    parent->childwait++;
 
    temp->knext       = userheap; //set up the programs' initial break
-   temp->pagedirloc  = pagedir;
+   temp->pagedirloc  = pagedir;  //set the memory page dir
     
    /*Set up the CPU registers*/
    memset(temp,0,sizeof(saveregs));
-   temp->regs.EIP    = (DWORD)ptr;
-   temp->regs.ESP    = (DWORD)stack;
+   temp->regs.EIP    = (DWORD)ptr;                    //set EIP to the code section (executable code)
+   temp->regs.ESP    = (DWORD)stack;                  //set the stack for the process
    temp->stackptr    = (void*)temp->regs.ESP;
    temp->regs.CR3    = (DWORD)pagedir;
-   temp->regs.ES     = USER_DATA;
+   temp->regs.ES     = USER_DATA;                     //set the segment registers to memory area for user processes
    temp->regs.SS     = USER_DATA;
    temp->regs.CS     = USER_CODE;
    temp->regs.DS     = USER_DATA;
@@ -321,7 +449,7 @@ DWORD createprocess(
    temp->regs.SS0    = SYS_STACK_SEL;
    temp->syscallsize=syscallsize;
    
-   //set up the program parameters
+   //set up the program parameters (command line arguments)
    if (params!=0){
       temp->parameters=(char*)malloc(512);
       strcpy(temp->parameters,params);
@@ -329,6 +457,7 @@ DWORD createprocess(
       temp->parameters=0;
    }
 
+   //prepare to enter critical section
    sync_entercrit(&processmgr_busy);	
    dex32_stopints(&flags);  
 
@@ -342,11 +471,11 @@ DWORD createprocess(
    temp->semhandle=0;
 
    //some functions that a character device uses
-
    disablepaging();
    dex32_copy_pagedirU(pagedir,pagedir1);
    enablepaging();
         
+
    pg = (DWORD*)getvirtaddress((DWORD)pagedir); /*convert to a virtual address so that
                                                  we could use it here without disabling
                                                  the paging mechanism of the 386*/
@@ -361,9 +490,10 @@ DWORD createprocess(
     
    maplineartophysical2((DWORD*)pg, (DWORD)SYS_KERPDIR_VIR,(DWORD)pagedir1    /*,stackbase*/,1);
 
-   //add to the list
+   //add the process to the list of processes
    ps_enqueue(temp);
 
+   //end of critical section
    dex32_restoreints(flags);
    sync_leavecrit(&processmgr_busy);
 
@@ -493,52 +623,57 @@ int getmessage(DWORD *source, DWORD *mes, DWORD *data){
    return 1;
 };
 
-/*creates a kernel thread*/
+/*
+ * Creates a kernel thread. A kernel thread is owned and managed by the kernel.
+ * It uses the address space of the kernel process. This is why
+ * threads are often referred to as lightweight proceses.
+ *
+*/
 DWORD createkthread(void *ptr,char *name,DWORD stacksize){
-   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
+ 
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));         //allocate PCB for the thread
    DWORD cpuflags;
     
-   memset(temp,0,sizeof(PCB386));
-   temp->before=current_process;
-   strcpy(temp->name,name);
-   totalprocesses++;
+   memset(temp,0,sizeof(PCB386));                        //Initialize the PCB
+   temp->before=current_process;                         //Point the 'before' to the parent 
+   strcpy(temp->name,name);                              //Set the name of the thread
+   totalprocesses++;                                     //Increment the total number of processes
    temp->size        = sizeof(PCB386);
-   temp->processid   = nextprocessid++;
-   temp->accesslevel = ACCESS_SYS;
-   temp->owner       = getprocessid();
-   temp->status     |= PS_ATTB_THREAD; 
-   temp->knext       = knext;
-   temp->pagedirloc  = pagedir1;
-   temp->workdir     = current_process->workdir;
+   temp->processid   = nextprocessid++;                  //Set the thread id
+   temp->accesslevel = ACCESS_SYS;                       //Set the access level to kernel. This is a kernel thread.
+   temp->owner       = getprocessid();                   //The owner of this thread is the current process
+   temp->status      |= PS_ATTB_THREAD;                  //Indicate that this PCB is for a thread
+   temp->knext       = knext;                            //Set the the top of the heap of this thread to same as kernel
+   temp->pagedirloc  = pagedir1;                         //Set the pagedir for this thread to the first page directory
+   temp->workdir     = current_process->workdir;         //Set the working directory of this thread to same as owner
 
-   //set up the initial values of the CPU registers for this process
-   memset(temp,0,sizeof(saveregs));
-   temp->regs.EIP    = (DWORD)ptr;
-   temp->stackptr    = malloc(stacksize);
+   //set up the initial values of the CPU registers for this thread
+   memset(temp,0,sizeof(saveregs));                      //This works because "regs" is the first field in the structure
+   temp->regs.EIP    = (DWORD)ptr;                       //Set the function to be executed by this thread
+   temp->stackptr    = malloc(stacksize);                   //Set up the stack for this thread
    temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
    temp->stackptr    = (void*)temp->regs.ESP;
-   temp->regs.CR3    = (DWORD)pagedir1;
-   temp->regs.ES     = SYS_DATA_SEL;
-   temp->regs.SS     = SYS_STACK_SEL;
+   temp->regs.CR3    = (DWORD)pagedir1;                  //Use the same memory as the kernel
+   temp->regs.ES     = SYS_DATA_SEL;                     //Set the segment registers to appropriate selectors for kernel memory area.
+   temp->regs.SS     = SYS_STACK_SEL;                    //this basically tells us that this is a kernel thread
    temp->regs.CS     = SYS_CODE_SEL;
    temp->regs.DS     = SYS_DATA_SEL;
    temp->regs.FS     = SYS_DATA_SEL;
    temp->regs.GS     = SYS_DATA_SEL;
    temp->regs.EFLAGS = 0x200;
 
-   temp->arrivaltime = getprecisetime(); 
-   temp->stdin       = current_process->stdin;
+   temp->arrivaltime = getprecisetime();                 //Store the arrival/creation time of this thread 
+   temp->stdin       = current_process->stdin;           //set the stdin
 
-   /*critical section...*/
-   sync_entercrit(&processmgr_busy);
+   /*Try to enter the critical section */
+   sync_entercrit(&processmgr_busy);                     //Access to the process list must synched that's why its in the critical section
    dex32_stopints(&cpuflags);
     
    //add to the process list
-   ps_enqueue(temp);
+   ps_enqueue(temp);                                     //Add the thread to the process list for scheduling
 
+   //Exit the critical section
    dex32_restoreints(cpuflags);
-    
-   //end of critical section
    sync_leavecrit(&processmgr_busy);
     
    return temp->processid;
@@ -614,41 +749,42 @@ void sleep(DWORD val){
     current_process->waiting = val;
 };
 
-/*called when another process wants to kill another.
-  Also performs garbage collection (reclaims memory 
-  used by the application).*/
+/* Called when another process wants to kill another.
+ * Also performs garbage collection (reclaims memory 
+ * used by the application).
+*/
 DWORD kill_process(DWORD processid){
    PCB386 *ptr,*parentptr=0;
-   sync_entercrit(&processmgr_busy);
-   ptr = bridges_ps_findprocess(processid);
-   if (ptr!=-1){
+   sync_entercrit(&processmgr_busy);                           //Try to enter the critical section
+
+   ptr = bridges_ps_findprocess(processid);                    //obtain a handle to the PCB given id
+   if (ptr!=-1){                                               //PCB exists
       if (! (ptr->status&PS_ATTB_UNLOADABLE) ){
          PCB386 *parent;
-         kill_children(processid); //kill child processes first
+         kill_children(processid);                             //kill children processes first
 
-         if (ptr->accesslevel == ACCESS_SYS){   //a kernel thread?
-            dex32_killkthread(ptr);
+         if (ptr->accesslevel == ACCESS_SYS){                  //A kernel process/thread?
+            dex32_killkthread(ptr);                            //special handling for kernel threads
             sync_leavecrit(&processmgr_busy);
             return 1;
          };
 
-         if ( ptr->status&PS_ATTB_THREAD ){ //a thread process? If yes then redirect to another procedure
-            kill_thread(ptr);
+         if ( ptr->status&PS_ATTB_THREAD ){                    //just a thread 
+            kill_thread(ptr);                                                    
             sync_leavecrit(&processmgr_busy);
             return 1;
          };
 
-         while (closeallfiles(ptr->processid)==1)
+         while (closeallfiles(ptr->processid)==1)              //close all opened files
             ;
 
-         parent=ps_findprocess(ptr->owner);
+         //locate the parent process and decrement its waiting
+         //status...important for the dex32_wait() function
+         parent=ps_findprocess(ptr->owner);                    //parent should no longer wait for this process
          if (parent!=-1){
             parent->childwait=0;
          };
 
-
-         //locate the parent process and decrement its waiting
-         //status...important for the dex32_wait() function
 
          if (ptr->accesslevel == ACCESS_SYS)
             free(ptr->stackptr);
@@ -685,7 +821,7 @@ DWORD kill_process(DWORD processid){
 };
 
 
-//used to kill kernel threads
+//used to threads
 DWORD kill_thread(PCB386 *ptr){
    DWORD flags;
    dex32_stopints(&flags);
@@ -1076,6 +1212,7 @@ void halt(){
 };
 
 
+//Context switching, dispatcher
 //switched to another process using the TSS switching method
 // 1/25/2004: Also added the capability to save the FPU registers to prevent
 //            applications that use the FPU from doing unexpected things
@@ -1087,15 +1224,14 @@ void ps_switchto(PCB386 *process){
    asm volatile ("frstor ps_fpustate");
 
    //switch to a user process
-   if (process->accesslevel==ACCESS_USER){
+   if (process->accesslevel == ACCESS_USER){
       dex32_setbase(USER_TSS, process);
-      switchuserprocess();
-      setattb(USER_TSS,0xE9); //run a user process
-   }else{
-      //switch to a kernel mode process
+      switchuserprocess();                            //defined in kernel/startup/asmlib.asm
+      setattb(USER_TSS,0xE9);                         //run a user process
+   }else{//switch to a kernel mode process
       dex32_setbase(SYS_TSS, process);
-      switchprocess();
-      setattb(SYS_TSS,0x89); //run a kernel process
+      switchprocess();                                //defined in kernel/startup/asmlib.asm
+      setattb(SYS_TSS,0x89);                          //run a kernel process
    };
 
    //save the state of the floating point unit
@@ -1111,8 +1247,9 @@ inline void taskswitch(){
    asm volatile ("int $0x20");
 };
 
-//The taskswitcher is basically the program that runs all the time.
-//It is  responsible for switching ro various processes and terminating them.
+//The taskswitcher() is basically the program that runs all the time, aka CPU scheduler.
+//It selects the process to execute on the CPU. The selection of the 
+//next process to run is delegated to an scheduler extension.
 void taskswitcher(){
    char temp[255];
    DWORD cputime=0;
@@ -1120,8 +1257,8 @@ void taskswitcher(){
 
    do{
       stopints(); //disable interrupts first
-      //fetch a ready process from the ready queue
 
+      //fetch a ready process from the ready queue
       do{
          if (!sigwait){
             //if the wait register is not set, switch to
@@ -1133,23 +1270,27 @@ void taskswitcher(){
 
             //obtain next job from the scheduler
             //readyprocess=extension_current->ps_scheduler->scheduler(&kernelPCB);
+
+            //get handle to the current scheduler extension
             devmgr_scheduler_extension *cursched = (devmgr_scheduler_extension*)extension_table[CURRENT_SCHEDULER].iface;
-            readyprocess = (PCB386*)bridges_link((devmgr_generic*)cursched,&cursched->scheduler,
+
+            //get the ready process returned by the scheduler extension
+            readyprocess = (PCB386*)bridges_link((devmgr_generic*)cursched, &cursched->scheduler,
                                                    current_process,0,0,0,0,0);
          };
          //readyprocess=bridges_ps_scheduler(current_process);
             
-         current_process=readyprocess;
+         //set the current process to the ready process
+         current_process = readyprocess;
 
-         //tell the cpu to give control to <readyprocess>
+         //give control to readyprocess, the context switch
          ps_switchto(readyprocess);
 
          /*Make sure the taskwitcher was really called by the timer, since
             another way of calling the taskswithcer is through taskswitch().
             In that case we must not call time_handler in order to make
-            the time as accurate as possible*/
-            
-            
+            the time as accurate as possible
+         */
          if (!ps_notimeincrement){
             //Increment system time... etc.
             time_handler();
@@ -1161,14 +1302,15 @@ void taskswitcher(){
          readyprocess->totalcputime++;
             
          //A process wants to get immediate control, usually set by
-         //device drivers that are hooked to IRQs
+         //device drivers that are hooked to IRQs or high priority process
+         //The pid of the high priority process is sigpriority 
          if (sigpriority){
             PCB386 *priorityprocess = ps_findprocess(sigpriority);
             if (priorityprocess!=-1){
-               //give the process to the CPU       
+               //give the high priotiry process to the CPU       
                ps_switchto(priorityprocess);       
             };
-            sigpriority = 0;
+            sigpriority = 0;     //reset the variable
          };
       }while(sigwait);
 
@@ -1181,23 +1323,23 @@ void taskswitcher(){
          pfoccured=0;
       };
 
+      //do clean up for terminate process
+      //a request to terminate a process is received, pid of process to end is the value of sigterm
       if (sigterm && !flushing){
-         flushok=0;
+         flushok = 0;
          kill_process(sigterm);
-         flushok=1;
-         sigterm=0;
-            ;
+         flushok = 1;
+         sigterm = 0;      //reset the variable
       };
 
       if (sched_sysmes[0]){
          sendmessage(sched_sysmes[0],sched_sysmes[1],sched_sysmes[2]);
          sched_sysmes[0]=0;
-            ;
       };
 
+      //Shutdown sequence initiated
       if (sigshutdown){
          broadcastmessage(1, SIG_KILL, 0);
-            ;
       };
     }while (1);
 };
@@ -1212,20 +1354,20 @@ void show_process_stat(int pid){
    for (i=0;i<total;i++){
       if (pid ==  ptr[i].processid){
          printf("=========================================================\n");
-         printf("Name:%s", ptr[i].name);
-         printf("Parent:%d", ptr[i].owner);
+         printf("Name: %s\n", ptr[i].name);
+         printf("Parent PID: %d\n", ptr[i].owner);
          printf("EIP=0x%s\n",itoa(ptr[i].regs.EIP,temp,16));
          printf("EAX=0x%s EBX=0x%s ECX=0x%s EDX=0x%s\n",itoa(ptr[i].regs.EAX,temp,16),
-         itoa(ptr[i].regs.EBX,temp1,16),itoa(ptr[i].regs.ECX,temp2,16),
-         itoa(ptr[i].regs.EDX,temp3,16));
+                  itoa(ptr[i].regs.EBX,temp1,16),itoa(ptr[i].regs.ECX,temp2,16),
+                  itoa(ptr[i].regs.EDX,temp3,16));
 
          printf("EDI=0x%s ESI=0x%s ESP=0x%s Flags=0x%s\n",itoa(ptr[i].regs.EDI,temp,16),
-                         itoa(ptr[i].regs.ESI,temp1,16),itoa(ptr[i].regs.ESP,temp2,16),
-                         itoa(ptr[i].regs.EFLAGS,temp3,16));
+                  itoa(ptr[i].regs.ESI,temp1,16),itoa(ptr[i].regs.ESP,temp2,16),
+                  itoa(ptr[i].regs.EFLAGS,temp3,16));
                          
-                         printf("waiting: %d\n", ptr[i].waiting);
-                         printf("last system calls:(1) : 0x%s ,(2-last): 0x%s\n",
-                         itoa(ptr[i].cursyscall[0],temp2,16),itoa(ptr[i].cursyscall[1],temp,16));
+         printf("Waiting: %d\n", ptr[i].waiting);
+         printf("Last system calls:(1) : 0x%s ,(2-last): 0x%s\n",
+                  itoa(ptr[i].cursyscall[0],temp2,16),itoa(ptr[i].cursyscall[1],temp,16));
 
       };
    };
@@ -1253,7 +1395,7 @@ void show_process(){
    textbackground(BLACK);
    printf("Processes in memory:\n\n");
    textcolor(MAGENTA);
-   printf("%-5s %-17s %-10s %-17s %6s %5s %10s\n","ID","Name","User Level","Owner","Size","AT","CT");
+   printf("%-5s %-17s %-11s %-14s %6s %6s %11s\n","PID","Name","Access Lvl","PPID","Size","AT","CT");
    textcolor(WHITE);
     
    /*Tell the scheduler to give us an array of PCBs which contain the PCBs of the processes
@@ -1290,18 +1432,24 @@ void show_process(){
       else
          textcolor(GREEN);
             
-      printf(" %-17s",ptr[i].name);
+      if ( ptr[i].status & PS_ATTB_THREAD )     //This is a thread
+         printf(" %-14s(t)",ptr[i].name);
+      else
+         printf(" %-14s   ",ptr[i].name);
+
       textcolor(WHITE);
       strcpy(levelstr,"?");
 
       //determine the access level and then show it on the screen
       if (ptr[i].accesslevel == ACCESS_SYS) 
-         strcpy(levelstr,"supervisor");
+         strcpy(levelstr,"kernel");
       else if (ptr[i].accesslevel == ACCESS_USER) 
          strcpy(levelstr,"user");
 
       //obtain the name of the parent process
-      dex32_getname(ptr[i].owner,sizeof(temp),temp);
+      //dex32_getname(ptr[i].owner,sizeof(temp),temp);
+      
+      sprintf(temp,"%d",ptr[i].owner);
 
       /*compute for the percent CPU time*/
       percent_cpu_time = (ptr[i].totalcputime - ptr[i].lastcputime) * 100 / grandtotalcputime;
@@ -1315,11 +1463,11 @@ void show_process(){
         
       sync_leavecrit(&processmgr_busy);
         
-      printf(" %-10s %-17s %5dK %5ds %5ds(%2d)%%\n",levelstr,temp,psize,
-      ptr[i].arrivaltime/100, ptr[i].totalcputime/100, percent_cpu_time);
+      printf(" %-11s %-14s %5dK %5ds %5ds(%2d)%%\n",levelstr,temp,psize,
+         ptr[i].arrivaltime/100, ptr[i].totalcputime/100, percent_cpu_time);
    };
 
-   printf("\nTotal            : %d processes (%d KB)\n",total,totalsize);
+   printf("\nTotal              : %d processes (%d KB)\n",total,totalsize);
    printf("Time Since Startup : %d\n", ticks / context_switch_rate);
    printf("Legend: AT = Arrival Time, CT = CPU Time, %%CT = Percent CPU Time\n");
     
@@ -1386,26 +1534,26 @@ void process_init(){
    asm volatile ("fninit");
    asm volatile ("fnsave ps_kernelfpustate");
     
-   //add the first process in memory which is the process kernel
-   kernel=&sPCB;
-   memset(kernel,0,sizeof(PCB386));
-   kernel->next=kernel;
-   kernel->before=kernel;
-   kernel->processid=0;                              //process id is 0
-   kernel->meminfo=0;
-   strcpy(kernel->name,"dex_kernel-beta");           //sPCB
-   kernel->accesslevel=ACCESS_SYS;
-   kernel->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
-   kernel->knext=knext;
-   kernel->outdev=consoleDDL;
-   kernel->pagedirloc=pagedir1;
+   //Add the first process in memory which is the process kernel
+   kernel=&sPCB;                                         //get a reference to the PCB
+   memset(kernel,0,sizeof(PCB386));                      //initialize by zeroing it out
+   kernel->next=kernel;                                  //next points to itself
+   kernel->before=kernel;                                //before points to itself
+   kernel->processid=0;                                  //process id is 0
+   kernel->meminfo=0;                                    //no memory information
+   strcpy(kernel->name,"dex_kernel");                    //sPCB
+   kernel->accesslevel=ACCESS_SYS;                       //kernel mode
+   kernel->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE; //it cannot be locked and unloaded, its the kernel!
+   kernel->knext=knext;                                  //top of the heap
+   kernel->outdev=consoleDDL;                            //the console defined in kernel32.c, output of kernel goes here
+   kernel->pagedirloc=pagedir1;                          //set page directory to the first location
 
    //initialize the current FPU state
    memcpy(&kernel->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
     
-   memset(&kernel->regs,0,sizeof(saveregs));
-   kernel->regs.EIP=(DWORD)dex_init;                 //dex_init() in kernel32.c
-   kernel->regs.ESP= DISPATCHER_STACK_LOC;
+   memset(&kernel->regs,0,sizeof(saveregs));             //initialize the execution context 
+   kernel->regs.EIP=(DWORD)dex_init;                     //dex_init() in kernel32.c
+   kernel->regs.ESP= DISPATCHER_STACK_LOC;               //set the values of the registers for kernel mode process selector
    kernel->regs.CR3=pagedir1;
    kernel->regs.ES=SYS_DATA_SEL;
    kernel->regs.SS=SYS_STACK_SEL;
@@ -1416,22 +1564,23 @@ void process_init(){
    kernel->regs.ESP0= DISPATCHER_STACK_LOC;
    kernel->regs.SS0= SYS_DATA_SEL;
    kernel->regs.EFLAGS=0x200;
-   memcpy(&kernelPCB,kernel,sizeof(PCB386));
+   memcpy(&kernelPCB,kernel,sizeof(PCB386));             //create a copy of the kernel PCB
    setgdt(SYS_TSS,&kernelPCB.regs,103,0x89,0);
-   sched_phead=kernel;
 
+   sched_phead=kernel;                                   //set the head of the ready queue to the kernel                          
+
+   /*----------------------------------------------------------------------------*/
    /*Set up the PCB of the scheduler*/
    schedp=&schedpPCB;
    memset(schedp,0,sizeof(PCB386));
-    
-   schedp->processid=1;                              //process id is 1
-   strcpy(schedp->name,"dex32_sched");               //schedpPCB
+   schedp->processid=1;                                  //process id is 1
+   strcpy(schedp->name,"scheduler");                     //schedpPCB
    schedp->accesslevel=ACCESS_SYS;
    schedp->status = PS_ATTB_LOCKED | PS_ATTB_UNLOADABLE;
    schedp->knext=knext;
    schedp->pagedirloc=pagedir1;
    schedp->outdev = consoleDDL;
-   schedp->regs.EIP=(DWORD)taskswitcher;             //taskswitcher() defined here.
+   schedp->regs.EIP=(DWORD)taskswitcher;                 //taskswitcher() defined here.
    schedp->regs.ESP= SCHED_STACK_LOC;
    schedp->regs.ES=SYS_DATA_SEL;
    schedp->regs.SS=SYS_STACK_SEL;
@@ -1445,11 +1594,12 @@ void process_init(){
    schedp->regs.ESP0= SCHED_STACK_LOC;
    setgdt(SCHED_TSS,&(schedp->regs),103,0x89,0);
 
-   loadtsr();  //terminate and stay resident 
+   loadtsr();  //terminate and stay resident the scheduler 
 
+   //--------------------------------------------------------------------------------------
    //directly manipulate the keyboard handler PCB. uses dot(.)
    keyPCB.next=0;
-   keyPCB.processid=1;
+   keyPCB.processid=2;
    strcpy(keyPCB.name,"keybhandler");
    keyPCB.accesslevel=ACCESS_SYS;
    keyPCB.priority=0;
@@ -1472,9 +1622,10 @@ void process_init(){
    keyPCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
    setgdt(KEYB_TSS,&(keyPCB.regs),103,0x89,0);
 
+   //------------------------------------------------------------------------------------
    //directly manipulate the mouse handler PCB. uses dot(.)
    mousePCB.next=0;
-   mousePCB.processid=1;
+   mousePCB.processid=3;
    strcpy(mousePCB.name,"mousehandler");
    mousePCB.accesslevel=ACCESS_SYS;
    mousePCB.priority=0;
@@ -1497,10 +1648,10 @@ void process_init(){
    mousePCB.regs.ESP0 = PAGEFAULT_STACK_LOC;
    setgdt(MOUSE_TSS,&(mousePCB.regs),103,0x89,0);
 
-
+   //------------------------------------------------------------------------------------
    /*set up the PCB of the pagefault handler*/
    pfPCB.next=0;
-   pfPCB.processid=1;
+   pfPCB.processid=4;
    strcpy(pfPCB.name,"dex32_pfhandler");
    pfPCB.accesslevel=ACCESS_SYS;
    pfPCB.priority=0;
@@ -1508,7 +1659,7 @@ void process_init(){
    pfPCB.knext=knext;
    pfPCB.pagedirloc=pagedir1;
    memset(&pfPCB.regs,0,sizeof(saveregs));
-   pfPCB.regs.EIP=(DWORD)pfwrapper;                  //define in irqwrap.asm
+   pfPCB.regs.EIP=(DWORD)pfwrapper;                            //defined in irqwrap.asm
    pfPCB.regs.ESP=0x7FFFE;
    pfPCB.regs.ES=SYS_DATA_SEL;
    pfPCB.regs.SS=SYS_STACK_SEL;
@@ -1527,16 +1678,18 @@ void process_init(){
    setgdt(USER_TSS,0,103,0xE9,0);
    setcallgate(DEX_SYSCALL,SYS_CODE_SEL,systemcall,0,3);
 
+
    //set up the semaphore manager
    semaphore_head=(semaphore*)malloc(sizeof(semaphore));
    semaphore_head->owner=0;
    semaphore_head->next=0;
    semaphore_head->prev=0;
 
-   //initialize current_process
+   //initialize current_process, which is the kernel
    current_process = kernel;
    current_process->workdir = vfs_root;
-   ps_scheduler_install();
+
+   ps_scheduler_install();    //defined in kernel/process/scheduler.c
 
 #ifdef DEBUG_STARTUP
    printf("process manager: done.\n");
@@ -1545,6 +1698,6 @@ void process_init(){
    processmgr_busy.busy = 0;
    processmgr_busy.wait = 0;
     
-   printf("starting process manager...\n");
+   printf("Starting process manager...\n");
 };
 

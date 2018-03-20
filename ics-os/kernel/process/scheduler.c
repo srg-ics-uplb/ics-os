@@ -170,9 +170,8 @@ int sched_listprocess(PCB386 *process_buf, DWORD size_per_item, int items)
 };
 
 //registers this scheduler extension to the device manager
-void ps_scheduler_install()
-{
- //create a scheduler extension, fill up required information
+void ps_scheduler_install(){
+   //create a scheduler extension, fill up required information
    memset(&ps_scheduler,0,sizeof(devmgr_scheduler_extension));
    ps_scheduler.hdr.size = sizeof(devmgr_scheduler_extension);
    ps_scheduler.hdr.type = DEVMGR_SCHEDULER_EXTENSION;
@@ -186,12 +185,13 @@ void ps_scheduler_install()
    ps_scheduler.ps_gethead     = sched_gethead;
    ps_scheduler.ps_listprocess = sched_listprocess;
    ps_scheduler.ps_findprocess = sched_findprocess;
+
    //make interface available to the device manager
    ps_schedid = devmgr_register(&ps_scheduler);
 
    //update the current scheduler
    #ifdef DEBUG_STARTUP
-      printf("process manager: Installing default scheduler (Simple Round-Robin)\n");
+      printf("Process manager: Installing default scheduler (Simple Round-Robin)\n");
    #endif
    
    extension_override(devmgr_getdevice(ps_schedid),0);   

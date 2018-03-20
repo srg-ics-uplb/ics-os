@@ -1,4 +1,5 @@
 /*
+
   Name: DEX-OS 1.0 Beta Kernel Main file
   Copyright: 
   Author: Joseph Emmanuel Dayo
@@ -274,8 +275,8 @@ void main(){
    fg_init();
     
    //Create a virtual console that the kernel will send its output to
-   consoleDDL=Dex32CreateDDL();
-   fg_kernel = fg_register(consoleDDL,0);
+   consoleDDL = Dex32CreateDDL();
+   fg_kernel = fg_register(consoleDDL, 0);
    fg_setforeground(fg_kernel);
     
    /* Preliminary initializaation complete, start up the operating system*/
@@ -295,11 +296,11 @@ void dex32_startup(){
    //printf("Bootloader name : %s\n", mbhdr->boot_loader_name);
     
    //obtain CPU information using the CPUID instruction
-   printf("Obtaining CPU information\n");
+   printf("Obtaining CPU information...\n");
    hardware_getcpuinfo(&hardware_mycpu);
    hardware_printinfo(&hardware_mycpu);
     
-   printf("Available size: %d KB\n",memamount/1024);
+   printf("Available memory: %d KB\n", memamount/1024);
 
    //Initialize the extension manager
    printf("Initializing the extension manager...");
@@ -311,10 +312,8 @@ void dex32_startup(){
    devmgr_init();
    printf("[OK]\n");
 
-
-   printf("Registering the memory manager and the memory allocator...");
-
    //register the memory manager
+   printf("Registering the memory manager and the memory allocator...");
    mem_register();
 
    //register the different memory allocators
@@ -338,14 +337,9 @@ void dex32_startup(){
    //delay(400/80);
    printf("[OK]\n");
 				
+   //initialize the API module
    printf("Initializing kernel API...");		  
-   //initialize the DEX API module
    api_init();
-   printf("[OK]\n");
-
-   printf("Initializing the process manager...");
-   //Initialize the process manager
-   process_init();
    printf("[OK]\n");
 
    //initialize the keyboard device driver
@@ -354,9 +348,15 @@ void dex32_startup(){
    installmouse();
    init_mouse();
    printf("[OK]\n");
+   
+   //Initialize the process manager and the initial
+   //processes
+   printf("Initializing the process manager...");
+   process_init();    //defined in process.c
+   printf("[OK]\n");
 
    //process manager is ready, pass execution to the taskswitcher
-   taskswitcher();
+   taskswitcher();      //defined in process.h
 
     //============ we should not reach this point at all =================
    while (1)
@@ -366,8 +366,10 @@ void dex32_startup(){
 #define STARTUP_DELAY 400
 
 /*This function is the first function that is called by the taskswitcher
- * see process/process.c
-  incidentally it is also the first process that gets run*/
+ see process/process.c
+ incidentally it is also the first process that gets run
+ it is the equivalent of the init() process in *nix systems
+*/
 void dex_init(){
    char temp[255],spk;
    int consolepid,i,baremode = 0;
@@ -394,6 +396,7 @@ void dex_init(){
    //kb_addhotkey('\t', KBD_META_ALT, fg_toggle);
    kb_addhotkey(KEY_F12, 0xFF, fg_next); //move accross the consoles
    kb_addhotkey(KEY_F11, 0xFF, fg_prev);
+   kb_addhotkey(KEY_F2, 0xFF, console_new);
    kb_addhotkey('\t', KBD_META_ALT, fg_toggle);
     
    keyboardflush();
@@ -420,15 +423,15 @@ void dex_init(){
    getmonthname(date.month,temp);
    printf("[OK]\n");   
 
-   printf("Installing floppy driver...");
    //Install the built-in floppy disk driver
+   printf("Installing floppy driver...");
    floppy_install("fd0"); 
    printf("[OK]\n");   
     
-   printf("Initializing IDE drivers...\n");
    /*Install the IDE, ATA-2/4 compliant driver in order to be able to
       use CD-ROMS and harddisks. This will also create logical drives from
       the partition tables if needed.*/
+   printf("Initializing IDE drivers...\n");
    ide_init();
    printf("[OK]\n");   
 
@@ -452,22 +455,22 @@ void dex_init(){
    //set the current directory of the init process to the vfs root
    current_process->workdir= vfs_root;
     
-   printf("Initializing the task manager...");
    //Initialize the task manager - a module program that monitors processes
-   //for the user's convenience
-   tm_pid=createkthread((void*)dex32_tm_updateinfo,"dex32_taskmanager",3500);
+   //for the user's convenience, as kernel thread
+   printf("Initializing the task manager...");
+   tm_pid=createkthread((void*)dex32_tm_updateinfo,"task_mgr",3500);
    printf("[OK]\n");   
 
 
    //create the IO manager thread which handles all I/O to and from
    //block devices like the hard disk, floppy, CD-ROM etc. see iosched.c
    printf("Initializing the disk manager...");
-   createkthread((void*)iomgr_diskmgr,"iomgr_diskmgr",200000);
+   createkthread((void*)iomgr_diskmgr,"disk_mgr",200000);
    printf("[OK]\n");   
 
    
-   printf("Initializng the null block device...");
    //Install a null block device
+   printf("Initializng the null block device...");
    devfs_initnull();
    printf("[OK]\n");   
     
@@ -504,7 +507,7 @@ void dex_init(){
    printf("Running foreground manager thread\n");
     
    //create the foreground manager
-   fg_pid = createkthread((void*)fg_updateinfo,"fg_manager",20000);
+   fg_pid = createkthread((void*)fg_updateinfo,"fg_mgr",20000);
     
    if (baremode) 
       console_first++;
@@ -524,17 +527,17 @@ void dex_init(){
    spk=spk&252;
    outportb(0x61,spk);
 
-
    //set the console for this process
    Dex32SetProcessDDL(consoleDDL, getprocessid());
     
-    /*Run the process dispatcher.
+   /* Run the process dispatcher.
       The process dispatcher is responsible for running new modules/process.
       It is the only one that could disable paging without crashing the system since
       its stack, data and code segments are located in virtual memory that is at the
       same location as the physical memory
-      see pdispatch.c/pdispatch.h for details*/
-   process_dispatcher();
+      see pdispatch.c/pdispatch.h for details
+   */
+   process_dispatcher();   // defined in kernel/process/pdispatch.c
     ;
 };
 
