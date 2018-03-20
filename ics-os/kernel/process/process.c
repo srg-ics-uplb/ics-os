@@ -218,7 +218,7 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    DWORD cpuflags;
 
    PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));            //Allocate PCB for the user thread
-   memset(temp,0,sizeof(PCB386));                           //Initialize it
+   memset(temp,0,sizeof(PCB386));                           //Initialize it to zero
    temp->before      = current_process;                     //
    temp->processid   = nextprocessid++;                     //Assign the process id for this thread
    sprintf(temp->name,"%s.t.%d",current_process->name,temp->processid); //set the thread name
@@ -236,9 +236,9 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    
    current_process->childwait++;
    
-   temp->status      |= PS_ATTB_THREAD;                     //this is a thread 
+   temp->status      |= PS_ATTB_THREAD;                     //indicate that this is a thread 
   
-   temp->knext       = current_process->knext;              //set the memory heap, page dir to the process
+   temp->knext       = current_process->knext;              //set the memory heap, page dir same as the process
    temp->pagedirloc  = (DWORD)current_process->pagedirloc;
    
 
@@ -254,9 +254,9 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->stackptr    = (void*)temp->regs.ESP;
    
    //Option 2: Allocate stack internally
-   temp->stackptr    = malloc(stacksize);
-   temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
-   temp->stackptr    = (void*)temp->regs.ESP;
+   //temp->stackptr    = malloc(stacksize);
+   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   //temp->stackptr    = (void*)temp->regs.ESP;
 
    //segment registers
    temp->regs.CR3    = (DWORD)current_process->pagedirloc;
@@ -277,11 +277,11 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    sync_entercrit(&processmgr_busy);
    dex32_stopints(&cpuflags);
     
-   //add to the process list, critical section: must be sync
+   //add the thread to the process list, critical section: must be synched
    ps_enqueue(temp);
 
    //end of critical section
-   dex32_restoreints(cpuflags);
+   dex32_restoreints(&cpuflags);
    sync_leavecrit(&processmgr_busy);
 
    //return the thread id 
@@ -308,7 +308,7 @@ DWORD ps_dequeue(PCB386 *process){
 //duplicates a process using COPY_ON_WRITE methods *NOT YET WORKING!!*
 DWORD forkprocess(PCB386 *parent){
    int pages;
-   DWORD *pagedir,pg,flags;
+   DWORD *pagedir,*pg,flags;
    DWORD parentpd = parent->pagedirloc;
    PCB386 *pcb;
     
