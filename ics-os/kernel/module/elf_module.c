@@ -525,7 +525,7 @@ int elf_loadmodule(char *module_name,char *elf_image,
          dex32_stopints(&flags);
          printf("executing entrypoint at (0x%x)..\n", (DWORD) entrypoint);
          ret = createprocess(entrypoint,module_name,pagedir,memptr,stackloc,
-            1000,SYSCALL_STACK,0,p,workdir,parent);
+                                 1000,SYSCALL_STACK,0,p,workdir,parent);
          dex32_freeuserpagetable(pagedir1);
          dex32_restoreints(flags);
         };    
