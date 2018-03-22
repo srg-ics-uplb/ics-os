@@ -618,7 +618,8 @@ int console_execute(const char *str){
       printf("New console thread created.\n");                   
    }else  
    if (strcmp(u,"ver") == 0) {         //-- Shows version information.
-      printf("%s",dex32_versionstring);
+      printf("%s\n",dex32_versionstring);
+      printf("%s\n",OS_VERSION);
    }else
    if (strcmp(u,"cpuid") == 0){        //-- Displays CPU information. 
       hardware_cpuinfo mycpu;
