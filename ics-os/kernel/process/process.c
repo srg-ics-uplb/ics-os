@@ -625,8 +625,8 @@ int getmessage(DWORD *source, DWORD *mes, DWORD *data){
 
 /*
  * Creates a kernel thread. A kernel thread is owned and managed by the kernel.
- * It uses the address space of the kernel process. This is why
- * threads are often referred to as lightweight proceses.
+ * It uses the address space of the kernel process. 
+ * 
  *
 */
 DWORD createkthread(void *ptr,char *name,DWORD stacksize){
@@ -729,7 +729,7 @@ DWORD dex32_killkthread(DWORD processid){
 
          PCB386 *parent;
 
-         //
+         //kernel thread
          if (ptr->accesslevel == ACCESS_SYS)
             free(ptr->stackptr);
                 
@@ -779,20 +779,19 @@ DWORD kill_process(DWORD processid){
 
          kill_children(processid);                             //kill children processes first
 
-         if (ptr->accesslevel == ACCESS_SYS){                  //A kernel process/thread?
-            dex32_killkthread(ptr);                            //special handling for kernel threads
+         if (ptr->accesslevel == ACCESS_SYS){                  //a kernel process/thread
+            dex32_killkthread(ptr);                            
             sync_leavecrit(&processmgr_busy);
             return 1;
          };
 
-         //if ( ptr->status & PS_ATTB_THREAD ){                //just an ordinary thread 
-         if ( ptr->accesslevel == ACCESS_USER ){               //just an ordinary thread 
-            kill_thread(ptr);                                  //                                              
+         if ( ptr->status & PS_ATTB_THREAD ){                  //a user thread 
+            kill_thread(ptr);                                                                                
             sync_leavecrit(&processmgr_busy);
             return 1;
          };
 
-         while (closeallfiles(ptr->processid)==1)              //close all opened files
+         while (closeallfiles(ptr->processid)==1)              //close all opened files by the process
             ;
 
          //locate the parent process and decrement its waiting
@@ -802,7 +801,7 @@ DWORD kill_process(DWORD processid){
             parent->childwait = 0;                             //set the childwait to 0
          };
 
-         if (ptr->accesslevel == ACCESS_SYS)                   //
+         if (ptr->accesslevel == ACCESS_SYS)                   //deallocate the stack pointer
             free(ptr->stackptr);
             
          /* 
@@ -812,6 +811,9 @@ DWORD kill_process(DWORD processid){
          if (ptr->meminfo != 0)
             freeprocessmemory(ptr->meminfo,(DWORD*)ptr->pagedirloc); //
 
+         /**
+          * For user processes
+          */
          if (!(ptr->status & PS_ATTB_THREAD) && (ptr->accesslevel != ACCESS_SYS) ) {
 
             //free the page tables used by the application
@@ -849,14 +851,14 @@ DWORD kill_process(DWORD processid){
 };
 
 
-//used for threads
+//Kill user threads
 DWORD kill_thread(PCB386 *ptr){
    DWORD flags;
    dex32_stopints(&flags);
 
    kill_children(ptr->processid); //kill the children of this thread first!!cascade kill
     
-   //Tell the scheduler to remove this process from the process queue
+   //Tell the scheduler to remove this thread from the ready queue
    ps_dequeue(ptr);
 
    if (ptr->stackptr0!=0)
