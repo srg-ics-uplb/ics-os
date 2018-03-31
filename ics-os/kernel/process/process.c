@@ -625,8 +625,8 @@ int getmessage(DWORD *source, DWORD *mes, DWORD *data){
 
 /*
  * Creates a kernel thread. A kernel thread is owned and managed by the kernel.
- * It uses the address space of the kernel process. This is why
- * threads are often referred to as lightweight proceses.
+ * It uses the address space of the kernel process. 
+ * 
  *
 */
 DWORD createkthread(void *ptr,char *name,DWORD stacksize){
@@ -710,19 +710,26 @@ DWORD dex32_exitprocess(DWORD ret_value){
       ;
 };
 
-//used to kill kernel(Ring0) threads only!!!
+//used to kill kernel (Ring0) threads only!!!
 DWORD dex32_killkthread(DWORD processid){
    PCB386 *ptr;
    PCB386 *end;
    DWORD flags;
+
    sync_entercrit(&processmgr_busy);
 
+   //get a pointer to the PCB
    ptr = bridges_ps_findprocess(processid);
 
+   //stop interrupts
    dex32_stopints(&flags);
+
    if (ptr != -1){
-      if (!ptr->status&PS_ATTB_UNLOADABLE){
+      if (!ptr->status & PS_ATTB_UNLOADABLE){
+
          PCB386 *parent;
+
+         //kernel thread
          if (ptr->accesslevel == ACCESS_SYS)
             free(ptr->stackptr);
                 
@@ -730,12 +737,16 @@ DWORD dex32_killkthread(DWORD processid){
             set_semaphore(ptr->semhandle,SIG_TERM);
                 
          ps_dequeue(ptr);
+
          free(ptr);
          dex32_restoreints(flags);
 
          sync_leavecrit(&processmgr_busy);
+
          return 1;
+
       };
+
    };
 
    dex32_restoreints(flags);
@@ -749,70 +760,89 @@ void sleep(DWORD val){
     current_process->waiting = val;
 };
 
-/* Called when another process wants to kill another.
+/* Called in taskswitcher() to terminate a process and perform cleanup. 
  * Also performs garbage collection (reclaims memory 
  * used by the application).
 */
 DWORD kill_process(DWORD processid){
    PCB386 *ptr,*parentptr=0;
+
    sync_entercrit(&processmgr_busy);                           //Try to enter the critical section
 
    ptr = bridges_ps_findprocess(processid);                    //obtain a handle to the PCB given id
+
    if (ptr!=-1){                                               //PCB exists
-      if (! (ptr->status&PS_ATTB_UNLOADABLE) ){
+
+      if (! (ptr->status & PS_ATTB_UNLOADABLE) ){
+
          PCB386 *parent;
+
          kill_children(processid);                             //kill children processes first
 
-         if (ptr->accesslevel == ACCESS_SYS){                  //A kernel process/thread?
-            dex32_killkthread(ptr);                            //special handling for kernel threads
+         if (ptr->accesslevel == ACCESS_SYS){                  //a kernel process/thread
+            dex32_killkthread(ptr);                            
             sync_leavecrit(&processmgr_busy);
             return 1;
          };
 
-         if ( ptr->status&PS_ATTB_THREAD ){                    //just a thread 
-            kill_thread(ptr);                                                    
+         if ( ptr->status & PS_ATTB_THREAD ){                  //a user thread 
+            kill_thread(ptr);                                                                                
             sync_leavecrit(&processmgr_busy);
             return 1;
          };
 
-         while (closeallfiles(ptr->processid)==1)              //close all opened files
+         while (closeallfiles(ptr->processid)==1)              //close all opened files by the process
             ;
 
          //locate the parent process and decrement its waiting
          //status...important for the dex32_wait() function
-         parent=ps_findprocess(ptr->owner);                    //parent should no longer wait for this process
-         if (parent!=-1){
-            parent->childwait=0;
+         parent = ps_findprocess(ptr->owner);                  //parent should no longer wait for this process
+         if (parent != -1){
+            parent->childwait = 0;                             //set the childwait to 0
          };
 
-
-         if (ptr->accesslevel == ACCESS_SYS)
+         if (ptr->accesslevel == ACCESS_SYS)                   //deallocate the stack pointer
             free(ptr->stackptr);
             
-         /*Perform memory garbage collection if necessary*/
-         if (ptr->meminfo!=0)
-            freeprocessmemory(ptr->meminfo,(DWORD*)ptr->pagedirloc);
+         /* 
+          * Perform memory garbage collection if necessary
+          * This includes freeing up memory associated to the process.
+          */
+         if (ptr->meminfo != 0)
+            freeprocessmemory(ptr->meminfo,(DWORD*)ptr->pagedirloc); //
 
-         if (!(ptr->status&PS_ATTB_THREAD) && (ptr->accesslevel != ACCESS_SYS) ) {
+         /**
+          * For user processes
+          */
+         if (!(ptr->status & PS_ATTB_THREAD) && (ptr->accesslevel != ACCESS_SYS) ) {
+
             //free the page tables used by the application
             dex32_freeuserpagetable((DWORD*)ptr->pagedirloc);
+
 #ifdef MEM_LEAK_CHECK
             printf("1 page freed (page directory).\n");
 #endif
+            //return it back for others to use
             mempush(ptr->pagedirloc);
          };
-            
+         
+         //free command line arguments 
          if (ptr->parameters!=0) 
             free(ptr->parameters);
 
          if (ptr->stdout!=0) {
-                free(ptr->stdout);
+            free(ptr->stdout);
          };
 
          //Tell the scheduler to remove this process from the queue
          ps_dequeue(ptr);
+
+         //deallocate the PCB for the process
          free(ptr);
+
          sync_leavecrit(&processmgr_busy);
+
+         //process successfully killed
          return 1;
       };
    }; 
@@ -821,14 +851,14 @@ DWORD kill_process(DWORD processid){
 };
 
 
-//used to threads
+//Kill user threads
 DWORD kill_thread(PCB386 *ptr){
    DWORD flags;
    dex32_stopints(&flags);
 
    kill_children(ptr->processid); //kill the children of this thread first!!cascade kill
     
-   //Tell the scheduler to remove this process from the process queue
+   //Tell the scheduler to remove this thread from the ready queue
    ps_dequeue(ptr);
 
    if (ptr->stackptr0!=0)
@@ -840,15 +870,18 @@ DWORD kill_thread(PCB386 *ptr){
    ;
 };
 
-//called when another process wants to kill another
+//Iterates over the process list to terminate children processes
 DWORD kill_children(DWORD processid){
    PCB386 *ptr;
    sync_entercrit(&processmgr_busy);
 
    ptr = bridges_ps_findprocess(processid);
+
    if (ptr!=-1){
+
       if (ptr->owner==processid && !( ptr->status&PS_ATTB_UNLOADABLE ) ){
-         kill_thread(ptr);
+         //kill_thread(ptr);
+         kill_process(ptr->processid);
          sync_leavecrit(&processmgr_busy);
          return 1;
       };
@@ -879,8 +912,10 @@ DWORD exit(DWORD val){
    return 0;
 };
 
-/*kills a process with the specified pid, leaves all files
-  open*/
+/*
+ * Kills a process with the specified pid, leaves all files
+ * open. Called by the dkill command in kernel/console/console.c
+*/
 void ps_user_kill(int pid){
    if (ps_findprocess(pid) != -1){
       sigterm = pid;
@@ -922,7 +957,7 @@ DWORD create_semaphore(DWORD val){
 };
 
 /*
-* places the list of processes to buf, get_processlist is responsible
+* Places the list of processes to buf, get_processlist is responsible
 * for allocating the necessary size required to store the list 
 * Returns: The total nubmer of processes in buf
 */
@@ -1123,26 +1158,39 @@ DWORD free_semaphore(DWORD handle){
 //---------------------- end semaphore related stuff ------------------
 
 
-//kill a kernel thread
+/*
+ * Kill a process or thread.
+ * This function is called by the "kill" command in kernel/console/console.c
+ * 
+ */
 DWORD dex32_killkthread_name(char *processname){
    PCB386 *ptr;
    int total, processid , i;
-   total = get_processlist(&ptr);
-    
+
+   //Retrieve the list of processes maintained by the scheduler
+   //the process list will be pointed to by ptr.
+   //get_processlist() is defined in this file.
+   total = get_processlist(&ptr);     
+   
+   //iterate over the process list looking for processname 
    for (i=0; i < total; i++){
+      //if the processname matches the one in the list and the process can be killed, 
+      //the sigterm global variable is set to the process id to inform taskswitcher() that
+      //a process will be terminated
       if (strcmp(ptr[i].name, processname) == 0 && !(ptr[i].status & PS_ATTB_UNLOADABLE) ){
-         sigterm = ptr[i].processid;
+         sigterm = ptr[i].processid;      //inform the taskswitcher that a process will be terminated
          free(ptr);
          return 1;
       };
    };
     
-   //maybe the paramater given was a pid?? (fallback)
+   //maybe the paramater given was a pid?? (fallback). Convert to a number
    processid = atoi(processname);
 
+   //check the process list again
    for (i=0; i < total; i++){
       if ( (ptr[i].processid == processid) && !(ptr[i].status&PS_ATTB_UNLOADABLE) ){
-         sigterm=ptr[i].processid;
+         sigterm=ptr[i].processid;       //inform taskswitcher() that a process is to be terminated
          free(ptr);
          return 1;
       };
@@ -1323,6 +1371,9 @@ void taskswitcher(){
          pfoccured=0;
       };
 
+      //At this point, sigterm is check if a process is to be terminated.
+      //A non-zero value in sigterm indicates the process id of the process to be terminated.
+      //sigterm is usually set in the dex32_killkthread_name(),ps_user_kill(), and exit() functions.
       //do clean up for terminate process
       //a request to terminate a process is received, pid of process to end is the value of sigterm
       if (sigterm && !flushing){

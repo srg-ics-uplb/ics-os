@@ -7,13 +7,14 @@ copy- Copy source to destination: Args: <source> <destination>
 cpuid- Displays CPU information. 
 del- Deletes a files or directory. Args: <filename/dirname>
 demo_graphics- Runs the graphics demonstration.
+dkill- Dirty kill a user process/thread. No cleanup is done. Args: <pid>
 echo- Displays a string. Args: <string>  
 exit- Exits a console session.
 fgman-  Foreground manager
 files- Shows list of currently open files.
 find- Finds a file.
 help- Displays this help screen.
-kill- Kills a kernel thread. Args: <thread name>
+kill- Kills a thread/process. Performs cleanup.  Args: <thread name>
 libinfo- Shows library information.
 loadmod- Loads a shared library (.dll or .so). Args: <module filename> 
 lsdev- Lists all modules currently installed and available. 

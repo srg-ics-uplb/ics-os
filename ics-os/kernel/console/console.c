@@ -618,7 +618,8 @@ int console_execute(const char *str){
       printf("New console thread created.\n");                   
    }else  
    if (strcmp(u,"ver") == 0) {         //-- Shows version information.
-      printf("%s",dex32_versionstring);
+      printf("%s\n",dex32_versionstring);
+      printf("%s\n",OS_VERSION);
    }else
    if (strcmp(u,"cpuid") == 0){        //-- Displays CPU information. 
       hardware_cpuinfo mycpu;
@@ -651,10 +652,17 @@ int console_execute(const char *str){
       if (u != 0)
          findfile(u);
    }else
-   if (strcmp(u,"kill") == 0){         //-- Kills a kernel thread. Args: <thread name>
+   if (strcmp(u,"dkill") == 0){         //-- Dirty kill a user process/thread. No cleanup is done. Args: <pid>
       u=strtok(0," ");
-      if (u!=0)
+      if (u!=0){
+         ps_user_kill(atoi(u));
+      }
+   }else
+   if (strcmp(u,"kill") == 0){         //-- Kills a thread/process. Performs cleanup.  Args: <thread name>
+      u=strtok(0," ");
+      if (u!=0){
          dex32_killkthread_name(u);
+      }
    }else
    if (strcmp(u,"procs") == 0 || strcmp(u,"ps") == 0){  //-- List the running processes. "ps" can also be used.
       show_process();
