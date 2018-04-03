@@ -33,102 +33,98 @@ devmgr_scheduler_extension ps_scheduler;
 
 
 //Currently Implements the Round-Robin Algorithm
-PCB386 *scheduler(PCB386 *lastprocess)
-{
-  PCB386 *ptr = lastprocess->next;
+PCB386 *scheduler(PCB386 *lastprocess){
+   PCB386 *ptr = lastprocess->next;
   
-  //if this process is blocked or is waiting, we get another process.
-  //This assumes that at least one process is not blocked or waiting.
-  while ( (ptr->status & PS_ATTB_BLOCKED) || ptr->waiting )
-  {
+   //if this process is blocked or is waiting, we get another process.
+   //This assumes that at least one process is not blocked or waiting.
+   while ( (ptr->status & PS_ATTB_BLOCKED) || ptr->waiting ){
       ptr=ptr->next;
-      if (ptr->waiting) ptr->waiting--;
-  };    
- //we should have picked a process at this point. 
- return ptr;
+      if (ptr->waiting) 
+         ptr->waiting--;
+   };    
+
+   //we should have picked a process at this point. 
+   return ptr;
 };
 
 
 //This is called when the extension manager is ready to make the current
 //scheduler active
-int sched_attach(devmgr_generic *cur)
-{
-    devmgr_scheduler_extension *oldsched=(devmgr_scheduler_extension*)cur;
-    //get the location of the PCB head 
-    sched_phead = oldsched->ps_gethead();
+int sched_attach(devmgr_generic *cur){
+   devmgr_scheduler_extension *oldsched=(devmgr_scheduler_extension*)cur;
+   //get the location of the PCB head 
+   sched_phead = oldsched->ps_gethead();
 };
 
-PCB386 *sched_getcurrentprocess()
-{
+PCB386 *sched_getcurrentprocess(){
    return current_process;
 };
 
-PCB386 *sched_gethead()
-{
+PCB386 *sched_gethead(){
    return sched_phead;
 };
 
 //adds a process to a circular doubly-linked list process queue
-void sched_enqueue(PCB386 *process)
-{
-	 PCB386 *temp;
-	 process->size = sizeof(PCB386);
+void sched_enqueue(PCB386 *process){
+   PCB386 *temp;
+   process->size = sizeof(PCB386);
 	 
-     //no processes in memory yet?
-     if (sched_phead==0)
-        {
-        	sched_phead = process;
-            //fill up phead's connections
-            sched_phead->next = sched_phead;
-            sched_phead->before = sched_phead;
-        }
-     else
-        {
-        	//Use insert at head method
-          	temp = sched_phead->next;
-            //fill up phead's connections
-            sched_phead->next = process;
+   //no processes in memory yet?
+   if (sched_phead==0){
+      sched_phead = process;
+      //fill up phead's connections
+      sched_phead->next = sched_phead;
+      sched_phead->before = sched_phead;
+   }else{
+      //Use insert at head method
+      temp = sched_phead->next;
+      //fill up phead's connections
+      sched_phead->next = process;
 
-            //fill up process's connections
-            process->next = temp;
-            process->before = sched_phead;
+      //fill up process's connections
+      process->next = temp;
+      process->before = sched_phead;
 
-            //fill up temp's connections
-            temp->before = process;
-        };
+      //fill up temp's connections
+      temp->before = process;
+   };
 };
 
 //removes a process with the specified pid from a doubly-linked list process queue
-int sched_dequeue(PCB386 *ptr)
-{
-      ptr->before->next=ptr->next;
-      ptr->next->before=ptr->before;
-      return 1;
-      
+int sched_dequeue(PCB386 *ptr){
+   ptr->before->next=ptr->next;
+   ptr->next->before=ptr->before;
+   return 1;
 };
 
 /*Unlike sched_listprocess, sched_findprocess should return the pointer
 to the actual PCB structure it uses.  The DEX process manager may use this
 to modify the actual PCB of the scheduler*/
-PCB386 *sched_findprocess(int pid)
-{
-PCB386 *retval = -1;
-DWORD cpuflags;
-PCB386 *head_ptr = sched_phead, *ptr;
-ptr = head_ptr;
+PCB386 *sched_findprocess(int pid){
+   PCB386 *retval = -1;
+   DWORD cpuflags;
+   PCB386 *head_ptr = sched_phead, *ptr;
+   ptr = head_ptr;
 
-storeflags(&cpuflags);
-stopints();
+   storeflags(&cpuflags);
+   stopints();
 
-do  {
-      if (ptr->processid == pid) {retval = ptr;break;};
+   do{
+      if (ptr->processid == pid) {
+         retval = ptr;
+         break;
+      };
       ptr = ptr ->next;
     }
-while (ptr != head_ptr);
+
+   while (ptr != head_ptr)
+      ;
     
-restoreflags(cpuflags);
-return retval;
+   restoreflags(cpuflags);
+   return retval;
 };
+
 
 /*****************************************************************************
 int sched_listprocess(PCB386 *process_buf,int items)
@@ -139,38 +135,39 @@ return value: The total number of processes, if process_buf is NULL then
               the function simply returns the total number of processes.
               items must be non-zero 
 -places the list of processes into a buffer*/
-int sched_listprocess(PCB386 *process_buf, DWORD size_per_item, int items)
-{
-    DWORD cpuflags;
-    int i = 0;
-    PCB386 *head_ptr = sched_phead, *ptr;
+int sched_listprocess(PCB386 *process_buf, DWORD size_per_item, int items){
+   DWORD cpuflags;
+   int i = 0;
+   PCB386 *head_ptr = sched_phead, *ptr;
     
-    ptr = head_ptr;
+   ptr = head_ptr;
     
-    storeflags(&cpuflags);
-    stopints();
-    do
-        {
+   storeflags(&cpuflags);
+   stopints();
+
+   do{
                        
-            if (process_buf!=0 && items!=0 )
-                   { 
-                   if (i < items)    
-                   memcpy(&process_buf[i], ptr, size_per_item < sizeof(PCB386) ?
+      if (process_buf!=0 && items!=0 ){ 
+         if (i < items)    
+            memcpy(&process_buf[i], ptr, size_per_item < sizeof(PCB386) ?
                                             size_per_item : sizeof(PCB386) );
-                        else
-                   break;
-                   };
-            ptr = ptr ->next; i++;                                            
-        }
-    while (ptr != head_ptr);
+         else
+            break;
+      };
+      ptr = ptr ->next; i++;                                            
+   }
+
+   while (ptr != head_ptr)
+      ;
     
-    restoreflags(cpuflags);
+   restoreflags(cpuflags);
     
-    return i;
+   return i;
 };
 
 //registers this scheduler extension to the device manager
 void ps_scheduler_install(){
+
    //create a scheduler extension, fill up required information
    memset(&ps_scheduler,0,sizeof(devmgr_scheduler_extension));
    ps_scheduler.hdr.size = sizeof(devmgr_scheduler_extension);
