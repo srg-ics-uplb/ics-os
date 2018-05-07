@@ -30,7 +30,7 @@
 #define B32_STACKSIZE 0xFFFF
 #define B32_HEAPSIZE  0xFFFF
 
-typedef struct  {
+typedef struct{
    DWORD zmagic;
    DWORD entrypoint;
    DWORD symbol_table;
@@ -38,105 +38,110 @@ typedef struct  {
 }B32_fileheader;
 
 typedef struct  {
-char func_name[256];
-DWORD address;
-DWORD type;
-} B32_symboltable;
+   char func_name[256];
+   DWORD address;
+   DWORD type;
+}B32_symboltable;
 
 
 //loads a user mode pe module and creates a process to start it
 int b32_loadusermodule(
-        char *module_name, //the name of the module
-        char *b32_image,  //the location of the pe image
-        DWORD base, //the desired base address to load the image so
-                    //that dex can perform the necessary relocations
-        int mode,   //Determines what kind of PE to load, USEREXE, USERDLL, SYSDLL or SYSEXE
-        char *p,    //the parameters
-        char *workdir, //The working directory of the program
-        PCB386 *parent //the parent PCB for EXEs, the parent pagedirectory for DLLs
-        ) //location of image to load
+        char *module_name,    //the name of the module
+        char *b32_image,      //the location of the pe image
+        DWORD base,           //the desired base address to load the image so
+                              //that dex can perform the necessary relocations
+        int mode,             //Determines what kind of PE to load, USEREXE, USERDLL, SYSDLL or SYSEXE
+        char *p,              //the parameters
+        char *workdir,        //The working directory of the program
+        PCB386 *parent        //the parent PCB for EXEs, the parent pagedirectory for DLLs
+        )                     //location of image to load
 {
-	B32_fileheader *fhdr=(B32_fileheader*) b32_image;
+   B32_fileheader *fhdr=(B32_fileheader*) b32_image;
 	
-	if (fhdr->zmagic==0xDA40)
-	{
-	DWORD *pagedir,*pg;
-  	DWORD heapres=0,stackres=0;
-  	DWORD *stackloc;
-  	DWORD flags,pages,ret;
-  	void (*entrypoint)(int,char**)=0;
-  	process_mem *memptr=0;
+   if (fhdr->zmagic == 0xDA40){
+	   DWORD *pagedir,*pg;
+  	   DWORD heapres=0,stackres=0;
+  	   DWORD *stackloc;
+  	   DWORD flags,pages,ret;
+  	   void (*entrypoint)(int,char**)=0;
+  	   process_mem *memptr=0;
 	
-	#ifdef DEBUG_B32
-	printf("dex32 standard flat binary loader\n");
- 	#endif
- 			
-	//allocate heaps and stacks
-   	pagedir=(DWORD*)mempop(); //obtain a physical address from the memory manager
-    pg=(DWORD*)getvirtaddress((DWORD)pagedir); //convert to a virtual address so that
+	   #ifdef DEBUG_B32
+	   printf("dex32 standard flat binary loader\n");
+ 	   #endif
+ 		
+      printf("Loading B32 executable.\n");
+	
+	   //allocate heaps and stacks
+   	pagedir=(DWORD*)mempop();                    //obtain a physical address from the memory manager
+      pg=(DWORD*)getvirtaddress((DWORD)pagedir);   //convert to a virtual address so that
                                                           //we could use it here without disabling
                                                           //the paging mechanism of the 386
 
-               //initialize the new pagedirectory
-               memset(pg,0,0x1000);
+      printf("Physical address: %x\n",pagedir);
+
+      //initialize the new pagedirectory
+      memset(pg,0,0x1000);
         
-               stackloc=(DWORD*)dex32_commitblock((DWORD)userstackloc-B32_STACKSIZE,
-               B32_STACKSIZE,&pages,
-               pagedir,PG_WR | PG_USER | PG_PRESENT);
+      stackloc=(DWORD*)dex32_commitblock((DWORD)userstackloc-B32_STACKSIZE,
+                                          B32_STACKSIZE,&pages,
+                                          pagedir, PG_WR | PG_USER | PG_PRESENT);
                
-               addmemusage(&memptr,stackloc,pages);
+      addmemusage(&memptr, stackloc, pages);
 
-               //allocate the "reserve" user stack
-               //this pages don't get a physical memory until it actually gets
-               //accessed
+      //allocate the "reserve" user stack
+      //this pages don't get a physical memory until it actually gets
+      //accessed
 
-               stackres=dex32_reserveblock((DWORD)stackloc-DEFAULT_STACKSIZE,
-               DEFAULT_STACKSIZE,&pages,pagedir,PG_WR);
+      stackres=dex32_reserveblock((DWORD)stackloc-DEFAULT_STACKSIZE,
+                                    DEFAULT_STACKSIZE, &pages, pagedir, PG_WR);
 
-               //store the allocation information so that it could be linked to
-               //the process PCB and then be able to free up the memory when app terminates
-               addmemusage(&memptr,stackres,pages);
+      //store the allocation information so that it could be linked to
+      //the process PCB and then be able to free up the memory when app terminates
+      addmemusage(&memptr, stackres, pages);
                
-               //calculate the position of the ESP pointer
-               stackloc = userstackloc - 4 ;
+      //calculate the position of the ESP pointer
+      stackloc = userstackloc - 4;
 
-               //allocate "commited" user heap
-               //unlike the stack, this one goes up
-               dex32_commitblock((DWORD)userheap, B32_HEAPSIZE, &pages,
+      //allocate "commited" user heap
+      //unlike the stack, this one goes up
+      dex32_commitblock((DWORD)userheap, B32_HEAPSIZE, &pages,
                         pagedir,PG_WR | PG_USER | PG_PRESENT);
 
-               //take note of this, so that it wouldn't cause a memory leak later
-               addmemusage(&memptr,userheap,pages);
+      //take note of this, so that it wouldn't cause a memory leak later
+      addmemusage(&memptr,userheap,pages);
                
-               //calculate the position of the reserved heap
-               heapres=userheap+(pages*0x1000);
+      //calculate the position of the reserved heap
+      heapres = userheap+(pages*0x1000);
 
-               //allocate "reserved" user heap
-               dex32_reserveblock((DWORD)heapres,
-                      DEFAULT_HEAPSIZE,&pages,pagedir,PG_WR );
+      //allocate "reserved" user heap
+      dex32_reserveblock((DWORD)heapres,
+                           DEFAULT_HEAPSIZE, &pages,pagedir,PG_WR );
 
-               addmemusage(&memptr,heapres,pages);
+      addmemusage(&memptr,heapres,pages);
 
-
-		       //copy image to memory
-		
-		       dex32_commitblock((DWORD)base,fhdr->image_size,&pages,
-               pagedir,PG_WR | PG_USER | PG_PRESENT);
+      //copy image to memory
+		dex32_commitblock((DWORD)base, fhdr->image_size, &pages,
+                           pagedir, PG_WR | PG_USER | PG_PRESENT);
         
-               addmemusage(&memptr,base,pages);            	
-  		       memcpy(base,b32_image,fhdr->image_size);
+      addmemusage(&memptr, base, pages);            	
+
+      //memcpy(base, b32_image, fhdr->image_size);
+      memcpy(base, b32_image, fhdr->image_size+16);
      
-               dex32_stopints(&flags);
+      dex32_stopints(&flags);
                
-                   entrypoint=fhdr->entrypoint;
-                   ret=createprocess(entrypoint,module_name,pagedir,memptr,stackloc,
-                        0x2000,SYSCALL_STACK,signal,p,workdir,parent);
-                   dex32_freeuserpagetable(pagedir1);             
+      entrypoint = fhdr->entrypoint;
+      //entrypoint = pg+16;
                    
-               dex32_restoreints(flags);
+      ret=createprocess(entrypoint, module_name, pagedir, memptr, stackloc,
+                        0x2000, SYSCALL_STACK, signal, p, workdir, parent);
+
+      dex32_freeuserpagetable(pagedir1);             
+                   
+      dex32_restoreints(flags);
             
-		
-	     return ret;
+      return ret;
 	};
 	
 	return 0;
