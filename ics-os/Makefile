@@ -13,6 +13,14 @@ clean:
 	rm -fr tmp/*
 	make -C kernel/ clean
 
+update_kernel_only: vmdex
+	sudo rm -fr mnt
+	sudo mkdir mnt
+	sudo mount ics-os-floppy.img mnt -tmsdos -oloop
+	sudo cp -r vmdex mnt
+	sudo umount mnt
+	sudo chmod 666 ics-os-floppy.img
+
 prep_image: vmdex
 	rm -fr tmp
 	mkdir tmp
