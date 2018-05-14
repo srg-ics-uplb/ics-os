@@ -383,6 +383,22 @@ void prompt_parser(const char *promptstr, char *prompt){
 };
   
 
+void kernel_file_io_demo(){
+   char msg[10]="Hello!";  
+   char buf[10];  
+   file_PCB *fp;
+
+   fp=openfilex("sample.txt",FILE_WRITE);
+   fwrite(msg,sizeof(msg),1,fp);
+   fclose(fp);
+   
+   fp=openfilex("sample.txt",FILE_READ);
+   fread(buf,sizeof(msg),1,fp);
+   printf("%s\n",buf);
+   fclose(fp);
+
+}
+
 
 
 /*An auxillary function for qsort for comparing two elements, based on size*/
@@ -659,6 +675,7 @@ int console_execute(const char *str){
       }
    }else
    if (strcmp(u,"kill") == 0){         //-- Kills a thread/process. Performs cleanup.  Args: <thread name>
+      //kernel_file_io_demo();
       u=strtok(0," ");
       if (u!=0){
          dex32_killkthread_name(u);
