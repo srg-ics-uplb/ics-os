@@ -5,9 +5,9 @@
 
 #ifndef RTL8139_H
 #define RTL8139_H
-#include <system.h>
-#include <kheap.h>
-#include <paging.h>
+//#include <system.h>
+//#include <kheap.h>
+//#include <paging.h>
 
 // Define some constants
 #define RTL8139_VENDOR_ID 0x10EC
@@ -22,6 +22,15 @@
 #define TOK     (1<<2)
 #define TER     (1<<3)
 #define TX_TOK  (1<<15)
+
+typedef struct registers
+{
+    uint32_t ds;
+    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+    uint32_t int_no, err_code;
+    uint32_t eip, cs, eflags, useresp, ss;
+}register_t;
+
 
 enum RTL8139_registers {
   MAG0             = 0x00,       // Ethernet hardware address
@@ -64,21 +73,21 @@ enum RTL8139_registers {
 };
 
 typedef struct tx_desc {
-    uint32_t phys_addr;
-    uint32_t packet_size;
+    DWORD phys_addr;
+    DWORD packet_size;
 }tx_desc_t;
 
 typedef struct rtl8139_dev {
     uint8_t bar_type;
-    uint16_t io_base;
-    uint32_t mem_base;
+    WORD io_base;
+    DWORD mem_base;
     int eeprom_exist;
     uint8_t mac_addr[6];
     char * rx_buffer;
     int tx_cur;
 }rtl8139_dev_t;
 
-void rtl8139_send_packet(void * data, uint32_t len);
+void rtl8139_send_packet(void * data, DWORD len);
 
 void rtl8139_handler(register_t * reg);
 
