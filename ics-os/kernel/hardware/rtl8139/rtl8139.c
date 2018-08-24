@@ -117,12 +117,18 @@ void rtl8139_send_packet(void * data, DWORD len) {
 void rtl8139_init() {
     // First get the network device using PCI
     pci_rtl8139_device = icsos_pci_get_device(RTL8139_VENDOR_ID, RTL8139_DEVICE_ID, -1);
+
     DWORD ret = icsos_pci_read(pci_rtl8139_device, PCI_BAR0);
+
     rtl8139_device.bar_type = ret & 0x1;
+
     // Get io base or mem base by extracting the high 28/30 bits
     rtl8139_device.io_base = ret & (~0x3);
+
     rtl8139_device.mem_base = ret & (~0xf);
+
     //qemu_printf("rtl8139 use %s access (base: %x)\n", (rtl8139_device.bar_type == 0)? "mem based":"port based", (rtl8139_device.bar_type != 0)?rtl8139_device.io_base:rtl8139_device.mem_base);
+
     printf("rtl8139 use %s access (base: %x)\n", (rtl8139_device.bar_type == 0)? "mem based":"port based", (rtl8139_device.bar_type != 0)?rtl8139_device.io_base:rtl8139_device.mem_base);
 
     // Set current TSAD
