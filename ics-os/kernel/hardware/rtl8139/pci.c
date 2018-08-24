@@ -20,7 +20,8 @@ pci_dev_t dev_zero= {0};
  * Read it for me !
  * */
 DWORD icsos_pci_read(pci_dev_t dev, DWORD field) {
-	// Only most significant 6 bits of the field
+printf("in pci_read\n");	
+   // Only most significant 6 bits of the field
 	dev.field_num = (field & 0xFC) >> 2;
 	dev.enable = 1;
 	outportl(PCI_CONFIG_ADDRESS, dev.bits);
@@ -112,7 +113,8 @@ pci_dev_t icsos_pci_scan_function(WORD vendor_id, WORD device_id, DWORD bus, DWO
  * Scan device
  * */
 pci_dev_t icsos_pci_scan_device(WORD vendor_id, WORD device_id, DWORD bus, DWORD device, int device_type) {
-	pci_dev_t dev = {0};
+	printf("in pci_scan_device\n");
+   pci_dev_t dev = {0};
 	dev.bus_num = bus;
 	dev.device_num = device;
 
@@ -139,7 +141,8 @@ pci_dev_t icsos_pci_scan_device(WORD vendor_id, WORD device_id, DWORD bus, DWORD
  * Scan bus
  * */
 pci_dev_t icsos_pci_scan_bus(WORD vendor_id, WORD device_id, DWORD bus, int device_type) {
-	for(int device = 0; device < DEVICE_PER_BUS; device++) {
+	printf("in pci_scan_bus\n");
+   for(int device = 0; device < DEVICE_PER_BUS; device++) {
 		pci_dev_t t = icsos_pci_scan_device(vendor_id, device_id, bus, device, device_type);
 		if(t.bits)
 			return t;
@@ -160,7 +163,10 @@ pci_dev_t icsos_pci_get_device(WORD vendor_id, WORD device_id, int device_type) 
 
 	if(icsos_pci_reach_end(dev_zero)) {
 		printf("PCI Get device failed...\n");
-	}
+	}else{
+		printf("PCI Get device success...\n");
+   }
+   
 	for(int function = 1; function < FUNCTION_PER_DEVICE; function++) {
 		pci_dev_t dev = {0};
 		dev.function_num = function;
