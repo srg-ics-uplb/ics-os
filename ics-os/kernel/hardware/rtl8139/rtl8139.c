@@ -133,7 +133,7 @@ void rtl8139_init() {
 
     // Set current TSAD
     rtl8139_device.tx_cur = 0;
-
+    
     // Enable PCI Bus Mastering
     DWORD pci_command_reg = icsos_pci_read(pci_rtl8139_device, PCI_COMMAND);
     if(!(pci_command_reg & (1 << 2))) {
@@ -146,9 +146,12 @@ void rtl8139_init() {
 
     // Soft reset
     outportb(rtl8139_device.io_base + 0x37, 0x10);
-    while((inportb(rtl8139_device.io_base + 0x37) & 0x10) != 0) {
-        // Do nothibg here...
-    }
+
+//    while((inportb(rtl8139_device.io_base + 0x37) & 0x10) != 0) {
+//        // Do nothibg here...
+//    }
+
+   printf("here\n");
 
     // Allocate receive buffer
     //rtl8139_device.rx_buffer = kmalloc(8192 + 16 + 1500);
@@ -167,7 +170,7 @@ void rtl8139_init() {
     // Register and enable network interrupts
     DWORD irq_num = icsos_pci_read(pci_rtl8139_device, PCI_INTERRUPT_LINE);
     //register_interrupt_handler(32 + irq_num, rtl8139_handler);
-    //qemu_printf("Registered irq interrupt for rtl8139, irq num = %d\n", irq_num);
+    printf("Registered irq interrupt for rtl8139, irq num = %d\n", irq_num);
 
     read_mac_addr();
 }

@@ -341,7 +341,7 @@ void dex32_startup(){
    icsos_pci_init();
    printf("[OK]\n");
    printf("Initializing rtl8139 NIC...");
-   rtl8139_init();
+   //rtl8139_init();
    printf("[OK]\n");
    //delay(400/80);
 				
