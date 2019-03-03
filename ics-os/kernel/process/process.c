@@ -210,7 +210,7 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
 /**
  * Creates a user thread. A user thread has access to all 
  * the information about the user process. Unique to a thread 
- * is the registers and stack.
+ * are the registers and stack.
  *
  *  FIXME: by jach. not working. :(
  */
