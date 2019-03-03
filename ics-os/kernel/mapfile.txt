@@ -1187,15 +1187,15 @@ LOAD irqwrap.o
 LOAD devmgr_error.o
 OUTPUT(Kernel32.bin elf32-i386)
 
-.comment        0x0000000000000000       0x34
- .comment       0x0000000000000000       0x34 kernel32.o
-                                         0x35 (size before relaxing)
- .comment       0x0000000000000034       0x35 scheduler.o
- .comment       0x0000000000000034       0x35 iomgr.o
- .comment       0x0000000000000034       0x35 fat.o
- .comment       0x0000000000000034       0x35 iso9660.o
- .comment       0x0000000000000034       0x35 devfs.o
- .comment       0x0000000000000034       0x35 devmgr_error.o
+.comment        0x0000000000000000       0x35
+ .comment       0x0000000000000000       0x35 kernel32.o
+                                         0x36 (size before relaxing)
+ .comment       0x0000000000000035       0x36 scheduler.o
+ .comment       0x0000000000000035       0x36 iomgr.o
+ .comment       0x0000000000000035       0x36 fat.o
+ .comment       0x0000000000000035       0x36 iso9660.o
+ .comment       0x0000000000000035       0x36 devfs.o
+ .comment       0x0000000000000035       0x36 devmgr_error.o
 
 .note.GNU-stack
                 0x0000000000000000        0x0
