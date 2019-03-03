@@ -215,50 +215,30 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
  *  FIXME: by jach. not working. :(
  */
 DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
-   DWORD cpuflags;
 
    PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));            //Allocate PCB for the user thread
+   DWORD cpuflags;
+   
    memset(temp,0,sizeof(PCB386));                           //Initialize it to zero
    temp->before      = current_process;                     //
-   temp->processid   = nextprocessid++;                     //Assign the process id for this thread
    sprintf(temp->name,"%s.t.%d",current_process->name,temp->processid); //set the thread name
    totalprocesses++;                                        //Increment the total number of processes
    temp->size        = sizeof(PCB386);                      //set the size of the PCB
+   temp->processid   = nextprocessid++;                     //Assign the process id for this thread
    temp->accesslevel = ACCESS_USER;                         //indicate that it is a user thread
-   temp->meminfo     = current_process->meminfo;            //memory info is the same as process
    temp->owner       = getprocessid();                      //set the pid of the owner to the process
-   temp->arrivaltime = getprecisetime();                    //set the arrival time of the thread 
-   temp->stdin       = current_process->stdin;              //stdin and stdout same as process
-   temp->stdout      = current_process->stdout;
-   memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
-   temp->workdir     = current_process->workdir;            //workdir same as process
-   temp->outdev      = current_process->outdev;             //outdev same as process
-   
-   current_process->childwait++;
-   
    temp->status      |= PS_ATTB_THREAD;                     //indicate that this is a thread 
-  
    temp->knext       = current_process->knext;              //set the memory heap, page dir same as the process
    temp->pagedirloc  = (DWORD)current_process->pagedirloc;
-   
+   temp->workdir     = current_process->workdir;            //workdir same as process
 
    //Data unique to each thread (registers and stack)
    //set up the initial values of the CPU registers for this thread.
    memset(temp,0,sizeof(saveregs));
    temp->regs.EIP    = (DWORD)ptr;                       //Set the function to be executed by this thread
-
-   //stack 
-   //Option 1: Use the passed parameter as stack
    temp->stackptr    = (DWORD)stack;
    temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
    temp->stackptr    = (void*)temp->regs.ESP;
-   
-   //Option 2: Allocate stack internally
-   //temp->stackptr    = malloc(stacksize);
-   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
-   //temp->stackptr    = (void*)temp->regs.ESP;
-
-   //segment registers
    temp->regs.CR3    = (DWORD)current_process->pagedirloc;
    temp->regs.ES     = USER_DATA;
    temp->regs.SS     = USER_DATA;
@@ -266,6 +246,26 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.DS     = USER_DATA;
    temp->regs.FS     = USER_DATA;
    temp->regs.GS     = USER_DATA;
+
+   temp->arrivaltime = getprecisetime();                    //set the arrival time of the thread 
+   temp->stdin       = current_process->stdin;              //stdin and stdout same as process
+   temp->stdout      = current_process->stdout;
+
+   temp->meminfo     = current_process->meminfo;            //memory info is the same as process
+   memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
+   temp->outdev      = current_process->outdev;             //outdev same as process
+   
+   current_process->childwait++;
+   
+   //stack 
+   //Option 1: Use the passed parameter as stack
+   
+   //Option 2: Allocate stack internally
+   //temp->stackptr    = malloc(stacksize);
+   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
+   //temp->stackptr    = (void*)temp->regs.ESP;
+
+   //segment registers
  
    //allocate syscall stack 
    temp->regs.SS0    = SYS_STACK_SEL;
