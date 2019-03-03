@@ -207,20 +207,23 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
 DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
 
    DWORD cpuflags;
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));            //Allocate PCB for the user thread
+   memset(temp,0,sizeof(PCB386));                           //Initialize it to zero
+   totalprocesses++;                                        //Increment the total number of processes
    
-   //save flags 
+   //disable interrupts, save flags 
    dex32_stopints(&cpuflags);
 
-   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));            //Allocate PCB for the user thread
-
-   memset(temp,0,sizeof(PCB386));                           //Initialize it to zero
-   sprintf(temp->name,"%s.t.%d",current_process->name,temp->processid); //set the thread name
-   totalprocesses++;                                        //Increment the total number of processes
+   sprintf(temp->name,"%s.thread",current_process->name);        //set the thread name
    temp->size        = sizeof(PCB386);                      //set the size of the PCB
    temp->processid   = nextprocessid++;                     //Assign the process id for this thread
    temp->accesslevel = ACCESS_USER;                         //indicate that it is a user thread
-   temp->owner       = getprocessid();                      //set the pid of the owner to the process
    temp->status      |= PS_ATTB_THREAD;                     //indicate that this is a thread 
+   current_process->childwait++;
+   temp->owner       = getprocessid();                      //set the pid of the owner to the process
+   temp->workdir     = current_process->workdir;            
+   temp->stdout      = current_process->stdout;
+   temp->outdev      = current_process->outdev;             //outdev same as process
    temp->knext       = current_process->knext;              //set the memory heap, page dir same as the process
    temp->pagedirloc  = (DWORD)current_process->pagedirloc;
 
@@ -237,16 +240,18 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.DS     = USER_DATA;
    temp->regs.FS     = USER_DATA;
    temp->regs.GS     = USER_DATA;
+   temp->regs.SS0    = SYS_STACK_SEL;
    
-   temp->before      = current_process;                     //
-   current_process->childwait++;
+   //allocate syscall stack 
+   temp->stackptr0   = malloc(SYSCALL_STACK);
+   temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
+   temp->regs.EFLAGS = current_process->regs.EFLAGS;
+
+   //temp->before      = current_process;                     //
 
    temp->arrivaltime = getprecisetime();                    //set the arrival time of the thread 
    temp->stdin       = current_process->stdin;              //stdin and stdout same as process
-   temp->stdout      = current_process->stdout;
-   temp->outdev      = current_process->outdev;             //outdev same as process
    temp->meminfo     = current_process->meminfo;            //memory info is the same as process
-   temp->workdir     = current_process->workdir;            
 
    memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
    
@@ -260,21 +265,16 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    //temp->stackptr    = (void*)temp->regs.ESP;
 
  
-   //allocate syscall stack 
-   temp->regs.SS0    = SYS_STACK_SEL;
-   temp->stackptr0   = malloc(SYSCALL_STACK);
-   temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
-   temp->regs.EFLAGS = current_process->regs.EFLAGS;
    
    /*Try to enter critical section...*/
-   sync_entercrit(&processmgr_busy);
+   //sync_entercrit(&processmgr_busy);
    //dex32_stopints(&cpuflags);
     
    //add the thread to the process list, critical section: must be synched
    ps_enqueue(temp);
 
    //end of critical section
-   sync_leavecrit(&processmgr_busy);
+   //sync_leavecrit(&processmgr_busy);
 
    dex32_restoreints(&cpuflags);
 
