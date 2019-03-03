@@ -27,6 +27,7 @@
 
 #include "console.h"
 
+
 void runner(){
    int i=0;
    while(1){
@@ -686,8 +687,9 @@ int console_execute(const char *str){
    }else
    if (strcmp(u,"cls") == 0 || strcmp(u,"clear") == 0){          //-- Clears the screen. 
       clrscr();
-      //char *stk=malloc(10240);
-      //createuthread(runner,stk,10240);
+      unsigned char stk[10240];
+      //createkthread((void *)runner,"runner",10240);
+      //createthread((void*)runner,stk,10240);
    }else
    if (strcmp(u,"help") == 0){         //-- Displays this help screen.
       console_execute("type /icsos/icsos.hlp");

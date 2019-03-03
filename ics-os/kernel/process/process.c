@@ -206,31 +206,36 @@ DWORD createthread(void *ptr, void *stack, DWORD stacksize){
  */
 DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
 
-   DWORD cpuflags;
-   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));            //Allocate PCB for the user thread
-   memset(temp,0,sizeof(PCB386));                           //Initialize it to zero
-   totalprocesses++;                                        //Increment the total number of processes
+   int pages;
+   DWORD flags;
+    
+   PCB386 *temp=(PCB386*)malloc(sizeof(PCB386));
+   memset(temp,0,sizeof(PCB386));
+
+   totalprocesses++;
+    
+   dex32_stopints(&flags);
+    
+   temp->size=sizeof(PCB386);
+   temp->before=current_process;
    
-   //disable interrupts, save flags 
-   dex32_stopints(&cpuflags);
-
-   sprintf(temp->name,"%s.thread",current_process->name);        //set the thread name
-   temp->size        = sizeof(PCB386);                      //set the size of the PCB
-   temp->processid   = nextprocessid++;                     //Assign the process id for this thread
-   temp->accesslevel = ACCESS_USER;                         //indicate that it is a user thread
-   temp->status      |= PS_ATTB_THREAD;                     //indicate that this is a thread 
+   sprintf(temp->name,"%s.thread",current_process->name);
+   temp->processid   = nextprocessid++;
+   temp->accesslevel = ACCESS_USER;
+   temp->status     |= PS_ATTB_THREAD;
    current_process->childwait++;
-   temp->owner       = getprocessid();                      //set the pid of the owner to the process
-   temp->workdir     = current_process->workdir;            
-   temp->stdout      = current_process->stdout;
-   temp->outdev      = current_process->outdev;             //outdev same as process
-   temp->knext       = current_process->knext;              //set the memory heap, page dir same as the process
-   temp->pagedirloc  = (DWORD)current_process->pagedirloc;
+   temp->meminfo     = current_process->meminfo;
 
-   //Data unique to each thread (registers and stack)
-   //set up the initial values of the CPU registers for this thread.
+   temp->owner       = getprocessid();
+   temp->workdir     = current_process->workdir;
+   temp->stdout      = current_process->stdout;
+   temp->outdev      = current_process->outdev;
+   temp->knext       = current_process->knext; 
+   temp->pagedirloc  = current_process->pagedirloc;
+    
+   /*Set up initial contents of the CPU registers*/
    memset(temp,0,sizeof(saveregs));
-   temp->regs.EIP    = (DWORD)ptr;                       //Set the function to be executed by this thread
+   temp->regs.EIP    = (DWORD)ptr;
    temp->regs.ESP    = (DWORD)(stack+stacksize-4);
    temp->stackptr    = (void*)temp->regs.ESP;
    temp->regs.CR3    = (DWORD)current_process->pagedirloc;
@@ -241,44 +246,20 @@ DWORD createuthread(void *ptr, void *stack, DWORD stacksize){
    temp->regs.FS     = USER_DATA;
    temp->regs.GS     = USER_DATA;
    temp->regs.SS0    = SYS_STACK_SEL;
-   
-   //allocate syscall stack 
+
+   //set up the initial stack pointer for system calls
    temp->stackptr0   = malloc(SYSCALL_STACK);
    temp->regs.ESP0   = temp->stackptr0+SYSCALL_STACK-4;
    temp->regs.EFLAGS = current_process->regs.EFLAGS;
-
-   //temp->before      = current_process;                     //
-
-   temp->arrivaltime = getprecisetime();                    //set the arrival time of the thread 
-   temp->stdin       = current_process->stdin;              //stdin and stdout same as process
-   temp->meminfo     = current_process->meminfo;            //memory info is the same as process
-
-   memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
-   
-   
-   //stack 
-   //Option 1: Use the passed parameter as stack
-   
-   //Option 2: Allocate stack internally
-   //temp->stackptr    = malloc(stacksize);
-   //temp->regs.ESP    = (DWORD)(temp->stackptr+stacksize-4);
-   //temp->stackptr    = (void*)temp->regs.ESP;
-
- 
-   
-   /*Try to enter critical section...*/
-   //sync_entercrit(&processmgr_busy);
-   //dex32_stopints(&cpuflags);
     
-   //add the thread to the process list, critical section: must be synched
+   //initialize the current FPU state
+   memcpy(&temp->regs2,&ps_kernelfpustate,sizeof(ps_kernelfpustate));
+    
+   //Tell the scheduler to add it to the process queue
    ps_enqueue(temp);
+    
+   dex32_restoreints(flags);
 
-   //end of critical section
-   //sync_leavecrit(&processmgr_busy);
-
-   dex32_restoreints(&cpuflags);
-
-   //return the thread id 
    return temp->processid;
 }
 

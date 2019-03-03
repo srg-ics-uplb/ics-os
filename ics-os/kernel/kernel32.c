@@ -466,7 +466,8 @@ void dex_init(){
    //Initialize the task manager - a module program that monitors processes
    //for the user's convenience, as kernel thread
    printf("Initializing the task manager...");
-   tm_pid=createkthread((void*)dex32_tm_updateinfo,"task_mgr",3500);
+   tm_pid=createkthread((void*)dex32_tm_updateinfo,"task_mgr",3500);!
+
    printf("[OK]\n");   
 
 
