@@ -53,5 +53,8 @@ livecd: prep_image
 boot-floppy:
 	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M -vnc 10.0.3.198:1
 
+boot-floppy-vnc:
+	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M -vnc :1
+
 boot-livecd:
 	qemu-system-i386 -cdrom ics-os-livecd.iso -boot cd -m 64M
