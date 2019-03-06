@@ -17,13 +17,13 @@ help- Displays this help screen.
 kill- Kills a thread/process. Performs cleanup.  Args: <thread name>
 libinfo- Shows library information.
 loadmod- Loads a shared library (.dll or .so). Args: <module filename> 
+ls- Shows directory listing. Args: [-l | -osize | -oname] 
 lsdev- Lists all modules currently installed and available. 
 lsext- Lists all extensions.
 lsmod- Shows the list of loaded libraries and modules. 
 lspcut- Shows a list of path aliases. 
-ls- Shows directory listing. Args: [-l | -osize | -oname] 
-meminfo- Show memory map information.
 mem- Shows memory information.
+meminfo- Show memory map information.
 mkdir- Creates a directory. Args: <directory name> 
 mount- Mounts a device. Args: fat/cdfs <partition/device> <mount point> 
 mouse-  Activate the mouse
