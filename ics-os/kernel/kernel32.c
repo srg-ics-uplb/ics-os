@@ -153,10 +153,10 @@ void dex_init();
 #include "hardware/keyboard/keyboard.c"
 #include "hardware/keyboard/mouse.c"
 #include "hardware/pcibus/dexpci2.c"
-#include "hardware/pcibus/i386-ports.c"
-#include "hardware/pcibus/access.c"
-#include "hardware/pcibus/generic.c"
-#include "hardware/pcibus/jachpci.c"
+//#include "hardware/pcibus/i386-ports.c"
+//#include "hardware/pcibus/access.c"
+//#include "hardware/pcibus/generic.c"
+//#include "hardware/pcibus/jachpci.c"
 #include "hardware/exceptions.c"
 #include "hardware/hardware.c"
 #include "hardware/chips/speaker.c"
@@ -332,10 +332,10 @@ void dex32_startup(){
    printf("[OK]\n");
 
    //Initialize the PCI bus driver
-   printf("Initializing PCI devices...");
-   show_pci();
+   //printf("Initializing PCI devices...");
+   //show_pci();
    //delay(400/80);
-   printf("[OK]\n");
+   //printf("[OK]\n");
 				
    //initialize the API module
    printf("Initializing kernel API...");		  

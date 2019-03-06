@@ -18,8 +18,8 @@
  *	Types
  */
 
-#ifdef OS_LINUX
-#include <linux/types.h>
+//#ifdef OS_LINUX
+//#include <linux/types.h>
 
 typedef __u8 byte;
 typedef __u8 u8;

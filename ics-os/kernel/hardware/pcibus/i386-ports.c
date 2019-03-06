@@ -10,11 +10,11 @@
 
 //#include <unistd.h>
 
-#ifdef __GLIBC__
-#include <sys/io.h>
-#else
-#include <asm/io.h>
-#endif
+//#ifdef __GLIBC__
+//#include <sys/io.h>
+//#else
+//#include <asm/io.h>
+//#endif
 
 #include "internal.h"
 
