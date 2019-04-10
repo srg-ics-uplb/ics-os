@@ -45,6 +45,9 @@ livecd: prep_image
 boot-floppy:
 	qemu-system-i386 -net nic,model=rtl8139 -soundhw pcspk -fda ics-os-floppy.img -boot a -m 64M 
 
+boot-floppy-gdb:
+	qemu-system-i386 -net nic,model=rtl8139 -soundhw pcspk -fda ics-os-floppy.img -boot a -m 64M -s -S
+
 boot-floppy-vnc:
 	qemu-system-i386 -net nic,model=rtl8139 -soundhw pcspk -fda ics-os-floppy.img -boot a -m 64M -vnc :1 
 

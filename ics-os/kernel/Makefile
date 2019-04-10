@@ -1,9 +1,11 @@
 CC=gcc
-CFLAGS=-fno-stack-protector -fgnu89-inline -m32 -w -nostdlib -fno-builtin -ffreestanding -c
+CFLAGS=-g -fno-stack-protector -fgnu89-inline -m32 -w -nostdlib -fno-builtin -ffreestanding -c
 ASM=nasm
 ASMFLAGS=-f elf32
 
 bzImage: all
+	objcopy --only-keep-debug Kernel32.bin Kernel32.sym
+	objcopy --strip-debug Kernel32.bin
 	gzip -c -9 Kernel32.bin >  vmdex
 	cp vmdex ..
 
@@ -11,7 +13,7 @@ all: obj Kernel32.bin
 
 obj: scheduler.o fat.o iso9660.o devfs.o iomgr.o devmgr_error.o kernel32.o \
 		startup.o asmlib.o irqwrap.o 
-	strip --strip-debug *.o
+#	strip --strip-debug *.o
 		
 kernel32.o: kernel32.c build.h
 	$(CC) $(CFLAGS) -o kernel32.o kernel32.c 
@@ -49,4 +51,5 @@ Kernel32.bin:
 clean:
 	rm -f *.o
 	rm -f Kernel32.bin
+	rm -f Kernel32.sym
 	rm -f vmdex
