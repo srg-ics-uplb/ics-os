@@ -7,6 +7,6 @@ services:
     volumes:
       - .:/home/ics-os
     security_opt:
-      -seccomp:unconfined
+      - seccomp:unconfined
     cap_add:
-      -SYS_PTRACE
+      - SYS_PTRACE
