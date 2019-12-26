@@ -2,5 +2,11 @@ version: "3"
 services:
   ics-os:
     build: .
+    command:
+      - /bin/bash
     volumes:
       - .:/home/ics-os
+    security_opt:
+      -seccomp:unconfined
+    cap_add:
+      -SYS_PTRACE
