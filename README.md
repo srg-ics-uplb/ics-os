@@ -17,8 +17,11 @@ Get started by reading the <a href="https://github.com/srg-ics-uplb/ics-os/wiki/
 ICS-OS is a 32-bit operating system and requires a 32-bit build environment. If you have a 64-bit system, 
 you can install docker and docker-compose to build ICS-OS and create the floppy image.
 
-`docker-compose run ics-os`
+Run the following command:
+`$docker-compose run ics-os`
 
+You will be dropped to a shell where you can perform the build. The floppy image is available outside the container 
+and you can use the host to load ICS-OS from the floppy image.
 
 ## Development and Support
 This project is used at the <a href='http://www.ics.uplb.edu.ph'>Institute of Computer Science</a>, <a href='http://www.uplb.edu.ph'>University of the Philippines Los Banos</a> for <a href='http://ics.uplb.edu.ph/courses/ugrad/cmsc/125'>CMSC 125</a>. It is maintained by the <a href='http://srg.ics.uplb.edu.ph'>Systems Research Group</a>.
