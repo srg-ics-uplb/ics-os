@@ -12,6 +12,14 @@ The source code available for download in .tar.gz format is availabe in the <a h
 
 Get started by reading the <a href="https://github.com/srg-ics-uplb/ics-os/wiki/Kernel-Developer's-Guide">Kernel Developer's Guide</a>.
 
+## Using docker to build
+
+ICS-OS is a 32-bit operating system and requires a 32-bit build environment. If you have a 64-bit system, 
+you can install docker and docker-compose to build ICS-OS and create the floppy image.
+
+`docker-compose run ics-os`
+
+
 ## Development and Support
 This project is used at the <a href='http://www.ics.uplb.edu.ph'>Institute of Computer Science</a>, <a href='http://www.uplb.edu.ph'>University of the Philippines Los Banos</a> for <a href='http://ics.uplb.edu.ph/courses/ugrad/cmsc/125'>CMSC 125</a>. It is maintained by the <a href='http://srg.ics.uplb.edu.ph'>Systems Research Group</a>.
 
