@@ -21,7 +21,7 @@ Run the following command:
 `$docker-compose run ics-os`
 
 You will be dropped to a shell where you can perform the build. The floppy image is available outside the container 
-and you can use the host to load ICS-OS from the floppy image.
+and you can use the host to load ICS-OS from the floppy image through qemu.
 
 ## Development and Support
 This project is used at the <a href='http://www.ics.uplb.edu.ph'>Institute of Computer Science</a>, <a href='http://www.uplb.edu.ph'>University of the Philippines Los Banos</a> for <a href='http://ics.uplb.edu.ph/courses/ugrad/cmsc/125'>CMSC 125</a>. It is maintained by the <a href='http://srg.ics.uplb.edu.ph'>Systems Research Group</a>.

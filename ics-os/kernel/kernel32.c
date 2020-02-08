@@ -385,6 +385,8 @@ void dex_init(){
    printf("Starting dex_init()...\n");
    printf("Press space to skip autoexec.bat processing\n");
 
+   printf("dex_init address: 0x%x\n",(unsigned)dex_init);
+
    //At this point, the kernel has fininshed setting up memory and the process scheduler.
    //More importantly, interrupts are already operational, which means we can now set up
    //devices that require IRQs like the floppy disk driver 
