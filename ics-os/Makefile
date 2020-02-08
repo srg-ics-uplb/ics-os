@@ -53,6 +53,9 @@ livecd: prep_image
 boot-floppy:
 	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M 
 
+boot-debug:
+	cd kernel ;	qemu-system-i386 -s -S -kernel Kernel32.bin -fda ../ics-os-floppy.img -m 64M -append "root (hdp0p0)" 
+
 boot-floppy-vnc:
 	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M -vnc :1
 
