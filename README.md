@@ -18,7 +18,7 @@ Ubuntu 16.04 64-bit is the last tested working build environment. Virtualbox can
 to run this version of Ubuntu.
 
 
-## Using docker to build
+## Using Docker to build
 
 ICS-OS is a 32-bit operating system and requires a 32-bit build environment. If you have a 64-bit system, 
 you can install docker and docker-compose to build ICS-OS and create the floppy image.
@@ -30,17 +30,13 @@ Run the following command:
 You will be dropped to a shell where you can perform the build. 
 
 `#cd /home/ics-os`
-
 `#make`
-
 `#make clean`
-
 `#exit`
 
 Make the floppy image then boot.
 
 `$sudo make floppy`
-
 `$make boot-floppy`
 
 ## Development and Support
