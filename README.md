@@ -24,16 +24,23 @@ ICS-OS is a 32-bit operating system and requires a 32-bit build environment. If 
 you can install docker and docker-compose to build ICS-OS and create the floppy image.
 
 Run the following command:
+
 `$docker-compose run ics-os`
 
 You will be dropped to a shell where you can perform the build. 
+
 `#cd /home/ics-os`
+
 `#make`
+
 `#make clean`
+
 `#exit`
 
 Make the floppy image then boot.
+
 `$sudo make floppy`
+
 `$make boot-floppy`
 
 ## Development and Support
