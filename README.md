@@ -12,6 +12,12 @@ The source code available for download in .tar.gz format is availabe in the <a h
 
 Get started by reading the <a href="https://github.com/srg-ics-uplb/ics-os/wiki/Kernel-Developer's-Guide">Kernel Developer's Guide</a>.
 
+## Build Environment
+
+Ubuntu 16.04 64-bit is the last tested working build environment. Virtualbox can be used 
+to run this version of Ubuntu.
+
+
 ## Using docker to build
 
 ICS-OS is a 32-bit operating system and requires a 32-bit build environment. If you have a 64-bit system, 
@@ -20,8 +26,15 @@ you can install docker and docker-compose to build ICS-OS and create the floppy 
 Run the following command:
 `$docker-compose run ics-os`
 
-You will be dropped to a shell where you can perform the build. The floppy image is available outside the container 
-and you can use the host to load ICS-OS from the floppy image through qemu.
+You will be dropped to a shell where you can perform the build. 
+`#cd /home/ics-os`
+`#make`
+`#make clean`
+`#exit`
+
+Make the floppy image then boot.
+`$sudo make floppy`
+`$make boot-floppy`
 
 ## Development and Support
 This project is used at the <a href='http://www.ics.uplb.edu.ph'>Institute of Computer Science</a>, <a href='http://www.uplb.edu.ph'>University of the Philippines Los Banos</a> for <a href='http://ics.uplb.edu.ph/courses/ugrad/cmsc/125'>CMSC 125</a>. It is maintained by the <a href='http://srg.ics.uplb.edu.ph'>Systems Research Group</a>.
