@@ -13,6 +13,14 @@ clean:
 	rm -fr tmp/*
 	make -C kernel/ clean
 
+update_kernel_only: vmdex
+	sudo rm -fr mnt
+	sudo mkdir mnt
+	sudo mount ics-os-floppy.img mnt -tmsdos -oloop
+	sudo cp -r vmdex mnt
+	sudo umount mnt
+	sudo chmod 666 ics-os-floppy.img
+
 prep_image: vmdex
 	rm -fr tmp
 	mkdir tmp
@@ -43,6 +51,7 @@ livecd: prep_image
 	rm -fr tmp/
 
 boot-floppy:
+<<<<<<< HEAD
 	qemu-system-i386 -net nic,model=rtl8139 -soundhw pcspk -fda ics-os-floppy.img -boot a -m 64M 
 
 boot-floppy-gdb:
@@ -50,6 +59,15 @@ boot-floppy-gdb:
 
 boot-floppy-vnc:
 	qemu-system-i386 -net nic,model=rtl8139 -soundhw pcspk -fda ics-os-floppy.img -boot a -m 64M -vnc :1 
+=======
+	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M 
+
+boot-debug:
+	cd kernel ;	qemu-system-i386 -s -S -kernel Kernel32.bin -fda ../ics-os-floppy.img -m 64M -append "root (hdp0p0)" 
+
+boot-floppy-vnc:
+	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M -vnc :1
+>>>>>>> 2019-2nd-Sem
 
 boot-livecd:
 	qemu-system-i386 -cdrom ics-os-livecd.iso -boot cd -m 64M

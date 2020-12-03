@@ -154,6 +154,7 @@ void dex_init();
 #include "hardware/keyboard/mouse.c"
 //testing network
 #include "hardware/pcibus/dexpci2.c"
+<<<<<<< HEAD
 #include "hardware/pcibus/i386-ports.c"
 #include "hardware/pcibus/access.c"
 #include "hardware/pcibus/generic.c"
@@ -161,6 +162,12 @@ void dex_init();
 #include "hardware/rtl8139/pci.c"
 #include "hardware/rtl8139/rtl8139.c"
 //-----------------------------------
+=======
+//#include "hardware/pcibus/i386-ports.c"
+//#include "hardware/pcibus/access.c"
+//#include "hardware/pcibus/generic.c"
+//#include "hardware/pcibus/jachpci.c"
+>>>>>>> 2019-2nd-Sem
 #include "hardware/exceptions.c"
 #include "hardware/hardware.c"
 #include "hardware/chips/speaker.c"
@@ -336,6 +343,7 @@ void dex32_startup(){
    printf("[OK]\n");
 
    //Initialize the PCI bus driver
+<<<<<<< HEAD
    printf("Initializing PCI devices...");
    //show_pci();
    icsos_pci_init();
@@ -344,6 +352,12 @@ void dex32_startup(){
    //rtl8139_init();
    printf("[OK]\n");
    //delay(400/80);
+=======
+   //printf("Initializing PCI devices...");
+   //show_pci();
+   //delay(400/80);
+   //printf("[OK]\n");
+>>>>>>> 2019-2nd-Sem
 				
    //initialize the API module
    printf("Initializing kernel API...");		  
@@ -392,6 +406,8 @@ void dex_init(){
    textcolor(WHITE);
    printf("Starting dex_init()...\n");
    printf("Press space to skip autoexec.bat processing\n");
+
+   printf("dex_init address: 0x%x\n",(unsigned)dex_init);
 
    //At this point, the kernel has fininshed setting up memory and the process scheduler.
    //More importantly, interrupts are already operational, which means we can now set up
