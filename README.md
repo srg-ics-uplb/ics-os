@@ -25,7 +25,7 @@ you can install docker and docker-compose to build ICS-OS and create the floppy 
 
 Run the following command:
 
-`$docker-compose run ics-os`
+`$docker-compose run ics-os-build`
 
 You will be dropped to a shell where you can perform the build. 
 

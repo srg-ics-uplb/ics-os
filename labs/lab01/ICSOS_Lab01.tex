@@ -1,0 +1,118 @@
+\documentclass[a4paper, 11pt,oneside]{article}
+\usepackage[
+  top=1.5cm,
+  bottom=1cm,
+  left=2cm,
+  right=1.5cm,
+  headheight=25.22153pt, % as per the warning by fancyhdr
+  includehead,includefoot,
+  heightrounded, % to avoid spurious underfull messages
+]{geometry} 
+
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{lipsum}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{datetime}
+
+\settimeformat{hhmmsstime}
+\yyyymmdddate
+
+\pagestyle{fancy}
+\fancyhf{} % clear all fields
+
+\pagestyle{fancy}
+\lhead{CMSC 125: Operating Systems \\ First Semester 2020-2021}
+\rhead{Institute of Computer Science \\ University of the Philippines Los Banos}
+\rfoot{JACHermocilla [CC-BY-NC-SA 4.0]}
+%\cfoot{Enjoy!:)}
+\cfoot{\thepage\ of \pageref{LastPage}}
+\lfoot{Revision: \today\ \currenttime}
+%\rfoot{https://jachermocilla.org/teaching/125}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+\begin{center}
+	{\LARGE \textbf{ICS-OS Lab 01: Building ICS-OS}}
+\end{center}
+
+\section*{Objectives}
+   At the end of this activity, you should be able to:
+   \begin{enumerate}[itemsep=0pt,parsep=0pt]
+       \item build the ICS-OS kernel binary image;
+       \item build the ICS-OS floppy disk image; and
+       \item boot ICS-OS and run two commands.
+   \end{enumerate}   
+
+\section{Introduction}
+ICS-OS is an instructional operating system that can be used for understanding different operating system concepts.  An operating system is no different from other software in that it is written in a programming language, such as C. 
+
+The build process creates the compressed kernel binary image (\texttt{vmdex}) and the floppy disk image (\texttt{ics-os-floppy.img}). Since ICS-OS has a relatively large number of source files, 
+the \texttt{Make} utility is used for the build. You can examine the contents of \texttt{Makefile} 
+to learn more of the details how this is done.
+
+To start ICS-OS, the floppy disk image is loaded in Qemu and is set as the boot device. It contains 
+the GRUB bootloader which transfers control to the ICS-OS kernel (in \texttt{vmdex}). After the boot process, a prompt is provided to users to enter commands. 
+
+\section{Prerequisites}
+The recommended development environment is Ubuntu 16.04. Tasks described here may or may not 
+work on other Linux distributions. Familiarity with the command line is also needeed.
+
+\section{Deliverables and Credit}
+Perform the tasks below and capture screen shots while you do them. Submit a PDF file 
+containing the screen shots with captions. Do not forget to put your name and laboratory section.
+Credit is five (5) points.
+
+
+\section{Tasks}
+
+\subsection*{Task 1: Install build dependencies}
+A C compiler, assembler, linker, emulator, bootloader and other tools are needed to 
+build and run ICS-OS. Run the following commands to install the dependencies.
+
+\begin{lstlisting}[language=bash,frame=single]
+$sudo apt-get update
+$sudo apt-get install build-essential nasm qemu-kvm tcc git gcc-multilib \
+      grub-pc-bin xorriso
+\end{lstlisting}
+
+\subsection*{Task 2: Clone the repository and explore the source tree}
+ICS-OS\footnote{https://github.com/srg-ics-uplb/ics-os/} is open source and is hosted on Github. Run the following command to 
+checkout the source code and explore the source tree.
+\begin{lstlisting}[language=bash,frame=single] 
+$git clone https://github.com/srg-ics-uplb/ics-os.git
+$cd ics-os/ics-os
+\end{lstlisting}
+
+\subsection*{Task 3: Build}
+Run the commands below to build. The commands should be repeated 
+whenever changes in the kernel source code are made. You will modify the kernel source 
+code in future homeworks. 
+\begin{lstlisting}[language=bash,frame=single] 
+$make clean
+$make vmdex
+$make floppy 
+\end{lstlisting}
+
+\subsection*{Task 4: Boot}
+Start Qemu with the floppy image as boot device using the command below. 
+\begin{lstlisting}[language=bash,frame=single] 
+$make boot-floppy 
+\end{lstlisting}
+
+\subsection*{Task 5: Run ICS-OS commands}
+Once the ICS-OS command prompt (\texttt{\%}) appears, type \texttt{help}. 
+Examine the list of commands and run two of these commands. Do not forget 
+to capture screen shots of the outputs.
+
+%\begin{thebibliography}{9}
+%\end{thebibliography}
+
+\end{document}

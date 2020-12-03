@@ -1,0 +1,442 @@
+\documentclass[a4paper, 11pt,oneside]{article}
+\usepackage[
+  top=1.5cm,
+  bottom=1cm,
+  left=2cm,
+  right=1.5cm,
+  headheight=25.22153pt, % as per the warning by fancyhdr
+  includehead,includefoot,
+  heightrounded, % to avoid spurious underfull messages
+]{geometry} 
+
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{lipsum}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{datetime}
+
+\settimeformat{hhmmsstime}
+\yyyymmdddate
+
+\pagestyle{fancy}
+\fancyhf{} % clear all fields
+
+\pagestyle{fancy}
+\lhead{CMSC 125: Operating Systems \\ First Semester 2020-2021}
+\rhead{Institute of Computer Science \\ University of the Philippines Los Banos}
+\rfoot{JACHermocilla [CC-BY-NC-SA 4.0]}
+%\cfoot{Enjoy!:)}
+\cfoot{\thepage\ of \pageref{LastPage}}
+\lfoot{Revision: \today\ \currenttime}
+%\rfoot{https://jachermocilla.org/teaching/125}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+\begin{center}
+   {\LARGE \textbf{ICS-OS Lab 03: Environment Variables, Processes, and Threads}}
+\end{center}
+
+\section*{Objectives}
+   At the end of this activity, you should be able to:
+   \begin{enumerate}[itemsep=0pt,parsep=0pt]
+       \item understand how environment variables are implemented and used in ICS-OS;
+       \item edit and compile C programs inside ICS-OS;
+       \item understand how processes and threads are implemented in ICS-OS; and
+       \item use process-related commands and utilities provided by ICS-OS.
+   \end{enumerate}   
+
+\section{Introduction}
+A process is a program in execution. In this homework, you will explore the process-related services provided by ICS-OS. 
+
+\section{Prerequisites}
+In order not to mess your setup, get a fresh copy of the source and place it to a new folder, \texttt{homework3}, as shown below. 
+\begin{Verbatim}[frame=single]
+$ git clone https://github.com/srg-ics-uplb/ics-os.git homework3
+$ cd homework3
+\end{Verbatim}
+
+Alternatively, you can download a tar.gz file:
+
+\begin{Verbatim}[frame=single]
+$ wget https://github.com/srg-ics-uplb/ics-os/archive/Homework3.tar.gz
+$ tar xzvf Homework3.tar.gz
+$ cd ics-os-Homework3/
+\end{Verbatim}
+
+
+Take note that the \textit{top-level directory} of the source 
+tree contains the following. 
+
+\begin{Verbatim}[frame=single]
+extras  ics-os  README.md  SEMESTER  wiki 
+\end{Verbatim}
+
+However, most of the commands will be described relative to the \texttt{ics-os} directory.
+For consistency, we will refer to this folder as \texttt{\$ICSOS\_HOME}. Use the \texttt{cd} 
+command to transfer from one directory to another.
+\begin{Verbatim}[frame=single]
+$ cd ics-os
+$ export ICSOS_HOME=`pwd`  #use backtick
+\end{Verbatim}
+
+\section{Deliverables and Credit}
+Perform the tasks below and capture screen shots while you do them. Answer
+all questions. Questions by default relate to ICS-OS. Submit a PDF file containing the screen shots with captions 
+and answers to questions. Do not forget to put your name and laboratory
+section. You may need to review Homework 1 and Homework 2. Total is \textbf{26 points}.
+
+\section{Tasks}
+
+\subsection*{Task 1: Environment Variables (3 points)} 
+Processes do not run in isolation. In fact, most processes are created from a \textit{parent} process. 
+In multitasking/multisharing systems, several processes are in memory and are scheduled for execution 
+on the CPU. Some processes even communicate with other processes. Thus, processes exist in an \textit{environment}. Operating systems provide \textit{environment variables} to allow processes to obtain information about the environment. An example of an environment variable is \texttt{PATH}. This 
+environment variable has a value that specifies where in the filesystem executables 
+can be found. A shell process can then use this environment variable so that users need not specify the absolute path to executables when running programs.
+
+The implementation of environment variables in ICS-OS is in \texttt{kernel/process/environment.h} and 
+\texttt{kernel/process/environment.c}. Examine these files and answer the following questions.
+
+%\fbox{\parbox{
+%\textbf}
+%}
+
+
+\noindent\fbox{
+	\parbox{\textwidth}{
+	\textbf{QUESTIONS}(Provide screen shots to support your answer):
+	\begin{enumerate}[itemsep=0pt,parsep=0pt]
+	\item{What data structure is used for the implementation of environment variables?}
+	\item{Are environment variables unique for each process or shared by all processes?}
+	\item{What are the functions used to set and get an environment variable?}
+	\item{Examine \texttt{kernel/console/console.c}. What console commands use the functions in question 3?} 
+	\end{enumerate}	
+	}
+}
+
+
+\subsection*{Task 2: Edit and compile programs within ICS-OS (3 points)}
+In the previous homework, you built the \texttt{chown.exe} system utility outside 
+of the ICS-OS environment. In this task, you will build programs within the 
+ICS-OS environment.
+
+Build and boot ICS-OS. Run the following command line sequence and capture a screen shot.	
+
+\begin{Verbatim}[frame=single]
+[1]% cd tcc1
+[2]% ls -l -oname
+[3]% cc
+\end{Verbatim}
+
+The \texttt{cc} console command allows you to compile C programs inside ICS-OS. Check its implementation 
+in \texttt{kernel/console/console.c}. The command requires that \texttt{PATH} be set to where 
+the executables are and \texttt{SDK\_HOME} to where the SDK is located. Accomplish this using the command line sequence below.  
+
+\begin{Verbatim}[frame=single]
+[4]% set
+[5]% set SDK_HOME=/icsos/tcc1
+[6]% set PATH=/icsos/apps
+[7]% set
+\end{Verbatim}
+
+Your next task is to write and compile the \texttt{envtest.c} program. Use \texttt{/icsos/apps/ed.exe}, a simple text editor for ICS-OS. Use \texttt{CTRL+o,ENTER} to save and \texttt{CTRL+x} to exit. Take note that this editor has a very limited set of features. Unfortunately, there is no copy and paste option.
+
+\begin{Verbatim}[frame=single]
+[8]% pwd
+[9]% ed.exe envtest.c  
+[10]% cc envtest.exe envtest.c
+[11]% ls -l -oname
+[12]% envtest.exe
+[13]% set
+\end{Verbatim}
+
+\begin{Verbatim}[frame=single]
+/*envtest.c*/
+int main(){
+   char val[30];
+   printf("Testing environment variables.\n");
+   getenv("PATH",val);
+   printf("PATH is %s\n",val);
+   setenv("PERICO_HEART","liza s.");
+   setenv("BETEL_HEART","enrique g.");
+   return 0;
+}
+\end{Verbatim}
+
+ICS-OS has its own implementation of the C standard library functions in \texttt{sdk/tccsdk.c}.
+However the implementation is not complete thus you cannot use some functions you normally 
+use in your C programs.
+You can find the definition of \texttt{setenv()} and \texttt{getenv()} there along with other functions. 
+
+
+\noindent\fbox{
+	\parbox{\textwidth}{
+	\textbf{QUESTIONS}(Provide screen shots to support your answer):
+	\begin{enumerate}[itemsep=0pt,parsep=0pt] 
+	\item{Observe that you were able to run \texttt{ed.exe} in command line [9] without specifying its absolute path despite the current directory being \texttt{/icsos/tcc1}. Why is this so?}
+	\item{Command line [12] will not work. Why? Show your fix to be able to run \texttt{envtest.exe}.}
+	\item{After successfully running \texttt{envtest.exe}. What is the output of command line [13]?Does this support your answer in Q2 from Task 1?}
+	 
+	\end{enumerate}	
+	}
+}
+
+\subsection*{Task 3: Processes }
+\subsubsection*{Task 3.1: Process Control Block (4 points)}
+A process is represented by a data structure called the \textit{Process Control Block (PCB)}. 
+In ICS-OS the PCB is a C structure (see \texttt{kernel/process/process.h}).
+
+\begin{Verbatim}[frame=single]
+typedef struct _PCB386{
+    //contains fields related to a process
+}PCB386;
+\end{Verbatim}
+
+\noindent\fbox{
+	\parbox{\textwidth}{
+	\textbf{QUESTIONS}(Provide screen shots to support your answer):
+	\begin{enumerate}[itemsep=0pt,parsep=0pt] 
+	\item{What field in the PCB describes the security bits for a process?}
+	\item{What field in the PCB describes the time the process arrived in the system?}
+	\item{What field in the PCB describes the memory information used by a process?}
+    \item{What field in the PCB describes the execution context(hardware specific) of a  process?}	
+	\end{enumerate}	
+	}
+}
+
+\subsubsection*{Task 3.2: Startup Processes (5 points)}
+
+After GRUB, the ICS-OS boot process proceeds by the execution of a sequence of functions from the kernel as shown below. 
+
+\begin{enumerate}[itemsep=0pt,parsep=0pt]
+    \item{\texttt{startup:}, \textit{Source:}\texttt{kernel/startup/startup.asm}, \textit{Purpose:} enable 32-bit protected mode, set up memory address linear selectors, calls \texttt{main()}}
+    
+    \item{\texttt{main()}, \textit{Source:}\texttt{kernel/kernel32.c}, \textit{Purpose:} enable IRQ lines, set up default interrupt handlers, initialize memory management, set the context switch rate, calls \texttt{dex3\_startup()}}
+
+    \item{\texttt{dex32\_startup()}, \textit{Source:}\texttt{kernel/kernel32.c}, 
+\textit{Purpose:} initialize different managers(extension, device, memory, process), calls the \texttt{taskswitcher()}}
+	
+	\item{\texttt{taskswitcher()}, \textit{Source:}\texttt{kernel/process/process.c}, 
+\textit{Purpose:} select the next process to execute.}
+\end{enumerate}   
+
+When the task switcher kicks in, the kernel is now in full control and begins selecting processes and threads for execution. The task switcher is essentially the \textit{CPU scheduler}. 
+
+During boot, several processes have already been created and are running in the background, 
+including the \texttt{console} where you are typing commands. 
+
+You might be wondering how these startup processes/threads got created and started. There are two functions to look at in the source:  \texttt{process\_init()} from \texttt{kernel/process/process.c} and \texttt{dex\_init()} from \texttt{kernel/kernel32.c}. Study these two functions and answer the questions. You will observe that 
+the PCBs of the startup processes are \textit{hard-coded}, which means that the values of the fields are 
+set at compile time of the kernel.
+
+Now, run the command below.
+
+\begin{Verbatim}[frame=single]
+% ps
+\end{Verbatim}
+
+\noindent\fbox{
+	\parbox{\textwidth}{
+	\textbf{QUESTIONS}(Provide screen shots to support your answer):
+	\begin{enumerate}[itemsep=0pt,parsep=0pt] 
+	\item{How many processes and kernel threads (those with \texttt{(t)} in the name) in total are running?}
+	\item{What is the name of the process with PID 0?}
+    \item{What is the PID of \texttt{console(0)}?What is its access level?}
+    \item{What function is used to create the running kernel threads?}
+    \item{To what function is the EIP register assigned to in the PCB of the very first process?}
+	\end{enumerate}	
+	}
+}
+
+
+\subsubsection*{Task 3.3: Consoles (2 points)}
+
+Create a new console using the command below. You can move across consoles using \texttt{F11} and 
+\texttt{F12}. 
+\begin{Verbatim}[frame=single]
+% newconsole
+\end{Verbatim}
+
+\noindent\fbox{
+	\parbox{\textwidth}{
+	\textbf{QUESTIONS}(Provide screen shots to support your answer):
+	\begin{enumerate}[itemsep=0pt,parsep=0pt] 
+	\item{Using \texttt{ps}, what is the name and PID of the new console?What is the name and PID of its parent process?Is the new console a process or a thread?}
+	\item{Study the implementation of the \texttt{newconsole} command in the \texttt{kernel/console/console.c}. What function is used to create a new console?}
+	\end{enumerate}	
+	}
+}
+
+\subsubsection*{Task 3.4: User Processes (2 points)}
+Edit and compile \texttt{count.c} within ICS-OS but DO NOT RUN yet. Copy the executable to 
+\texttt{/icsos/apps} folder. Do not forget to set the environment variables.
+
+\begin{Verbatim}[frame=single]
+% ed.exe count.c
+% cc count.exe count.c
+% copy count.exe /icsos/apps
+\end{Verbatim}
+
+\begin{Verbatim}[frame=single]
+/*count.c*/
+int main(){
+   int i;
+   while(1){
+     printf("%d\n",(i=(i+1)%10));
+     sleep(10);   
+   }
+}
+\end{Verbatim}
+
+Create a new console then run \texttt{count.exe} on the new console. Try to press \texttt{CTRL+c}. 
+You will observe that the process does not stop. Signals are not yet implemented. 
+
+\begin{Verbatim}[frame=single]
+% newconsole
+% count.exe
+\end{Verbatim}
+
+Go back to the previous console using \texttt{F11} then run \texttt{ps}.
+
+\noindent\fbox{
+	\parbox{\textwidth}{
+	\textbf{QUESTIONS}(Provide screen shots to support your answer):
+	\begin{enumerate}[itemsep=0pt,parsep=0pt] 
+	\item{What is the PID of \texttt{count.exe} process?What is its access level?How much memory does it use?What is its parent process?}
+	\end{enumerate}	
+	}
+}
+
+In order to terminate the \texttt{count.exe} process, use the \texttt{kill} console command with the 
+process id or complete process name as argument.
+\begin{Verbatim}[frame=single]
+% kill count.exe
+\end{Verbatim}
+\textbf{Process Creation (5 points)} \\ 
+
+How did the executable \texttt{count.exe} program eventually became a process?This is explained below.\\
+
+When the user enters a command line, the console first checks if it is an internal command. 
+If it is not, then the command line is treated as an executable, as in the case of 
+\texttt{envtest.exe} and \texttt{count.exe}. If the executable is not found then a "\texttt{Command or executable not found.}" message is displayed. If found, a process will be created and started. 
+
+Creating and running processes from user programs is implemented in the \texttt{user\_execp()} function (see \texttt{kernel/console/console.c}). In this function, the contents of the executable (aka \textit{program image}) is read. Then, the function \texttt{addmodule()} (see \texttt{kernel/process/pdispatch.c}) is called. 
+This function creates a \texttt{createp\_queue} node (see \texttt{kernel/process/pdispatch.h}). The new node type is set to \texttt{NEW\_MODULE}, which means that the process that will be created will not be a copy of the parent process. The new node is then added to the global \texttt{pd\_head} queue. The \texttt{process\_dispatcher()} (see \texttt{kernel/process/pdispatch.c}) continuously inspects \texttt{pd\_head} queue and when it finds a node with  the \texttt{dispatched} field set to 0, it will create a new process using \texttt{createprocess()}. Note that the \texttt{process\_dispatcher()} was called in the very first process(pid=0).  
+
+There are two low-level functions to create processes (see \texttt{kernel/process/process.c}): \texttt{forkprocess()} and \texttt{createprocess()}. 
+The \texttt{forkprocess()} approach creates a duplicate of the PCB of the parent process while the \texttt{createprocess()} approach creates the PCB from scratch. In both approaches, after the PCB has been created, it is added to the ready queue using \texttt{ps\_enqueue()}. At this point, a process has been \textit{dispatched} and can now be scheduled by the CPU scheduler for execution. 
+
+As mentioned above, the instructions to be executed by the process will come from the program image, which can 
+be in different formats. In ICS-OS, the following formats are supported: ELF32, PE, COFF, B32. A \textit{module loader} for each format is implemented in \texttt{kernel/module/}. For example, the module to load linux executables is in \texttt{kernel/module/elf\_module.c}. These loaders 
+eventually call \texttt{createprocess()} after all the information needed to create the PCB have been obtained from the program image.
+
+For application programming, you can use the \texttt{execp()} function in the SDK which invokes  
+\texttt{user\_execp()} through a system call. It returns 0 if the call failed or the process id if successful. 
+
+\begin{Verbatim}[frame=single]
+int execp(char *fname, unsigned short mode, char *params);
+\end{Verbatim}
+
+The code below is a template for a basic shell. Edit, compile, and run \texttt{meshell.exe} inside ICS-OS. Show some screenshots of it in action.  
+
+\begin{Verbatim}[frame=single]
+/*meshell.c*/
+int main() {
+   char cmdline[255]="";
+   char params[255];
+   char *cmd;
+   printf("MeShell v1.0\n");
+   printf("Type 'exit' to end session.\n");
+   while (strcmp(cmdline,"exit")!=0){
+      printf("$");
+      gets(cmdline);
+      strcpy(params,cmdline);
+      cmd=strtok(cmdline," ");
+      if (cmd != 0){ 
+         if(!execp(cmd, 0, params))
+            printf("Executable not found.\n");
+      }   
+   }   
+   return 0;
+}
+
+\end{Verbatim}
+
+\noindent\fbox{
+	\parbox{\textwidth}{
+	\textbf{QUESTIONS}(Provide screen shots to support your answer):
+	\begin{enumerate}[itemsep=0pt,parsep=0pt] 
+	\item{Use \texttt{hxdmp.exe} to determine the format of some of the executables in the \texttt{apps} folder. If the first few bytes has \texttt{MZ} then it is a windows executable, if \texttt{ELF} then it is a linux executable. What is the executable format of \texttt{count.exe}? \texttt{ed.exe}? \texttt{tcc.exe}? \texttt{nasm.exe}? \texttt{meshell.exe}?}
+	\item{Which line in the \texttt{forkprocess()} and \texttt{createprocess()} functions initializes the 
+	PCB of the new process. How do the functions differ?
+	 }	
+	\end{enumerate}
+		
+	}
+}
+
+The \texttt{forkprocess()} method of creating processes can be used through the \texttt{fork()} function in the sdk. This function invokes  
+\texttt{user\_fork()} through a system call. Compile \texttt{fork.c} below. Create a new console and run \texttt{meshell.exe} on the new console. Run \texttt{fork.exe} in meshell. Switch to the previous console and run \texttt{ps}. Observe the list of processes and capture some screenshots.
+\begin{Verbatim}[frame=single]
+% cd /icsos/apps
+% newconsole
+% meshell.exe
+$ fork.exe
+\end{Verbatim}
+
+\begin{Verbatim}[frame=single]
+/*fork.c*/
+int NITER=10000;
+int main() {
+   int retval;
+   printf("Calling fork()..\n");
+   retval = fork();
+   if (retval == 0){
+      printf("In child. mypid:%d\n",getpid());
+      for (int i=0;i<NITER;i++){
+         printf("Child: %d\n",i);
+         sleep(10);
+      }
+      exit(0);
+   }
+   else if (retval > 0){
+      printf("In parent, mypid:%d, child pid: %d\n",getpid(), retval);
+      for (int i=0;i<NITER;i++){
+         printf("Parent: %d\n",i);
+         sleep(15);
+      }
+      exit(0);
+   }
+   return -1;
+}
+\end{Verbatim}
+
+\textbf{Process Termination (2 points)} \\
+
+Terminating a process means freeing the resources allocated to it,  such as memory and other data structures, as well as the PCB itself. As mentioned above, the \texttt{kill} console command (see \texttt{kernel/console/console.c}) is used to terminate a process. It calls the 
+\texttt{dex32\_killkthread\_name()} function (see \texttt{kernel/process/process.c}). This function sets 
+the  variable \texttt{sigterm} to the process id of the process to kill. The \texttt{taskswitcher()}, when in control, then checks if \texttt{sigterm} is zero, if not, it calls \texttt{kill\_process(sigterm)}. 
+The actual work of freeing the resources and terminating the process is done in the \texttt{kill\_process()} function (see \texttt{kernel/process/process.c}).
+
+\noindent\fbox{
+	\parbox{\textwidth}{
+	\textbf{QUESTIONS}(Provide screen shots to support your answer):\\
+	Study the \texttt{kill\_process()} function.
+	\begin{enumerate}[itemsep=0pt,parsep=0pt] 
+	\item{What function is called to kill a kernel process/thread?}	
+	\item{What function is called to kill a user thread?}	
+	\end{enumerate}
+	}
+}
+
+
+
+
+\end{document}

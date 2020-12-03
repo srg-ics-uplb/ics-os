@@ -1,0 +1,261 @@
+\documentclass[a4paper, 11pt,oneside]{article}
+\usepackage[
+  top=1.5cm,
+  bottom=1cm,
+  left=2cm,
+  right=1.5cm,
+  headheight=25.22153pt, % as per the warning by fancyhdr
+  includehead,includefoot,
+  heightrounded, % to avoid spurious underfull messages
+]{geometry} 
+
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{lipsum}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{datetime}
+
+\settimeformat{hhmmsstime}
+\yyyymmdddate
+
+\pagestyle{fancy}
+\fancyhf{} % clear all fields
+
+\pagestyle{fancy}
+\lhead{CMSC 125: Operating Systems \\ First Semester 2020-2021}
+\rhead{Institute of Computer Science \\ University of the Philippines Los Banos}
+\rfoot{JACHermocilla [CC-BY-NC-SA 4.0]}
+%\cfoot{Enjoy!:)}
+\cfoot{\thepage\ of \pageref{LastPage}}
+\lfoot{Revision: \today\ \currenttime}
+%\rfoot{https://jachermocilla.org/teaching/125}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+\begin{center}
+   {\LARGE \textbf{ICS-OS Lab 02: Command Line Interface, System Calls, and System
+Utilities }}
+\end{center}
+
+\section*{Objectives}
+   At the end of this activity, you should be able to:
+   \begin{enumerate}[itemsep=0pt,parsep=0pt]
+       \item add a console command;
+       \item add a new system call service/function; and
+       \item invoke a system call from a system utility.
+   \end{enumerate}   
+
+\section{Introduction}
+The command line interface (CLI) is one way an operating system allows users to
+access its services such as program execution.  The user enters a command
+string on the CLI prompt and the OS executes the command. The execution usually
+involves \textit{system calls} which invoke some services provided by the kernel. 
+This services are functions that execute in \textit{kernel mode}. 
+The CLI can be implemented as part of the kernel itself,
+as in the case of ICS-OS, or as a separate program, called a \textit{shell},
+which is outside of the kernel.  Since shells (and other system utilities and user applications
+ as well) are
+not in the kernel but may require system calls, they do so using software
+interrupts (Linux uses \texttt{int 80h}, DOS uses \texttt{int 21h}, and ICS-OS
+uses \texttt{int 30h}). Application Programming Interfaces(APIs), Software
+Development Kit(SDKs), and Runtime environments make it easy to write programs for
+operating systems by hiding the details of the systems calls to the
+programmers.
+
+
+\section{Prerequisites}
+You should have completed Lab 01.  Take note that the \textit{top-level directory} of the source 
+tree contains the following. 
+\begin{Verbatim}[frame=single]
+extras  ics-os  README.md  SEMESTER  wiki 
+\end{Verbatim}
+
+However, most of the commands will be described relative to the \texttt{ics-os} directory.
+For consistency, we will refer to this folder as \texttt{\$ICSOS\_HOME}. Use the \texttt{cd} 
+command to transfer from one directory to another.
+ Several updates have been made in the remote repository. 
+Update your local copy of the source using the following commands.
+
+%\begin{lstlisting}[language=bash,frame=single] 
+\begin{Verbatim}[frame=single] 
+$cd ics-os
+$git pull
+\end{Verbatim}
+%\end{lstlisting}
+
+
+\section{Deliverables and Credit}
+Perform the tasks below and capture screen shots while you do them. Answer
+all questions. Submit a PDF file containing the screen shots with captions
+and answers to questions. Do not forget to put your name and laboratory
+section.  Credit is ten (10) points.
+
+
+\section{Tasks}
+
+\subsection*{Task 1: Add a new console command (3 points)} 
+The CLI in ICS-OS is part of the kernel. Its implementation is located in
+\texttt{kernel/console/console.c}. The function \texttt{int
+console\_execute(const char *str)} is where the command string (what you type
+in the \texttt{\%} prompt) is processed. Study this function. The
+\texttt{strtok()} function is used to tokenize the command string to extract
+the command name and its arguments. The code fragment below is for the new
+\texttt{add} command with two integer arguments that we wish to include.
+Insert the code fragment in an appropriate location in the
+\texttt{console\_execute()} function. Build and boot ICS-OS to test if the command works.
+Capture screen shots. Also show where you placed the code
+fragment. 
+
+\textbf{QUESTION}: What are the advantages/disadvantages of having the CLI in
+the kernel?
+
+%\begin{lstlisting}[language=C,frame=single]
+\begin{Verbatim}[frame=single] 
+if (strcmp(u,"add") == 0){   //-- Adds two integers. Args: <num1> <num2> 
+   int a, b; 
+   u = strtok(0," "); 
+   a = atoi(u);
+   u = strtok(0," "); 
+   b = atoi(u); 
+   printf("%d + %d = %d\n",a,b,a+b); 
+}else
+\end{Verbatim}
+%\end{lstlisting}
+
+\subsection*{Task 2: Add a new system call service/function (3 points)}
+The list of functions/services accessible through system calls are placed in a
+\textit{system call table}. In ICS-OS, it is the array of structures 
+defined in \texttt{kernel/dexapi/dex32API.h}: 
+
+\begin{Verbatim}[frame=single]
+api_systemcall api_syscalltable[API_MAXSYSCALLS];
+\end{Verbatim}
+
+The function \texttt{api\_init()} in \texttt{kernel/dexapi/dex32API.c}
+populates this table. 
+
+
+ICS-OS hooks to \texttt{int 30h} to handle system calls. This is set in
+\texttt{kernel/hardware/chips/irqhandlers.c}. Recall the interrupt system 
+and the interrupt vector table (IVT) discussed in the lecture.
+
+\begin{Verbatim}[frame=single] 
+setinterruptvector(0x30, dex_idtbase, 0xEE, syscallwrapper, SYS_CODE_SEL); 
+\end{Verbatim}
+
+You do not have to understand all the parameters of the above function for now. 
+The parameter \texttt{syscallwrapper} is a function defined in \texttt{kernel/irqwrap.asm}.  
+It calls the function \texttt{api\_syscall(...)} from \texttt{dex32API.c} 
+which processes the system call and invokes the appropriate service from the
+system call table. \texttt{api\_syscall(...)} is called everytime \texttt{int 30h} is generated.
+
+To add a system call, the \texttt{api\_addsystemcall()} function is used. Its prototype 
+is shown below.
+\begin{Verbatim}[frame=single] 
+int api_addsystemcall(DWORD function_number, void *function_ptr,
+                        DWORD access_check, DWORD flags);
+\end{Verbatim}
+
+The important parameters are \texttt{function\_number} and \texttt{function\_ptr}.
+Say you want to implement the \texttt{kchown()}\footnote{Usually functions in the kernel are written with the letter \texttt{k} at the start} system call function/service below that changes the owner 
+of a file. Edit \texttt{dex32API.c} and add the function.
+\begin{Verbatim}[frame=single]
+int kchown(int fd, int uid, int gid){
+   printf("Changing owner of fd=%d to user id=%d and group id=%d\n", fd, uid, gid);
+   //Actual code to change file ownership is placed here.   
+   return 0; //0-success
+}
+\end{Verbatim}
+
+To add it to the system call table, add the following line in the \texttt{api\_init()} 
+function. The function number you will use is \texttt{9Fh}. Take note of this number.
+
+\begin{Verbatim}[frame=single]
+api_addsystemcall(0x9F, kchown, 0, 0);
+\end{Verbatim} 
+
+Capture screenshots where you placed the codes. 
+Build ICS-OS. At this point, the new system call is added to the kernel but it is not 
+doing anything yet. You will do that in Task 3. 
+
+\subsection*{Task 3: Invoke a system call in a system utility (4 points)}
+In this task you are to make a system utility that invokes the system call service  
+you created in Task 2. In ICS-OS, system utilities and user applications are 
+placed in the \texttt{contrib} folder. There is an example application, 
+\texttt{hello}, which you will use as template. Study the \texttt{Makefile}. 
+Run the commands below to create your \texttt{chown} system utility.  
+
+\begin{Verbatim}[frame=single]
+$ cd contrib	   #go to the contrib folder
+$ cp -r hello/ chown/   #copy hello to chown
+$ cd chown/             #go inside chown
+$ mv hello.c chown.c    #rename hello.c to chown .c
+$ sed -i 's/hello/chown/g' Makefile   #replace hello with chown in the Makefile
+$ make
+$ make install
+\end{Verbatim}
+
+Go back to \texttt{\$ICSOS\_HOME}. Build and boot ICS-OS. 
+Inside ICS-OS, run the following commands and capture screenshots.
+
+\begin{Verbatim}[frame=single]
+% cd apps
+% ls -l -oname
+% chown.exe
+\end{Verbatim}
+
+\textbf{QUESTION}: What is the output of executing \texttt{chown.exe} inside ICS-OS?
+
+Go back to the \texttt{contrib/chown} folder. Edit \texttt{chown.c} and replace 
+the contents with the code below. 
+
+\begin{Verbatim}[frame=single]
+#include "../../sdk/dexsdk.h"
+int main(int argc, char *argv[]) {
+   if (argc < 4){ 
+      printf("Usage: chown.exe <fd> <uid> <gid>\n");
+      return -1; 
+   }   
+   dexsdk_systemcall(0x9F, atoi(argv[1]), atoi(argv[2]), 
+                     atoi(argv[3]), 0, 0); 
+   return 0;
+}
+\end{Verbatim}
+
+\textbf{QUESTION}: Study the function \texttt{dexsdk\_systemcall()} defined in \texttt{sdk/tccsdk.c}.
+What does this function do?
+
+Now build and install the \texttt{chown} system utility.
+\begin{Verbatim}[frame=single]
+$ make
+$ make install
+\end{Verbatim}
+
+Go back to \texttt{\$ICSOS\_HOME}. Build and boot ICS-OS. 
+Inside ICS-OS, run the following commands and capture screenshots.
+
+\begin{Verbatim}[frame=single]
+% cd apps
+% ls -l -oname
+% chown.exe
+\end{Verbatim}
+
+\textbf{QUESTION}: What is the output of executing \texttt{chown.exe} this time?
+
+
+%\begin{thebibliography}{9} \end{thebibliography}
+\section{Tips}
+You can use the \texttt{grep} utility to quickly search for strings in files from \texttt{\$ICSOS\_HOME} .
+\begin{Verbatim}[frame=single]
+$ grep -rn api_init
+\end{Verbatim}
+ 
+
+\end{document}

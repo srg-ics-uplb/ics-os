@@ -1,6 +1,6 @@
 version: "3"
 services:
-  ics-os:
+  ics-os-build:
     build: .
     command:
       - /bin/bash
