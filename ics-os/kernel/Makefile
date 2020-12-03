@@ -1,9 +1,5 @@
 CC=gcc
-<<<<<<< HEAD
-CFLAGS=-g -fno-stack-protector -fgnu89-inline -m32 -w -nostdlib -fno-builtin -ffreestanding -c
-=======
 CFLAGS=-fno-stack-protector -fgnu89-inline -m32 -w -nostdlib -fno-builtin -ffreestanding -c -g 
->>>>>>> 2019-2nd-Sem
 ASM=nasm
 ASMFLAGS=-f elf32
 
@@ -17,11 +13,7 @@ all: obj Kernel32.bin
 
 obj: scheduler.o fat.o iso9660.o devfs.o iomgr.o devmgr_error.o kernel32.o \
 		startup.o asmlib.o irqwrap.o 
-<<<<<<< HEAD
-#	strip --strip-debug *.o
-=======
 	#strip --strip-debug *.o
->>>>>>> 2019-2nd-Sem
 		
 kernel32.o: kernel32.c build.h
 	$(CC) $(CFLAGS) -o kernel32.o kernel32.c 

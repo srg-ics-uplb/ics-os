@@ -51,7 +51,6 @@ livecd: prep_image
 	rm -fr tmp/
 
 boot-floppy:
-<<<<<<< HEAD
 	qemu-system-i386 -net nic,model=rtl8139 -soundhw pcspk -fda ics-os-floppy.img -boot a -m 64M 
 
 boot-floppy-gdb:
@@ -59,15 +58,10 @@ boot-floppy-gdb:
 
 boot-floppy-vnc:
 	qemu-system-i386 -net nic,model=rtl8139 -soundhw pcspk -fda ics-os-floppy.img -boot a -m 64M -vnc :1 
-=======
-	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M 
 
 boot-debug:
 	cd kernel ;	qemu-system-i386 -s -S -kernel Kernel32.bin -fda ../ics-os-floppy.img -m 64M -append "root (hdp0p0)" 
 
-boot-floppy-vnc:
-	qemu-system-i386 -fda ics-os-floppy.img -boot a -m 64M -vnc :1
->>>>>>> 2019-2nd-Sem
 
 boot-livecd:
 	qemu-system-i386 -cdrom ics-os-livecd.iso -boot cd -m 64M
