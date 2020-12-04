@@ -19,7 +19,7 @@ of Ubuntu do now work anymore.
 ### Using Docker to build
 
 ICS-OS is a 32-bit operating system and requires a 32-bit build environment. If you have a 64-bit system, 
-you can install [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) to build ICS-OS and create the floppy image.
+you can install [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) to build ICS-OS and create the floppy image. Note that this environment is used to build both the kernel and user applications.
 
 Run the following command:
 
