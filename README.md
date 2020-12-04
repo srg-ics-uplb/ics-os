@@ -13,19 +13,21 @@ Latest floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/
 ## Build Environment
 
 Ubuntu 16.04 64-bit is the last tested working build environment. Virtualbox can be used 
-to run this version of Ubuntu. We now use docker as the build environment since new versions 
+to run this version of Ubuntu.  However, docker is the recommended build environment since new versions 
 of Ubuntu do now work anymore.
 
 ### Using Docker to build
 
 ICS-OS is a 32-bit operating system and requires a 32-bit build environment. You need to install 
-[docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) to build the ICS-OS kernel and user applications.
+[docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) 
+to build the ICS-OS kernel and user applications.
 
-Run the following command:
+Run the following command to enter the build environment:
 
 `$docker-compose run ics-os-build`
 
-You will be dropped to a shell where you can perform the build. 
+You will be dropped to a shell where you can perform the build. The ics-os folder is mapped inside the container. Thus, 
+you can perform the edits outside the container and the changes will be reflected inside the build environment.
 
 ```
 #cd /home/ics-os
