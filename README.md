@@ -37,6 +37,11 @@ $make boot-floppy
 
 Latest floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/ics-os/ics-os-floppy.img'>ics-os-floppy.img</a>
 
+Boot the floppy using the following command:
+```
+$qemu-system-i386 -fda ics-os-floppy.img
+```
+
 The source code available for download in .tar.gz format is availabe in the <a href='https://github.com/srg-ics-uplb/ics-os/releases'>releases</a> section.
 
 Get started by reading the <a href="https://github.com/srg-ics-uplb/ics-os/wiki/Kernel-Developer's-Guide">Kernel Developer's Guide</a>.
