@@ -59,6 +59,7 @@ You can ask questions <a href="https://groups.google.com/forum/#!forum/ics-os">h
 ## Citation
 
 If you find his resource useful in your research, please cite our work.
+
 ---
 
 J. A. C. Hermocilla. Ics-os: A kernel programming approach to teaching operating system concepts. Philippine Information Technology Journal, 2(2):25--30, 2009.
