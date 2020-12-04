@@ -5,7 +5,7 @@
 #define KERNEL_NAME    "vmdex"
 
 #define OS_NAME        "ICS Operating System"
-#define OS_VERSION     "2019-2"
+#define OS_VERSION     "(master)"
 
 
 char *dex32_versionstring=OS_NAME;
