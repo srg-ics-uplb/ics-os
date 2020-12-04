@@ -14,7 +14,7 @@ Latest floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/
 
 Ubuntu 16.04 64-bit is the last tested working build environment. Virtualbox can be used 
 to run this version of Ubuntu.  However, docker is the recommended build environment since new versions 
-of Ubuntu do now work anymore.
+of Ubuntu do not work anymore.
 
 ### Using Docker to build
 
