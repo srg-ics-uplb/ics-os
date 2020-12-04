@@ -66,7 +66,7 @@ J. A. C. Hermocilla. Ics-os: A kernel programming approach to teaching operating
 
 ---
 
-You can also use the bibtex entry below.
+You can also use the following bibtex entry.
 
 ```
 @article{hermocilla-ics-os-pitj2009,
