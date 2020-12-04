@@ -58,7 +58,7 @@ You can ask questions by submitting an issue.
 
 ## Citation
 
-If you find his resource useful in your research, please cite our work.
+If you find his resource useful in your research, please cite our [paper](https://jachermocilla.org/publications/hermocilla-pitj2009-ics-os.pdf).
 
 ---
 
