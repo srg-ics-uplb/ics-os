@@ -44,12 +44,34 @@ Alternatively, you can boot the floppy image directly using qemu.
 ```
 $qemu-system-i386 -fda ics-os-floppy.img
 ```
-
-
 Get started by reading the <a href="https://github.com/srg-ics-uplb/ics-os/wiki/Kernel-Developer's-Guide">Kernel Developer's Guide</a>.
+
 ## Development and Support
 This project is used at the <a href='http://www.ics.uplb.edu.ph'>Institute of Computer Science</a>, <a href='http://www.uplb.edu.ph'>University of the Philippines Los Banos</a> for <a href='http://ics.uplb.edu.ph/courses/ugrad/cmsc/125'>CMSC 125</a>. It is maintained by the <a href='http://srg.ics.uplb.edu.ph'>Systems Research Group</a>.
 
 Don't forget to check the <a href="http://github.com/srg-ics-uplb/ics-os/wiki">Wiki</a>.
 
 You can ask questions <a href="https://groups.google.com/forum/#!forum/ics-os">here</a>.
+
+## Citation
+
+If you find his resource useful in your research, please cite our work.
+```
+J. A. C. Hermocilla. Ics-os: A kernel programming approach to teaching operating system concepts. Philippine Information Technology Journal, 2(2):25--30, 2009.
+```
+
+```
+@article{hermocilla-ics-os-pitj2009,
+  author = {Hermocilla, J. A. C.},
+  title = {ICS-OS: A Kernel Programming Approach to Teaching Operating System Concepts},
+  journal = {Philippine Information Technology Journal},
+  volume = {2},
+  number = {2},
+  year = {2009},
+  issn = {2012-0761},
+  pages = {25--30},
+  publisher = {Philippine Society of Information Technology Educators and Computing Society of the Philippines },
+  address = {Philippines},
+  pdf = {hermocilla-pitj2009-ics-os.pdf}
+}
+```
