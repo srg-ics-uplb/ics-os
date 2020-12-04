@@ -54,7 +54,7 @@ Get started by reading the <a href="https://github.com/srg-ics-uplb/ics-os/wiki/
 
 Don't forget to check the <a href="http://github.com/srg-ics-uplb/ics-os/wiki">Wiki</a>.
 
-You can ask questions <a href="https://groups.google.com/forum/#!forum/ics-os">here</a>.
+You can ask questions by submitting an issue.
 
 ## Citation
 
