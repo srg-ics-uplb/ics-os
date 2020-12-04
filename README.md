@@ -13,10 +13,10 @@ Latest floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/
 ## Build Environment
 
 Ubuntu 16.04 64-bit is the last tested working build environment. Virtualbox can be used 
-to run this version of Ubuntu.
+to run this version of Ubuntu. We now use docker as the build environment since new versions 
+of Ubuntu do now work anymore.
 
-
-## Using Docker to build
+### Using Docker to build
 
 ICS-OS is a 32-bit operating system and requires a 32-bit build environment. If you have a 64-bit system, 
 you can install [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) to build ICS-OS and create the floppy image.
