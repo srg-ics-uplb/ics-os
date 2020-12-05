@@ -29,7 +29,7 @@
 \pagestyle{fancy}
 \lhead{CMSC 125: Operating Systems \\ First Semester 2020-2021}
 \rhead{Institute of Computer Science \\ University of the Philippines Los Banos}
-\rfoot{JACHermocilla [CC-BY-NC-SA 4.0]}
+\rfoot{JACHermocilla [CC BY-NC-SA 4.0]}
 %\cfoot{Enjoy!:)}
 \cfoot{\thepage\ of \pageref{LastPage}}
 \lfoot{Revision: \today\ \currenttime}
@@ -47,7 +47,7 @@
    At the end of this activity, you should be able to:
    \begin{enumerate}[itemsep=0pt,parsep=0pt]
        \item build the ICS-OS kernel binary image;
-       \item build the ICS-OS floppy disk image; and
+       \item build the ICS-OS distribution floppy disk image; and
        \item boot ICS-OS and run two commands.
    \end{enumerate}   
 
@@ -58,32 +58,31 @@ The build process creates the compressed kernel binary image (\texttt{vmdex}) an
 the \texttt{Make} utility is used for the build. You can examine the contents of \texttt{Makefile} 
 to learn more of the details how this is done.
 
-To start ICS-OS, the floppy disk image is loaded in Qemu and is set as the boot device. It contains 
-the GRUB bootloader which transfers control to the ICS-OS kernel (in \texttt{vmdex}). After the boot process, a prompt is provided to users to enter commands. 
+To start ICS-OS, the floppy disk image is set as the boot device in Qemu, which 
+is an emulator for various microarchitectures. the floppy disk image contains 
+the GRUB bootloader which transfers control to the ICS-OS kernel (in 
+\texttt{vmdex}). After the boot process, a prompt is provided to users to enter 
+commands. 
 
 \section{Prerequisites}
-The recommended development environment is Ubuntu 16.04. Tasks described here may or may not 
-work on other Linux distributions. Familiarity with the command line is also needeed.
+The recommended development environment is Ubuntu 16.04. Tasks described here 
+may or may not work on other Linux distributions. Familiarity with the command 
+line is also needeed. 
+
+\texttt{docker}\footnote{https://docs.docker.com/engine/install/ubuntu/} and 
+\texttt{docker-compose}\footnote{https://docs.docker.com/compose/install/} 
+should also be installed to build in the latest version of Ubuntu. Check   
+\texttt{ics-os/Dockerfile} for the dependencies needed to build ICS-OS.
 
 \section{Deliverables and Credit}
-Perform the tasks below and capture screen shots while you do them. Submit a PDF file 
-containing the screen shots with captions. Do not forget to put your name and laboratory section.
-Credit is five (5) points.
+Perform the tasks below and capture screenshots while you do them. Submit a PDF 
+file containing the screenshots with captions. Do not forget to put your name 
+and laboratory section. Credit is five (5) points.
 
 
 \section{Tasks}
 
-\subsection*{Task 1: Install build dependencies}
-A C compiler, assembler, linker, emulator, bootloader and other tools are needed to 
-build and run ICS-OS. Run the following commands to install the dependencies.
-
-\begin{lstlisting}[language=bash,frame=single]
-$sudo apt-get update
-$sudo apt-get install build-essential nasm qemu-kvm tcc git gcc-multilib \
-      grub-pc-bin xorriso
-\end{lstlisting}
-
-\subsection*{Task 2: Clone the repository and explore the source tree}
+\subsection*{Task 1: Clone the repository and explore the source tree}
 ICS-OS\footnote{https://github.com/srg-ics-uplb/ics-os/} is open source and is hosted on Github. Run the following command to 
 checkout the source code and explore the source tree.
 \begin{lstlisting}[language=bash,frame=single] 
