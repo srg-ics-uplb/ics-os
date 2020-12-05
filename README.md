@@ -46,6 +46,8 @@ Alternatively, you can boot the floppy image directly using qemu.
 ```
 $qemu-system-i386 -fda ics-os-floppy.img
 ```
+i
+See [Lab 01](https://github.com/srg-ics-uplb/ics-os/blob/master/labs/lab01/ICSOS_Lab01.pdf) for a more complete discussion.<F6><F6>
 
 ## Development and Support
 This project is used at the <a href='http://www.ics.uplb.edu.ph'>Institute of Computer Science</a>, <a href='http://www.uplb.edu.ph'>University of the Philippines Los Banos</a> for <a href='http://ics.uplb.edu.ph/courses/ugrad/cmsc/125'>CMSC 125</a>. It is maintained by the <a href='https://sites.google.com/up.edu.ph/systems-research'>Systems Research Group</a>.
