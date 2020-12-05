@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.6.10)  5 DEC 2020 23:39
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.6.10)  5 DEC 2020 23:58
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -579,15 +579,15 @@ Package microtype Info: Loading generic protrusion settings for font family
 
 (./_minted-ICSOS_Lab02/default-pyg-prefix.pygstyle)
 (./_minted-ICSOS_Lab02/default.pygstyle)
-(./_minted-ICSOS_Lab02/595920E8E9628A1CAB8D94B43FE718FB4EC289BC5D53E40DE897F16E
-EB9D7884.pygtex)
+(./_minted-ICSOS_Lab02/E452C99E82A49DDAF7421289A3B1BC064EC289BC5D53E40DE897F16E
+EB9D7884.pygtex) [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
+
+]
 \openout3 = `ICSOS_Lab02.pyg'.
 
 
 (./_minted-ICSOS_Lab02/8165366FFB4CD4CC8D8374D77B568C05B84BF0C57F83DD5B51CDF58C
-DEFC7E67.pygtex [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
-
-]
+DEFC7E67.pygtex
 LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <10.95> not available
 (Font)              Font shape `T1/cmtt/m/n' tried instead on input line 2.
 )
@@ -596,7 +596,7 @@ LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <10.95> not available
 
 (./_minted-ICSOS_Lab02/F73EBF3A894D586116B7C18B1D9CE009B84BF0C57F83DD5B51CDF58C
 DEFC7E67.pygtex)
-Overfull \hbox (5.44057pt too wide) in paragraph at lines 133--136
+Overfull \hbox (5.44057pt too wide) in paragraph at lines 136--139
 []\T1/cmr/m/n/10.95 (-20) ICS-OS hooks to \T1/cmtt/m/n/10.95 int 30h \T1/cmr/m/
 n/10.95 (-20) to han-dle sys-tem calls. This is set in \T1/cmtt/m/n/10.95 kerne
 l/hardware/chips/irqhandlers.c\T1/cmr/m/n/10.95 (-20) .
@@ -618,17 +618,17 @@ DEFC7E67.pygtex)
 (./_minted-ICSOS_Lab02/50868ED62715A09AD7393EC877EB1DC8B84BF0C57F83DD5B51CDF58C
 DEFC7E67.pygtex)
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 163.
+(Font)              <10.95> on input line 166.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 163.
+(Font)              <8> on input line 166.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 163.
+(Font)              <6> on input line 166.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 164.
+(Font)              <9> on input line 167.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 164.
+(Font)              <5> on input line 167.
 
-Overfull \hbox (19.36177pt too wide) in paragraph at lines 161--167
+Overfull \hbox (19.36177pt too wide) in paragraph at lines 164--170
 \T1/cmtt/m/n/10.95 kchown()[] \T1/cmr/m/n/10.95 (-20) sys-tem call func-tion/se
 r-vice be-low that changes the owner of a file. Edit \T1/cmtt/m/n/10.95 kernel/
 dexapi/dex32API.c
@@ -636,14 +636,15 @@ dexapi/dex32API.c
 
 \openout3 = `ICSOS_Lab02.pyg'.
 
-runsystem(pygmentize -l C -f latex -P commandprefix=PYG -F tokenmerge -o _minte
-d-ICSOS_Lab02/2EAA1CFAB25A3A89F34BBF740A6D4BD2B84BF0C57F83DD5B51CDF58CDEFC7E67.
-pygtex ICSOS_Lab02.pyg)...executed.
-
 
 (./_minted-ICSOS_Lab02/2EAA1CFAB25A3A89F34BBF740A6D4BD2B84BF0C57F83DD5B51CDF58C
 DEFC7E67.pygtex [2])
-LaTeX Font Info:    Try loading font information for TS1+cmtt on input line 199
+\openout3 = `ICSOS_Lab02.pyg'.
+
+
+(./_minted-ICSOS_Lab02/A40C2EBCB1D02AEF6B06AECE03ED178DB84BF0C57F83DD5B51CDF58C
+DEFC7E67.pygtex)
+LaTeX Font Info:    Try loading font information for TS1+cmtt on input line 203
 .
  (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmtt.fd
 File: ts1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
@@ -660,15 +661,15 @@ runsystem(rm ICSOS_Lab02.pyg)...executed.
 
  ) 
 Here is how much of TeX's memory you used:
- 10174 strings out of 494923
- 169858 string characters out of 6180742
- 424657 words of memory out of 5000000
- 13250 multiletter control sequences out of 15000+600000
+ 10178 strings out of 494923
+ 170191 string characters out of 6180742
+ 424803 words of memory out of 5000000
+ 13251 multiletter control sequences out of 15000+600000
  19378 words of font info for 66 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 38i,12n,43p,1012b,510s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}{/usr/share/texmf
-/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texmf/fonts/type1/public/
+ 38i,11n,43p,1012b,508s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texmf/
+fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texmf/fonts/type1/public/
 cm-super/sfbx1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1200.pf
 b></usr/share/texmf/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/
 fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf/fonts/type1/public/c
@@ -678,7 +679,7 @@ onts/type1/public/cm-super/sfrm0900.pfb></usr/share/texmf/fonts/type1/public/cm
 -super/sfrm1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfti1095.pfb>
 </usr/share/texmf/fonts/type1/public/cm-super/sftt0900.pfb></usr/share/texmf/fo
 nts/type1/public/cm-super/sftt1095.pfb>
-Output written on ICSOS_Lab02.pdf (4 pages, 220844 bytes).
+Output written on ICSOS_Lab02.pdf (4 pages, 221908 bytes).
 PDF statistics:
  69 PDF objects out of 1000 (max. 8388607)
  50 compressed objects within 1 object stream

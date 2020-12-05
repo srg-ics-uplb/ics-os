@@ -30,7 +30,7 @@
 \pagestyle{fancy}
 \lhead{CMSC 125: Operating Systems \\ First Semester 2020-2021}
 \rhead{Institute of Computer Science \\ University of the Philippines Los Banos}
-\rfoot{JACHermocilla [CC-BY-NC-SA 4.0]}
+\rfoot{JACHermocilla | CC BY-NC-SA 4.0}
 %\cfoot{Enjoy!:)}
 \cfoot{\thepage\ of \pageref{LastPage}}
 \lfoot{Revision: \today\ \currenttime}
@@ -74,12 +74,15 @@ from the programmers.
 To proceed with this lab, you should have completed \texttt{Lab 01}. Most of 
 the commands that we will use in this lab will be run relative to the 
 \texttt{\$ICSOS\_HOME/ics-os} directory. This will be denoted by a 
-\texttt{dot(.)} Update your local copy of the source 
-code with the commands below.
+\texttt{dot(.)} Update your local copy of the source code and create a new 
+branch for this lab with the commands below.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $cd $ICSOS_HOME/ics-os
+$git checkout master
 $git pull
+$git checkout -b lab02
+$git branch -a #check the current branch
 \end{minted}
 
 
@@ -175,11 +178,11 @@ int kchown(int fd, int uid, int gid){
 
 To add it to the system call table, add the following line in the 
 \texttt{api\_init()} function. The function number you will use is 
-\texttt{9Fh}. Take note of this number.
+\texttt{0xC2}. Take note of this number.
 
-\begin{Verbatim}[frame=single]
-api_addsystemcall(0x9F, kchown, 0, 0);
-\end{Verbatim} 
+\begin{minted}[frame=single,framesep=10pt]{C}
+api_addsystemcall(0xC2, kchown, 0, 0);
+\end{minted}
 
 Capture screenshots where you placed the codes. 
 Build ICS-OS. At this point, the new system call is added to the kernel but it is not 
