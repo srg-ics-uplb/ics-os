@@ -59,11 +59,11 @@ The build process creates the compressed kernel binary image (\texttt{vmdex}) an
 the \texttt{Make} utility is used for the build. You can examine the contents of \texttt{Makefile} 
 to learn more of the details how this is done.
 
-To start ICS-OS, the floppy disk image is set as the boot device in Qemu, which 
-is an emulator for various microarchitectures. the floppy disk image contains 
-the GRUB bootloader which transfers control to the ICS-OS kernel (in 
-\texttt{vmdex}). After the boot process, a prompt is provided to users to enter 
-commands. 
+To start ICS-OS, the floppy disk image is set as the boot device in Qemu,  
+an emulator for various machine microarchitectures. The floppy disk image 
+contains the GRUB bootloader which transfers control to the ICS-OS kernel ( 
+\texttt{vmdex}). After the boot process, a prompt is provided for users to 
+enter commands. 
 
 \section{Prerequisites}
 The recommended development environment is Ubuntu 16.04. Tasks described here 
@@ -106,20 +106,19 @@ this document as \texttt{\$ICSOS\_HOME}.
 The build process must be done inside a docker container. There is a 
 \texttt{\$ICSOS\_HOME/ics-os/docker-compose.yml} and a 
 \texttt{\$ICSOS\_HOME/ics-os/Dockerfile} that describes the build environment.
-Enter the container using the commands below.
+
+Open a new terminal. Start and enter the container using the commands below.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $cd $ICSOS_HOME/ics-os
 $docker-compose run ics-os-build
 \end{minted}
 
-You will be dropped to a root shell where you can perform the build. The  
-\texttt{\$ICSOS\_HOME/ics-os} directory is mapped to \texttt{/home/ics-os} 
-inside the container. Thus, 
-you can 
-perform the edits outside the container(in another terminal) and the changes 
-will be reflected inside the build environment. The following steps will build 
-the kernel image. 
+You will be dropped to a root shell inside the container where you can perform 
+the build. The  \texttt{\$ICSOS\_HOME/ics-os} directory is mapped to 
+\texttt{/home/ics-os} inside the container. Thus, you can perform the edits 
+outside the container(in another terminal) and the changes will be reflected 
+inside the build environment. The following steps will build the kernel image. 
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 :/#cd /home/ics-os
@@ -127,18 +126,36 @@ the kernel image.
 :/#make
 \end{minted}
 
+Note that the details of the steps are in the 
+\texttt{\$ICSOS\_HOME/ics-os/Makefile}.
+
 \subsection*{Task 4: Boot}
-Start Qemu with the floppy image as boot device using the command below. 
-\begin{lstlisting}[language=bash,frame=single] 
+Open a new terminal. Build the boot floppy then start Qemu with the floppy 
+image as boot device using the commands below. 
+
+\begin{minted}[frame=single,framesep=10pt]{bash}
+$cd $ICSOS_HOME/ics-os
+$make floppy
 $make boot-floppy 
-\end{lstlisting}
+\end{minted}
+
+You should now see the Grub boot menu. Simply press enter to boot ICS-OS.
+
+Note that the details of the steps are in the 
+\texttt{\$ICSOS\_HOME/ics-os/Makefile}.
 
 \subsection*{Task 5: Run ICS-OS commands}
 Once the ICS-OS command prompt (\texttt{\%}) appears, type \texttt{help}. 
 Examine the list of commands and run two of these commands. Do not forget 
 to capture screen shots of the outputs.
 
-%\begin{thebibliography}{9}
-%\end{thebibliography}
+\subsection*{Task 6: Cleanup}
+To exit the build container. 
+\begin{minted}[frame=single,framesep=10pt]{bash}
+:/#exit
+\end{minted}
+
+To go back to the build container, simply perform \texttt{Task 3} above.
+
 
 \end{document}

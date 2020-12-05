@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.6.10)  5 DEC 2020 18:57
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.6.10)  5 DEC 2020 19:17
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -579,11 +579,6 @@ Package microtype Info: Loading generic protrusion settings for font family
 
 (./_minted-ICSOS_Lab01/default-pyg-prefix.pygstyle)
 (./_minted-ICSOS_Lab01/default.pygstyle)
-runsystem(pygmentize -l bash -f latex -P commandprefix=PYG -F tokenmerge -o _mi
-nted-ICSOS_Lab01/4634E27CED543C0362310AEAACF602926563160F6034D856FEB4625B5BC32E
-BA.pygtex ICSOS_Lab01.pyg)...executed.
-
-
 (./_minted-ICSOS_Lab01/4634E27CED543C0362310AEAACF602926563160F6034D856FEB4625B
 5BC32EBA.pygtex)
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -603,7 +598,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 5BC32EBA.pygtex [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 ])
-Overfull \hbox (24.04544pt too wide) in paragraph at lines 106--110
+Overfull \hbox (24.04544pt too wide) in paragraph at lines 106--109
 \T1/cmr/m/n/10.95 (-20) The build pro-cess must be done in-side a docker con-ta
 iner. There is a \T1/cmtt/m/n/10.95 $ICSOS_HOME/ics-os/docker-compose.yml
  []
@@ -617,41 +612,41 @@ iner. There is a \T1/cmtt/m/n/10.95 $ICSOS_HOME/ics-os/docker-compose.yml
 
 
 (./_minted-ICSOS_Lab01/F192480A134030975C03B64AA72C2E4A6563160F6034D856FEB4625B
-5BC32EBA.pygtex) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2015/06/04 1.6 listings language file
-) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2015/06/04 1.6 listings language file
-)
+5BC32EBA.pygtex)
+\openout3 = `ICSOS_Lab01.pyg'.
 
+
+(./_minted-ICSOS_Lab01/6A586FB89F856998666B2EF5F170E1636563160F6034D856FEB4625B
+5BC32EBA.pygtex)
+\openout3 = `ICSOS_Lab01.pyg'.
+
+
+(./_minted-ICSOS_Lab01/236ABEA209C6328CDDB65B4A9AA499E26563160F6034D856FEB4625B
+5BC32EBA.pygtex [2]) 
 AED: lastpage setting LastPage
-[2]
-runsystem(rm _minted-ICSOS_Lab01/BE21683E2A3B69A13C75B14483909EB96563160F6034D8
-56FEB4625B5BC32EBA.pygtex)...executed.
-
- (./ICSOS_Lab01.aux)
+[3] (./ICSOS_Lab01.aux)
 runsystem(rm ICSOS_Lab01.pyg)...executed.
 
  ) 
 Here is how much of TeX's memory you used:
- 10263 strings out of 494923
- 169712 string characters out of 6180742
- 452941 words of memory out of 5000000
- 13365 multiletter control sequences out of 15000+600000
- 16243 words of font info for 53 fonts, out of 8000000 for 9000
+ 10119 strings out of 494923
+ 168446 string characters out of 6180742
+ 423657 words of memory out of 5000000
+ 13218 multiletter control sequences out of 15000+600000
+ 16369 words of font info for 55 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 48i,11n,99p,1012b,1083s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf/fonts/
-type1/public/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/cm-supe
-r/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1728.pfb></usr
-/share/texmf/fonts/type1/public/cm-super/sfrm0600.pfb></usr/share/texmf/fonts/t
-ype1/public/cm-super/sfrm0800.pfb></usr/share/texmf/fonts/type1/public/cm-super
-/sfrm0900.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1095.pfb></usr/
-share/texmf/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on ICSOS_Lab01.pdf (2 pages, 166098 bytes).
+ 38i,11n,43p,1012b,506s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texmf/
+fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/c
+m-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1728.pfb
+></usr/share/texmf/fonts/type1/public/cm-super/sfrm0600.pfb></usr/share/texmf/f
+onts/type1/public/cm-super/sfrm0800.pfb></usr/share/texmf/fonts/type1/public/cm
+-super/sfrm0900.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1095.pfb>
+</usr/share/texmf/fonts/type1/public/cm-super/sftt1095.pfb>
+Output written on ICSOS_Lab01.pdf (3 pages, 160203 bytes).
 PDF statistics:
- 48 PDF objects out of 1000 (max. 8388607)
- 34 compressed objects within 1 object stream
+ 47 PDF objects out of 1000 (max. 8388607)
+ 33 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  15873 words of extra memory for PDF output out of 17280 (max. 10000000)
 
