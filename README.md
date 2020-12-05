@@ -80,6 +80,6 @@ You can also use the following bibtex entry.
   pages = {25--30},
   publisher = {Philippine Society of Information Technology Educators and Computing Society of the Philippines },
   address = {Philippines},
-  pdf = {hermocilla-pitj2009-ics-os.pdf}
+  pdf = {https://jachermocilla.org/publications/hermocilla-pitj2009-ics-os.pdf}
 }
 ```
