@@ -19,6 +19,7 @@
 \usepackage{lastpage}
 \usepackage{enumitem}
 \usepackage{datetime}
+\usepackage{minted}
 
 \settimeformat{hhmmsstime}
 \yyyymmdddate
@@ -56,68 +57,54 @@ Utilities }}
 The command line interface (CLI) is one way an operating system allows users to
 access its services such as program execution.  The user enters a command
 string on the CLI prompt and the OS executes the command. The execution usually
-involves \textit{system calls} which invoke some services provided by the kernel. 
-This services are functions that execute in \textit{kernel mode}. 
-The CLI can be implemented as part of the kernel itself,
-as in the case of ICS-OS, or as a separate program, called a \textit{shell},
-which is outside of the kernel.  Since shells (and other system utilities and user applications
- as well) are
-not in the kernel but may require system calls, they do so using software
-interrupts (Linux uses \texttt{int 80h}, DOS uses \texttt{int 21h}, and ICS-OS
-uses \texttt{int 30h}). Application Programming Interfaces(APIs), Software
-Development Kit(SDKs), and Runtime environments make it easy to write programs for
-operating systems by hiding the details of the systems calls to the
-programmers.
+involves \textit{system calls} which invoke some services provided by the 
+kernel. This services are functions that execute in \textit{kernel mode}. 
+The CLI can be implemented as part of the kernel itself, as in the case of 
+ICS-OS, or as a separate program, called a \textit{shell}, which is outside of 
+the kernel.  Since shells (and other system utilities and user applications as 
+well) are not in the kernel but may require system calls, they do so using 
+software interrupts (Linux uses \texttt{int 80h}, DOS uses \texttt{int 21h}, 
+and ICS-OS uses \texttt{int 30h}). Application Programming Interfaces(APIs), 
+Software Development Kit(SDKs), and Runtime Environments (REs) make it easy to 
+write programs for operating systems by hiding the details of the systems calls 
+from the programmers.
 
 
 \section{Prerequisites}
-You should have completed Lab 01.  Take note that the \textit{top-level directory} of the source 
-tree contains the following. 
-\begin{Verbatim}[frame=single]
-extras  ics-os  README.md  SEMESTER  wiki 
-\end{Verbatim}
+To proceed with this lab, you should have completed \texttt{Lab 01}. Most of 
+the commands that we will use in this lab will be run relative to the 
+\texttt{\$ICSOS\_HOME/ics-os} directory. This will be denoted by a 
+\texttt{dot(.)} Update your local copy of the source 
+code with the commands below.
 
-However, most of the commands will be described relative to the \texttt{ics-os} directory.
-For consistency, we will refer to this folder as \texttt{\$ICSOS\_HOME}. Use the \texttt{cd} 
-command to transfer from one directory to another.
- Several updates have been made in the remote repository. 
-Update your local copy of the source using the following commands.
-
-%\begin{lstlisting}[language=bash,frame=single] 
-\begin{Verbatim}[frame=single] 
-$cd ics-os
+\begin{minted}[frame=single,framesep=10pt]{bash}
+$cd $ICSOS_HOME/ics-os
 $git pull
-\end{Verbatim}
-%\end{lstlisting}
+\end{minted}
 
 
 \section{Deliverables and Credit}
-Perform the tasks below and capture screen shots while you do them. Answer
+Perform the tasks below and capture screenshots while you do them. Answer
 all questions. Submit a PDF file containing the screen shots with captions
 and answers to questions. Do not forget to put your name and laboratory
 section.  Credit is ten (10) points.
-
 
 \section{Tasks}
 
 \subsection*{Task 1: Add a new console command (3 points)} 
 The CLI in ICS-OS is part of the kernel. Its implementation is located in
-\texttt{kernel/console/console.c}. The function \texttt{int
+\texttt{kernel/console/console.c}. The function \texttt{int 
 console\_execute(const char *str)} is where the command string (what you type
-in the \texttt{\%} prompt) is processed. Study this function. The
+in the \texttt{\%} prompt) is processed. Study this function. The 
 \texttt{strtok()} function is used to tokenize the command string to extract
 the command name and its arguments. The code fragment below is for the new
 \texttt{add} command with two integer arguments that we wish to include.
-Insert the code fragment in an appropriate location in the
-\texttt{console\_execute()} function. Build and boot ICS-OS to test if the command works.
-Capture screen shots. Also show where you placed the code
+Insert the code fragment in an appropriate location in the 
+\texttt{console\_execute()} function. Build and boot ICS-OS to test if the 
+command works. Capture screen shots. Also show where you placed the code
 fragment. 
 
-\textbf{QUESTION}: What are the advantages/disadvantages of having the CLI in
-the kernel?
-
-%\begin{lstlisting}[language=C,frame=single]
-\begin{Verbatim}[frame=single] 
+\begin{minted}[frame=single,framesep=10pt]{C}
 if (strcmp(u,"add") == 0){   //-- Adds two integers. Args: <num1> <num2> 
    int a, b; 
    u = strtok(0," "); 
@@ -126,56 +113,69 @@ if (strcmp(u,"add") == 0){   //-- Adds two integers. Args: <num1> <num2>
    b = atoi(u); 
    printf("%d + %d = %d\n",a,b,a+b); 
 }else
-\end{Verbatim}
-%\end{lstlisting}
+\end{minted}
+
+\textbf{QUESTION}: What are the advantages/disadvantages of having the CLI in
+the kernel?
 
 \subsection*{Task 2: Add a new system call service/function (3 points)}
 The list of functions/services accessible through system calls are placed in a
 \textit{system call table}. In ICS-OS, it is the array of structures 
 defined in \texttt{kernel/dexapi/dex32API.h}: 
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{C}
 api_systemcall api_syscalltable[API_MAXSYSCALLS];
-\end{Verbatim}
+\end{minted}
 
 The function \texttt{api\_init()} in \texttt{kernel/dexapi/dex32API.c}
 populates this table. 
-
 
 ICS-OS hooks to \texttt{int 30h} to handle system calls. This is set in
 \texttt{kernel/hardware/chips/irqhandlers.c}. Recall the interrupt system 
 and the interrupt vector table (IVT) discussed in the lecture.
 
-\begin{Verbatim}[frame=single] 
+\begin{minted}[frame=single,framesep=10pt]{C}
 setinterruptvector(0x30, dex_idtbase, 0xEE, syscallwrapper, SYS_CODE_SEL); 
-\end{Verbatim}
+\end{minted}
 
 You do not have to understand all the parameters of the above function for now. 
-The parameter \texttt{syscallwrapper} is a function defined in \texttt{kernel/irqwrap.asm}.  
-It calls the function \texttt{api\_syscall(...)} from \texttt{dex32API.c} 
-which processes the system call and invokes the appropriate service from the
-system call table. \texttt{api\_syscall(...)} is called everytime \texttt{int 30h} is generated.
+The parameter \texttt{syscallwrapper} is a function defined in 
+\texttt{kernel/irqwrap.asm}. It calls the function \texttt{api\_syscall(...)} 
+from \texttt{kernel/dexapi/dex32API.c} which processes the system call and 
+invokes the appropriate service from the system call table. 
+\texttt{api\_syscall(...)} is called everytime \texttt{int 30h} is generated.
 
-To add a system call, the \texttt{api\_addsystemcall()} function is used. Its prototype 
-is shown below.
-\begin{Verbatim}[frame=single] 
+\begin{minted}[frame=single,framesep=10pt]{C}
+DWORD api_syscall(DWORD fxn,DWORD val,DWORD val2,
+                  DWORD val3,DWORD val4,DWORD val5);
+\end{minted}
+
+
+To add a system call, the \texttt{api\_addsystemcall()} function is used. Its 
+prototype is shown below.
+\begin{minted}[frame=single,framesep=10pt]{C}
 int api_addsystemcall(DWORD function_number, void *function_ptr,
                         DWORD access_check, DWORD flags);
-\end{Verbatim}
+\end{minted}
 
-The important parameters are \texttt{function\_number} and \texttt{function\_ptr}.
-Say you want to implement the \texttt{kchown()}\footnote{Usually functions in the kernel are written with the letter \texttt{k} at the start} system call function/service below that changes the owner 
-of a file. Edit \texttt{dex32API.c} and add the function.
-\begin{Verbatim}[frame=single]
+The important parameters are \texttt{function\_number} and 
+\texttt{function\_ptr}. Say you want to implement the 
+\texttt{kchown()}\footnote{Usually functions in the kernel are written with the 
+letter \texttt{k} at the start} system call function/service below that changes 
+the owner of a file. Edit \texttt{kernel/dexapi/dex32API.c} and add the 
+function.
+
+\begin{minted}[frame=single,framesep=10pt]{C}
 int kchown(int fd, int uid, int gid){
    printf("Changing owner of fd=%d to user id=%d and group id=%d\n", fd, uid, gid);
    //Actual code to change file ownership is placed here.   
    return 0; //0-success
 }
-\end{Verbatim}
+\end{minted}
 
-To add it to the system call table, add the following line in the \texttt{api\_init()} 
-function. The function number you will use is \texttt{9Fh}. Take note of this number.
+To add it to the system call table, add the following line in the 
+\texttt{api\_init()} function. The function number you will use is 
+\texttt{9Fh}. Take note of this number.
 
 \begin{Verbatim}[frame=single]
 api_addsystemcall(0x9F, kchown, 0, 0);
