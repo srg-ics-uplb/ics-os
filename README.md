@@ -27,7 +27,7 @@ Run the following command to enter the build environment:
 `$docker-compose run ics-os-build`
 
 You will be dropped to a shell where you can perform the build. The ics-os folder is mapped inside the container. Thus, 
-you can perform the edits outside the container and the changes will be reflected inside the build environment.
+you can perform the edits outside the container(in another terminal) and the changes will be reflected inside the build environment.
 
 ```
 #cd /home/ics-os
