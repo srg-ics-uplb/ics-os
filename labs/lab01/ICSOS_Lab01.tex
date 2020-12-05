@@ -19,6 +19,7 @@
 \usepackage{lastpage}
 \usepackage{enumitem}
 \usepackage{datetime}
+\usepackage{minted}
 
 \settimeformat{hhmmsstime}
 \yyyymmdddate
@@ -67,38 +68,64 @@ commands.
 \section{Prerequisites}
 The recommended development environment is Ubuntu 16.04. Tasks described here 
 may or may not work on other Linux distributions. Familiarity with the command 
-line is also needeed. 
+line is also needeed. Install the following packages.
 
-\texttt{docker}\footnote{https://docs.docker.com/engine/install/ubuntu/} and 
-\texttt{docker-compose}\footnote{https://docs.docker.com/compose/install/} 
-should also be installed to build in the latest version of Ubuntu. Check   
-\texttt{ics-os/Dockerfile} for the dependencies needed to build ICS-OS.
+\begin{minted}[frame=single,framesep=10pt]{bash}
+$sudo apt update
+$sudo apt install qemu-system-x86 git
+\end{minted}
+
 
 \section{Deliverables and Credit}
 Perform the tasks below and capture screenshots while you do them. Submit a PDF 
 file containing the screenshots with captions. Do not forget to put your name 
 and laboratory section. Credit is five (5) points.
 
-
 \section{Tasks}
 
-\subsection*{Task 1: Clone the repository and explore the source tree}
-ICS-OS\footnote{https://github.com/srg-ics-uplb/ics-os/} is open source and is hosted on Github. Run the following command to 
-checkout the source code and explore the source tree.
-\begin{lstlisting}[language=bash,frame=single] 
+\subsection*{Task 1: Install Docker and Docker-Compose}
+\texttt{docker}\footnote{https://docs.docker.com/engine/install/ubuntu/} and 
+\texttt{docker-compose}\footnote{https://docs.docker.com/compose/install/} 
+should be installed to build in the latest versions of Ubuntu (see footnote for 
+links to the guides). 
+
+
+\subsection*{Task 2: Clone the repository and explore the source tree}
+ICS-OS\footnote{https://github.com/srg-ics-uplb/ics-os/} is open source and is 
+hosted on Github. Run the following command to checkout the source code and 
+explore the source tree.
+
+\begin{minted}[frame=single,framesep=10pt]{bash}
 $git clone https://github.com/srg-ics-uplb/ics-os.git
-$cd ics-os/ics-os
-\end{lstlisting}
+\end{minted}
+
+Take note where the source was cloned. We will refer to this directory in 
+this document as \texttt{\$ICSOS\_HOME}.
 
 \subsection*{Task 3: Build}
-Run the commands below to build. The commands should be repeated 
-whenever changes in the kernel source code are made. You will modify the kernel source 
-code in future homeworks. 
-\begin{lstlisting}[language=bash,frame=single] 
-$make clean
-$make vmdex
-$make floppy 
-\end{lstlisting}
+The build process must be done inside a docker container. There is a 
+\texttt{\$ICSOS\_HOME/ics-os/docker-compose.yml} and a 
+\texttt{\$ICSOS\_HOME/ics-os/Dockerfile} that describes the build environment.
+Enter the container using the commands below.
+
+\begin{minted}[frame=single,framesep=10pt]{bash}
+$cd $ICSOS_HOME/ics-os
+$docker-compose run ics-os-build
+\end{minted}
+
+You will be dropped to a root shell where you can perform the build. The  
+\texttt{\$ICSOS\_HOME/ics-os} directory is mapped to \texttt{/home/ics-os} 
+inside the container. Thus, 
+you can 
+perform the edits outside the container(in another terminal) and the changes 
+will be reflected inside the build environment. The following steps will build 
+the kernel image. 
+
+\begin{minted}[frame=single,framesep=10pt]{bash}
+:/#cd /home/ics-os
+:/#make clean
+:/#make
+\end{minted}
 
 \subsection*{Task 4: Boot}
 Start Qemu with the floppy image as boot device using the command below. 
