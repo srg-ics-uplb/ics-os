@@ -100,14 +100,15 @@ explore the source tree.
 $git clone https://github.com/srg-ics-uplb/ics-os.git
 \end{minted}
 
+Take note where the source was cloned. We will refer to this directory in 
+this document as \texttt{\$ICSOS\_HOME}.
+
 We create a branch for lab01 to make management easier.
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $git checkout -b lab01
-$git branch -a
+$git branch
 \end{minted}
 
-Take note where the source was cloned. We will refer to this directory in 
-this document as \texttt{\$ICSOS\_HOME}.
 
 \subsection*{Task 3: Build}
 The build process must be done inside a docker container. There is a 
@@ -160,11 +161,13 @@ To exit the build containerb.
 :/#exit
 \end{minted}
 
-You can go back to the build container by performing \texttt{Task 3} above.
-You can also go back to the master branch of the source code.
+Go back to the master branch of the source code.
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $git checkout master
 \end{minted}
 
+\subsection*{Task 7. Reflection}
+Write some realizations and questions that crossed your mind while doing this 
+lab. 
 
 \end{document}

@@ -48,7 +48,7 @@ Utilities }}
 \section*{Objectives}
    At the end of this activity, you should be able to:
    \begin{enumerate}[itemsep=0pt,parsep=0pt]
-       \item add a console command;
+       \item add a a new console command;
        \item add a new system call service/function; and
        \item invoke a system call from a system utility.
    \end{enumerate}   
@@ -58,31 +58,30 @@ The command line interface (CLI) is one way an operating system allows users to
 access its services such as program execution.  The user enters a command
 string on the CLI prompt and the OS executes the command. The execution usually
 involves \textit{system calls} which invoke some services provided by the 
-kernel. This services are functions that execute in \textit{kernel mode}. 
-The CLI can be implemented as part of the kernel itself, as in the case of 
-ICS-OS, or as a separate program, called a \textit{shell}, which is outside of 
-the kernel.  Since shells (and other system utilities and user applications as 
-well) are not in the kernel but may require system calls, they do so using 
-software interrupts (Linux uses \texttt{int 80h}, DOS uses \texttt{int 21h}, 
-and ICS-OS uses \texttt{int 30h}). Application Programming Interfaces(APIs), 
-Software Development Kit(SDKs), and Runtime Environments (REs) make it easy to 
-write programs for operating systems by hiding the details of the systems calls 
-from the programmers.
+kernel. This services are functions that execute in \textit{previliged or 
+kernel mode}. The CLI can be implemented as part of the kernel itself, as in 
+the case of ICS-OS, or as a separate program, called a \textit{shell}, which is 
+outside of the kernel.  Since shells (and other system utilities and user 
+applications as well) are not in the kernel but may require system calls, they 
+do so using software interrupts (32-bit Linux uses \texttt{int 80h}, DOS uses 
+\texttt{int 21h}, and ICS-OS uses \texttt{int 30h}). Application Programming 
+Interfaces(APIs), Software Development Kit(SDKs), and Runtime Environments 
+(REs) make it easy to write programs for operating systems by hiding the 
+details of the systems calls from the programmers.
 
 
 \section{Prerequisites}
 To proceed with this lab, you should have completed \texttt{Lab 01}. Most of 
 the commands that we will use in this lab will be run relative to the 
-\texttt{\$ICSOS\_HOME/ics-os} directory. This will be denoted by a 
-\texttt{dot(.)} Update your local copy of the source code and create a new 
-branch for this lab with the commands below.
+\texttt{\$ICSOS\_HOME/ics-os} directory. Update your local copy of the source 
+code and create a new branch for this lab with the commands below.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $cd $ICSOS_HOME/ics-os
 $git checkout master
 $git pull
 $git checkout -b lab02
-$git branch -a #check the current branch
+$git branch    #to check the currrent branch
 \end{minted}
 
 
@@ -103,9 +102,9 @@ in the \texttt{\%} prompt) is processed. Study this function. The
 the command name and its arguments. The code fragment below is for the new
 \texttt{add} command with two integer arguments that we wish to include.
 Insert the code fragment in an appropriate location in the 
-\texttt{console\_execute()} function. Build and boot ICS-OS to test if the 
-command works. Capture screen shots. Also show where you placed the code
-fragment. 
+\texttt{console\_execute()} function. Build and boot ICS-OS (as discussed in 
+Tasks 3-5 in Lab 01) to test if the command works. Capture screenshots. Also 
+show where you placed the code fragment. 
 
 \begin{minted}[frame=single,framesep=10pt]{C}
 if (strcmp(u,"add") == 0){   //-- Adds two integers. Args: <num1> <num2> 
@@ -118,8 +117,8 @@ if (strcmp(u,"add") == 0){   //-- Adds two integers. Args: <num1> <num2>
 }else
 \end{minted}
 
-\textbf{QUESTION}: What are the advantages/disadvantages of having the CLI in
-the kernel?
+\textbf{QUESTION}: What are the advantages and disadvantages of having the CLI 
+in the kernel?
 
 \subsection*{Task 2: Add a new system call service/function (3 points)}
 The list of functions/services accessible through system calls are placed in a
