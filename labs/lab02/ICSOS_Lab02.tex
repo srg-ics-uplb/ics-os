@@ -84,6 +84,8 @@ $git checkout -b lab02
 $git branch    #to check the currrent branch
 \end{minted}
 
+You will need at least two terminals, one for the build container and another 
+for code editing. See Task 3 of Lab 01 to start the build container.
 
 \section{Deliverables and Credit}
 Perform the tasks below and capture screenshots while you do them. Answer
@@ -185,80 +187,99 @@ api_addsystemcall(0xC2, kchown, 0, 0);
 \end{minted}
 
 Capture screenshots where you placed the codes. 
-Build ICS-OS. At this point, the new system call is added to the kernel but it is not 
-doing anything yet. You will do that in Task 3. 
+Build ICS-OS (Task 3 of Lab 01). At this point, the new system call is added to 
+the kernel but it 
+is not being used/invoked yet. You will do that in Task 3. 
 
 \subsection*{Task 3: Invoke a system call in a system utility (4 points)}
-In this task you are to make a system utility that invokes the system call service  
-you created in Task 2. In ICS-OS, system utilities and user applications are 
-placed in the \texttt{contrib} folder. There is an example application, 
-\texttt{hello}, which you will use as template. Study the \texttt{Makefile}. 
-Run the commands below to create your \texttt{chown} system utility.  
+In this task you are to make a system utility that invokes the system call 
+service you created in Task 2. In ICS-OS, system utilities and user 
+applications are placed in the \texttt{contrib} folder. There is an example 
+application, \texttt{hello}, which you will use as template. Study the 
+\texttt{Makefile}. 
 
-\begin{Verbatim}[frame=single]
-$ cd contrib	   #go to the contrib folder
-$ cp -r hello/ chown/   #copy hello to chown
-$ cd chown/             #go inside chown
-$ mv hello.c chown.c    #rename hello.c to chown .c
-$ sed -i 's/hello/chown/g' Makefile   #replace hello with chown in the Makefile
-$ make
-$ make install
-\end{Verbatim}
+\subsubsection*{Task3a: Create the source}
+Run the commands below on the code editing to create the  
+\texttt{chown.exe} system utility source code.
 
-Go back to \texttt{\$ICSOS\_HOME}. Build and boot ICS-OS. 
-Inside ICS-OS, run the following commands and capture screenshots.
+\begin{minted}[frame=single,framesep=10pt]{bash}
+$cd contrib	   #go to the contrib folder
+$cp -r hello/ chown/   #copy hello to chown
+$cd chown/             #go inside chown
+$mv hello.c chown.c    #rename hello.c to chown .c
+$sed -i 's/hello/chown/g' Makefile   #replace hello with chown in the Makefile
+\end{minted}
 
-\begin{Verbatim}[frame=single]
+\subsubsection*{Task3b: Build the executable and install}
+Go to the build container to create the \texttt{chown.exe} executable.
+\begin{minted}[frame=single,framesep=10pt]{bash}
+#cd /home/ics-os/contrib/chown
+#make
+#make install
+\end{minted}
+
+\subsubsection*{Task3c: Run the executable inside ICS-OS}
+Build and boot ICS-OS (Task 3 and Task 4 of Lab 01). Inside ICS-OS, run the 
+following commands and capture screenshots.
+
+\begin{minted}[frame=single,framesep=10pt]{bash}
 % cd apps
 % ls -l -oname
 % chown.exe
-\end{Verbatim}
+\end{minted}
 
-\textbf{QUESTION}: What is the output of executing \texttt{chown.exe} inside ICS-OS?
+\textbf{QUESTION}: What is the output after executing \texttt{chown.exe} inside 
+ICS-OS? \newline
 
-Go back to the \texttt{contrib/chown} folder. Edit \texttt{chown.c} and replace 
-the contents with the code below. 
+\subsubsection*{Task3d: Modify chown.c to invoke the syscall}
+Go back to the \texttt{contrib/chown} folder in the code editing terminal. Edit 
+\texttt{chown.c} and replace the contents with the code below. Perform Task 3b 
+and Task 3c above again after the edit.
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{C}
 #include "../../sdk/dexsdk.h"
+#define KCHOWN_SERVICE_NO 0xC2
 int main(int argc, char *argv[]) {
    if (argc < 4){ 
       printf("Usage: chown.exe <fd> <uid> <gid>\n");
       return -1; 
    }   
-   dexsdk_systemcall(0x9F, atoi(argv[1]), atoi(argv[2]), 
+   dexsdk_systemcall(KCHOWN_SERVICE_NO, atoi(argv[1]), atoi(argv[2]), 
                      atoi(argv[3]), 0, 0); 
    return 0;
 }
-\end{Verbatim}
+\end{minted}
 
-\textbf{QUESTION}: Study the function \texttt{dexsdk\_systemcall()} defined in \texttt{sdk/tccsdk.c}.
-What does this function do?
-
-Now build and install the \texttt{chown} system utility.
-\begin{Verbatim}[frame=single]
-$ make
-$ make install
-\end{Verbatim}
-
-Go back to \texttt{\$ICSOS\_HOME}. Build and boot ICS-OS. 
-Inside ICS-OS, run the following commands and capture screenshots.
-
-\begin{Verbatim}[frame=single]
-% cd apps
-% ls -l -oname
-% chown.exe
-\end{Verbatim}
+\textbf{QUESTION}: Study the function \texttt{dexsdk\_systemcall()} defined in 
+\texttt{sdk/tccsdk.c}. What does this function do? Discuss two other functions 
+that call \texttt{dexsdk\_systemcall()}. \newline 
 
 \textbf{QUESTION}: What is the output of executing \texttt{chown.exe} this time?
+
+
+\subsection*{Task 4: Cleanup}
+To exit the build container. 
+\begin{minted}[frame=single,framesep=10pt]{bash}
+:/#exit
+\end{minted}
+
+Go back to the master branch of the source code.
+\begin{minted}[frame=single,framesep=10pt]{bash}
+$git checkout master
+\end{minted}
+
 
 
 %\begin{thebibliography}{9} \end{thebibliography}
 \section{Tips}
 You can use the \texttt{grep} utility to quickly search for strings in files from \texttt{\$ICSOS\_HOME} .
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 $ grep -rn api_init
-\end{Verbatim}
+\end{minted}
  
+\section{Reflection}
+Write some realizations and questions that crossed your mind while doing this 
+lab. 
+
 
 \end{document}
