@@ -178,8 +178,9 @@ int kchown(int fd, int uid, int gid){
 }
 \end{minted}
 
-To add it to the system call table, add the following line in the 
-\texttt{api\_init()} function. The function number you will use is 
+To add it to the system call table, add the following line to the 
+\texttt{api\_init()} function in \newline 
+\texttt{kernel/dexapi/dex32API.c}. The function number we will use is 
 \texttt{0xC2}. Take note of this number.
 
 \begin{minted}[frame=single,framesep=10pt]{C}
@@ -189,18 +190,19 @@ api_addsystemcall(0xC2, kchown, 0, 0);
 Capture screenshots where you placed the codes. 
 Build ICS-OS (Task 3 of Lab 01). At this point, the new system call is added to 
 the kernel but it 
-is not being used/invoked yet. You will do that in Task 3. 
+is not being used/invoked yet. We will do that in the next task. 
 
 \subsection*{Task 3: Invoke a system call in a system utility (4 points)}
 In this task you are to make a system utility that invokes the system call 
-service you created in Task 2. In ICS-OS, system utilities and user 
+service you created in \texttt{Task 2}. In ICS-OS, system utilities and user 
 applications are placed in the \texttt{contrib} folder. There is an example 
-application, \texttt{hello}, which you will use as template. Study the 
+application, \texttt{hello}, which we will use as template. Study the 
 \texttt{Makefile}. 
 
 \subsubsection*{Task3a: Create the source}
 Run the commands below on the code editing to create the  
-\texttt{chown.exe} system utility source code.
+\texttt{chown.exe} system utility source code. We are basically copying 
+\texttt{hello} and replacing some information.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $cd contrib	   #go to the contrib folder
@@ -211,7 +213,8 @@ $sed -i 's/hello/chown/g' Makefile   #replace hello with chown in the Makefile
 \end{minted}
 
 \subsubsection*{Task3b: Build the executable and install}
-Go to the build container to create the \texttt{chown.exe} executable.
+Go to the build container to create and install the \texttt{chown.exe} 
+executable. Use the following commands.
 \begin{minted}[frame=single,framesep=10pt]{bash}
 #cd /home/ics-os/contrib/chown
 #make
