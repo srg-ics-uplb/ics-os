@@ -134,7 +134,7 @@ populates this table.
 
 ICS-OS hooks to \texttt{int 30h} to handle system calls. This is set in
 \texttt{kernel/hardware/chips/irqhandlers.c}. Recall the interrupt system 
-and the interrupt vector table (IVT) discussed in the lecture.
+and the interrupt vector table (IVT) of x86 discussed in the lecture.
 
 \begin{minted}[frame=single,framesep=10pt]{C}
 setinterruptvector(0x30, dex_idtbase, 0xEE, syscallwrapper, SYS_CODE_SEL); 
@@ -145,7 +145,8 @@ The parameter \texttt{syscallwrapper} is a function defined in
 \texttt{kernel/irqwrap.asm}. It calls the function \texttt{api\_syscall(...)} 
 from \texttt{kernel/dexapi/dex32API.c} which processes the system call and 
 invokes the appropriate service from the system call table. 
-\texttt{api\_syscall(...)} is called everytime \texttt{int 30h} is generated.
+\texttt{api\_syscall(...)} is called everytime \texttt{int 30h} is invoked or  
+generated.
 
 \begin{minted}[frame=single,framesep=10pt]{C}
 DWORD api_syscall(DWORD fxn,DWORD val,DWORD val2,
@@ -153,8 +154,8 @@ DWORD api_syscall(DWORD fxn,DWORD val,DWORD val2,
 \end{minted}
 
 
-To add a system call, the \texttt{api\_addsystemcall()} function is used. Its 
-prototype is shown below.
+To add a system call, the \texttt{api\_addsystemcall()} function in 
+\texttt{kernel/dexapi/dex32API.c} is used. Its prototype is shown below.
 \begin{minted}[frame=single,framesep=10pt]{C}
 int api_addsystemcall(DWORD function_number, void *function_ptr,
                         DWORD access_check, DWORD flags);
@@ -164,8 +165,8 @@ The important parameters are \texttt{function\_number} and
 \texttt{function\_ptr}. Say you want to implement the 
 \texttt{kchown()}\footnote{Usually functions in the kernel are written with the 
 letter \texttt{k} at the start} system call function/service below that changes 
-the owner of a file. Edit \texttt{kernel/dexapi/dex32API.c} and add the 
-function.
+the owner of a file (does nothing for now). Edit  
+\texttt{kernel/dexapi/dex32API.c} and add the function.
 
 \begin{minted}[frame=single,framesep=10pt]{C}
 int kchown(int fd, int uid, int gid){
