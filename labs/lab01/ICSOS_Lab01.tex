@@ -103,14 +103,14 @@ $git clone https://github.com/srg-ics-uplb/ics-os.git
 Take note where the source was cloned. We will refer to this directory in 
 this document as \texttt{\$ICSOS\_HOME}.
 
-We create a branch for lab01 to make management easier.
+We create a branch for lab01 to make code management easier.
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $git checkout -b lab01
 $git branch
 \end{minted}
 
 
-\subsection*{Task 3: Build}
+\subsection*{Task 3: Build ICS-OS kernel}
 The build process must be done inside a docker container. There is a 
 \texttt{\$ICSOS\_HOME/ics-os/docker-compose.yml} and a 
 \texttt{\$ICSOS\_HOME/ics-os/Dockerfile} that describe the build environment.
@@ -137,7 +137,7 @@ inside the build environment. The following steps will build the kernel image.
 Note that the details of the steps are in the 
 \texttt{\$ICSOS\_HOME/ics-os/Makefile}.
 
-\subsection*{Task 4: Boot}
+\subsection*{Task 4: Create the disk and boot ICS-OS}
 Open a new terminal. Build the boot floppy then start Qemu with the floppy 
 image as boot device using the commands below. 
 
