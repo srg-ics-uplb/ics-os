@@ -10,6 +10,10 @@ Thus, this project aims to develop a simple yet operational instructional operat
 
 Latest floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/ics-os/ics-os-floppy.img'>ics-os-floppy.img</a>
 
+Test the floppy image in qemu.
+```
+$qemu-system-i386 -fda ics-os-floppy.img
+```
 ## Build Environment
 
 Ubuntu 16.04 64-bit is the last tested working build environment. Virtualbox can be used 
