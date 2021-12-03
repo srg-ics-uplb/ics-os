@@ -19,6 +19,9 @@
 \usepackage{lastpage}
 \usepackage{enumitem}
 \usepackage{datetime}
+\usepackage{minted}
+
+
 
 \settimeformat{hhmmsstime}
 \yyyymmdddate
@@ -27,7 +30,7 @@
 \fancyhf{} % clear all fields
 
 \pagestyle{fancy}
-\lhead{CMSC 125: Operating Systems \\ First Semester 2020-2021}
+\lhead{CMSC 125: Operating Systems \\ First Semester 2021-2022}
 \rhead{Institute of Computer Science \\ University of the Philippines Los Banos}
 \rfoot{JACHermocilla [CC-BY-NC-SA 4.0]}
 %\cfoot{Enjoy!:)}
@@ -56,27 +59,19 @@
 A process is a program in execution. In this homework, you will explore the process-related services provided by ICS-OS. 
 
 \section{Prerequisites}
-In order not to mess your setup, get a fresh copy of the source and place it to a new folder, \texttt{homework3}, as shown below. 
-\begin{Verbatim}[frame=single]
-$ git clone https://github.com/srg-ics-uplb/ics-os.git homework3
-$ cd homework3
-\end{Verbatim}
+In order not to mess your setup, get a fresh copy of the source and place it to a new folder, \texttt{ics-os-lab03}, as shown below. 
 
-Alternatively, you can download a tar.gz file:
-
-\begin{Verbatim}[frame=single]
-$ wget https://github.com/srg-ics-uplb/ics-os/archive/Homework3.tar.gz
-$ tar xzvf Homework3.tar.gz
-$ cd ics-os-Homework3/
-\end{Verbatim}
-
+\begin{minted}[frame=single,framesep=10pt]{bash}
+$ git clone https://github.com/srg-ics-uplb/ics-os.git ics-os-lab03
+$ cd ics-os-lab03
+\end{minted}
 
 Take note that the \textit{top-level directory} of the source 
 tree contains the following. 
 
-\begin{Verbatim}[frame=single]
-extras  ics-os  README.md  SEMESTER  wiki 
-\end{Verbatim}
+\begin{minted}[frame=single,framesep=10pt]{bash}
+extras  ics-os  ics-os.gif  labs  README.md  wiki
+\end{minted}
 
 However, most of the commands will be described relative to the \texttt{ics-os} directory.
 For consistency, we will refer to this folder as \texttt{\$ICSOS\_HOME}. Use the \texttt{cd} 
@@ -84,6 +79,7 @@ command to transfer from one directory to another.
 \begin{Verbatim}[frame=single]
 $ cd ics-os
 $ export ICSOS_HOME=`pwd`  #use backtick
+$ echo $ICSOS_HOME
 \end{Verbatim}
 
 \section{Deliverables and Credit}
