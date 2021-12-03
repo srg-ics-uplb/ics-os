@@ -1,5 +1,5 @@
 ### Dependencies
-pygments (Python)
-cm-super
-pdflatex
+* pygments (Python)
+* cm-super
+* pdflatex
 
