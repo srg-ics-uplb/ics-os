@@ -59,7 +59,7 @@
 A process is a program in execution. In this homework, you will explore the process-related services provided by ICS-OS. 
 
 \section{Prerequisites}
-In order not to mess your setup, get a fresh copy of the source and place it to a new folder, \texttt{ics-os-lab03}, as shown below. 
+In order not to mess your setup, get a fresh copy of the source and place it to a new folder, \texttt{ics-os-lab03}, as shown below. It is assumed that you have already set up the build environment as described in ICS-OS Lab01.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $ git clone https://github.com/srg-ics-uplb/ics-os.git ics-os-lab03
@@ -76,17 +76,17 @@ extras  ics-os  ics-os.gif  labs  README.md  wiki
 However, most of the commands will be described relative to the \texttt{ics-os} directory.
 For consistency, we will refer to this folder as \texttt{\$ICSOS\_HOME}. Use the \texttt{cd} 
 command to transfer from one directory to another.
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 $ cd ics-os
 $ export ICSOS_HOME=`pwd`  #use backtick
 $ echo $ICSOS_HOME
-\end{Verbatim}
+\end{minted}
 
 \section{Deliverables and Credit}
 Perform the tasks below and capture screen shots while you do them. Answer
 all questions. Questions by default relate to ICS-OS. Submit a PDF file containing the screen shots with captions 
 and answers to questions. Do not forget to put your name and laboratory
-section. You may need to review Homework 1 and Homework 2. Total is \textbf{26 points}.
+section. You may need to review ICS-OS Lab01 and ICS-OS Lab01. Total is \textbf{26 points}.
 
 \section{Tasks}
 
@@ -125,35 +125,35 @@ ICS-OS environment.
 
 Build and boot ICS-OS. Run the following command line sequence and capture a screen shot.	
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 [1]% cd tcc1
 [2]% ls -l -oname
 [3]% cc
-\end{Verbatim}
+\end{minted}
 
 The \texttt{cc} console command allows you to compile C programs inside ICS-OS. Check its implementation 
 in \texttt{kernel/console/console.c}. The command requires that \texttt{PATH} be set to where 
 the executables are and \texttt{SDK\_HOME} to where the SDK is located. Accomplish this using the command line sequence below.  
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 [4]% set
 [5]% set SDK_HOME=/icsos/tcc1
 [6]% set PATH=/icsos/apps
 [7]% set
-\end{Verbatim}
+\end{minted}
 
 Your next task is to write and compile the \texttt{envtest.c} program. Use \texttt{/icsos/apps/ed.exe}, a simple text editor for ICS-OS. Use \texttt{CTRL+o,ENTER} to save and \texttt{CTRL+x} to exit. Take note that this editor has a very limited set of features. Unfortunately, there is no copy and paste option.
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 [8]% pwd
 [9]% ed.exe envtest.c  
 [10]% cc envtest.exe envtest.c
 [11]% ls -l -oname
 [12]% envtest.exe
 [13]% set
-\end{Verbatim}
+\end{minted}
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt,linenos]{C}
 /*envtest.c*/
 int main(){
    char val[30];
@@ -164,7 +164,7 @@ int main(){
    setenv("BETEL_HEART","enrique g.");
    return 0;
 }
-\end{Verbatim}
+\end{minted}
 
 ICS-OS has its own implementation of the C standard library functions in \texttt{sdk/tccsdk.c}.
 However the implementation is not complete thus you cannot use some functions you normally 
@@ -189,11 +189,11 @@ You can find the definition of \texttt{setenv()} and \texttt{getenv()} there alo
 A process is represented by a data structure called the \textit{Process Control Block (PCB)}. 
 In ICS-OS the PCB is a C structure (see \texttt{kernel/process/process.h}).
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt,linenos]{C}
 typedef struct _PCB386{
     //contains fields related to a process
 }PCB386;
-\end{Verbatim}
+\end{minted}
 
 \noindent\fbox{
 	\parbox{\textwidth}{
@@ -234,9 +234,9 @@ set at compile time of the kernel.
 
 Now, run the command below.
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 % ps
-\end{Verbatim}
+\end{minted}
 
 \noindent\fbox{
 	\parbox{\textwidth}{
@@ -256,9 +256,9 @@ Now, run the command below.
 
 Create a new console using the command below. You can move across consoles using \texttt{F11} and 
 \texttt{F12}. 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 % newconsole
-\end{Verbatim}
+\end{minted}
 
 \noindent\fbox{
 	\parbox{\textwidth}{
@@ -274,13 +274,13 @@ Create a new console using the command below. You can move across consoles using
 Edit and compile \texttt{count.c} within ICS-OS but DO NOT RUN yet. Copy the executable to 
 \texttt{/icsos/apps} folder. Do not forget to set the environment variables.
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 % ed.exe count.c
 % cc count.exe count.c
 % copy count.exe /icsos/apps
-\end{Verbatim}
+\end{minted}
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt,linenos]{C}
 /*count.c*/
 int main(){
    int i;
@@ -289,15 +289,15 @@ int main(){
      sleep(10);   
    }
 }
-\end{Verbatim}
+\end{minted}
 
 Create a new console then run \texttt{count.exe} on the new console. Try to press \texttt{CTRL+c}. 
 You will observe that the process does not stop. Signals are not yet implemented. 
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 % newconsole
 % count.exe
-\end{Verbatim}
+\end{minted}
 
 Go back to the previous console using \texttt{F11} then run \texttt{ps}.
 
@@ -312,10 +312,12 @@ Go back to the previous console using \texttt{F11} then run \texttt{ps}.
 
 In order to terminate the \texttt{count.exe} process, use the \texttt{kill} console command with the 
 process id or complete process name as argument.
-\begin{Verbatim}[frame=single]
+
+\begin{minted}[frame=single,framesep=10pt]{bash}
 % kill count.exe
-\end{Verbatim}
-\textbf{Process Creation (5 points)} \\ 
+\end{minted}
+
+\subsubsection*{Task 3.5: Process Creation (5 points)}
 
 How did the executable \texttt{count.exe} program eventually became a process?This is explained below.\\
 
@@ -336,13 +338,13 @@ eventually call \texttt{createprocess()} after all the information needed to cre
 For application programming, you can use the \texttt{execp()} function in the SDK which invokes  
 \texttt{user\_execp()} through a system call. It returns 0 if the call failed or the process id if successful. 
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{C}
 int execp(char *fname, unsigned short mode, char *params);
-\end{Verbatim}
+\end{minted}
 
 The code below is a template for a basic shell. Edit, compile, and run \texttt{meshell.exe} inside ICS-OS. Show some screenshots of it in action.  
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt,linenos]{C}
 /*meshell.c*/
 int main() {
    char cmdline[255]="";
@@ -363,7 +365,7 @@ int main() {
    return 0;
 }
 
-\end{Verbatim}
+\end{minted}
 
 \noindent\fbox{
 	\parbox{\textwidth}{
@@ -380,14 +382,14 @@ int main() {
 
 The \texttt{forkprocess()} method of creating processes can be used through the \texttt{fork()} function in the sdk. This function invokes  
 \texttt{user\_fork()} through a system call. Compile \texttt{fork.c} below. Create a new console and run \texttt{meshell.exe} on the new console. Run \texttt{fork.exe} in meshell. Switch to the previous console and run \texttt{ps}. Observe the list of processes and capture some screenshots.
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt]{bash}
 % cd /icsos/apps
 % newconsole
 % meshell.exe
 $ fork.exe
-\end{Verbatim}
+\end{minted}
 
-\begin{Verbatim}[frame=single]
+\begin{minted}[frame=single,framesep=10pt,linenos]{C}
 /*fork.c*/
 int NITER=10000;
 int main() {
@@ -412,9 +414,9 @@ int main() {
    }
    return -1;
 }
-\end{Verbatim}
+\end{minted}
 
-\textbf{Process Termination (2 points)} \\
+\subsubsection*{Task 3.6: Process Termination (2 points)} 
 
 Terminating a process means freeing the resources allocated to it,  such as memory and other data structures, as well as the PCB itself. As mentioned above, the \texttt{kill} console command (see \texttt{kernel/console/console.c}) is used to terminate a process. It calls the 
 \texttt{dex32\_killkthread\_name()} function (see \texttt{kernel/process/process.c}). This function sets 
@@ -432,7 +434,9 @@ The actual work of freeing the resources and terminating the process is done in 
 	}
 }
 
-
+\section{Reflection}
+Write some realizations and questions that crossed your mind while doing this 
+lab. 
 
 
 \end{document}
