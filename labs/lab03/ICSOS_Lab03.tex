@@ -393,12 +393,12 @@ $ fork.exe
 /*fork.c*/
 int NITER=10000;
 int main() {
-   int retval;
+   int retval,i;
    printf("Calling fork()..\n");
    retval = fork();
    if (retval == 0){
       printf("In child. mypid:%d\n",getpid());
-      for (int i=0;i<NITER;i++){
+      for (i=0;i<NITER;i++){
          printf("Child: %d\n",i);
          sleep(10);
       }
@@ -406,7 +406,7 @@ int main() {
    }
    else if (retval > 0){
       printf("In parent, mypid:%d, child pid: %d\n",getpid(), retval);
-      for (int i=0;i<NITER;i++){
+      for (i=0;i<NITER;i++){
          printf("Parent: %d\n",i);
          sleep(15);
       }
