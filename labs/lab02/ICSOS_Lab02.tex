@@ -28,7 +28,7 @@
 \fancyhf{} % clear all fields
 
 \pagestyle{fancy}
-\lhead{CMSC 125: Operating Systems \\ First Semester 2020-2021}
+\lhead{CMSC 125: Operating Systems \\ First Semester 2023-2024}
 \rhead{Institute of Computer Science \\ University of the Philippines Los Banos}
 \rfoot{JACHermocilla | CC BY-NC-SA 4.0}
 %\cfoot{Enjoy!:)}
@@ -126,8 +126,7 @@ if (strcmp(u,"add") == 0){   //-- Adds two integers. Args: <num1> <num2>
 }else
 \end{minted}
 
-\textbf{QUESTION}: What are the advantages and disadvantages of having the CLI 
-part of the kernel itself?
+\textbf{QUESTION}: What are the advantages and disadvantages of having the CLI as part of the kernel itself instead of a user application like Bash?
 
 \subsection*{Task 2: Add a new system call service/function (3 points)}
 The list of functions/services accessible through system calls are placed in a
@@ -180,12 +179,13 @@ the owner of a file (does nothing for now). Edit
 \begin{minted}[frame=single,framesep=10pt]{C}
 int kchown(int fd, int uid, int gid){
    printf("Changing owner of fd=%d to user id=%d and group id=%d\n", fd, uid, gid);
-   //Actual code to change file ownership is placed here.   
+   //Actual code to change file ownership is placed here.
+   //For now this is just empty   
    return 0; //0-success
 }
 \end{minted}
 
-To add it to the system call table, add the following line to the 
+To add it to the system call table, add the following line at the end of the 
 \texttt{api\_init()} function in \newline 
 \texttt{kernel/dexapi/dex32API.c}. The function/service number we will use is 
 \texttt{0xC2}. Take note of this number.
@@ -220,7 +220,7 @@ $sed -i 's/hello/chown/g' Makefile   #replace hello with chown in the Makefile
 \end{minted}
 
 \subsubsection*{Task3b: Build the executable and install}
-Go to the build container to create and install the \texttt{chown.exe} 
+Start the build container to create and install the \texttt{chown.exe} 
 executable. Use the following commands.
 \begin{minted}[frame=single,framesep=10pt]{bash}
 #cd /home/ics-os/contrib/chown
