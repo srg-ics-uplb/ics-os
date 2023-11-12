@@ -28,7 +28,7 @@
 \fancyhf{} % clear all fields
 
 \pagestyle{fancy}
-\lhead{CMSC 125: Operating Systems \\ First Semester 2020-2021}
+\lhead{CMSC 125: Operating Systems \\ First Semester 2023-2024}
 \rhead{Institute of Computer Science \\ University of the Philippines Los Banos}
 \rfoot{JACHermocilla | CC BY-NC-SA 4.0}
 %\cfoot{Enjoy!:)}
@@ -67,7 +67,7 @@ contains the GRUB bootloader which transfers control to the ICS-OS kernel (
 enter commands. 
 
 \section{Prerequisites}
-The recommended development environment is Ubuntu 16.04. Tasks described here 
+The recommended development environment is Ubuntu 16.04 (can build the kernel successfully). Tasks described here 
 may or may not work on other Linux distributions. Familiarity with the command 
 line is also needeed. Install the following packages.
 
@@ -86,9 +86,9 @@ and laboratory section. Credit is five (5) points.
 
 \subsection*{Task 1: Install Docker and Docker-Compose}
 \texttt{docker}\footnote{https://docs.docker.com/engine/install/ubuntu/} and 
-\texttt{docker-compose}\footnote{https://docs.docker.com/compose/install/} 
+\texttt{docker-compose}\footnote{https://docs.docker.com/compose/install/linux/#install-using-the-repository} 
 should be installed to build in the latest versions of Ubuntu (see footnote for 
-links to the guides). 
+links to the guides). Also perform the post-install steps\footnote{https://docs.docker.com/engine/install/linux-postinstall/}. 
 
 
 \subsection*{Task 2: Clone the repository and explore the source tree}
@@ -97,21 +97,21 @@ hosted on Github. Run the following command to checkout the source code and
 explore the source tree.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
-$git clone https://github.com/srg-ics-uplb/ics-os.git
+$git clone https://github.com/srg-ics-uplb/ics-os.git ics-os-yourinitials
 \end{minted}
 
-Take note where the source was cloned. We will refer to this directory in 
-this document as \texttt{\$ICSOS\_HOME}.
+In the command above, the source will be cloned in the \texttt{ics-os-yourinitials} directory. We will refer to this directory in this document as \texttt{\$ICSOS\_HOME}. You can also use the \texttt{export} command to define it as an environment variable.
 
 We create a branch for lab01 to make code management easier.
 \begin{minted}[frame=single,framesep=10pt]{bash}
+$cd $ICSOS_HOME
 $git checkout -b lab01
-$git branch
+$git branch  #check that you are in the lab01 branch
 \end{minted}
 
 
 \subsection*{Task 3: Build ICS-OS kernel}
-The build process must be done inside a docker container. There is a 
+The build process must be done inside a docker container(an Ubuntu 16.04 environment). There is a 
 \texttt{\$ICSOS\_HOME/ics-os/docker-compose.yml} and a 
 \texttt{\$ICSOS\_HOME/ics-os/Dockerfile} that describe the build environment.
 
@@ -119,7 +119,7 @@ Open a new terminal. Start and enter the container using the commands below.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $cd $ICSOS_HOME/ics-os
-$docker-compose run ics-os-build
+$docker compose run ics-os-build
 \end{minted}
 
 You will be dropped to a root shell inside the container where you can perform 
@@ -143,7 +143,7 @@ image as boot device using the commands below.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $cd $ICSOS_HOME/ics-os
-$make floppy
+$sudo make floppy
 $make boot-floppy 
 \end{minted}
 
@@ -164,6 +164,7 @@ To exit the build container.
 Go back to the master branch of the source code.
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $git checkout master
+$git branch
 \end{minted}
 
 \section{Reflection}
