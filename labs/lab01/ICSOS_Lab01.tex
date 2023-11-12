@@ -67,9 +67,7 @@ contains the GRUB bootloader which transfers control to the ICS-OS kernel (
 enter commands. 
 
 \section{Prerequisites}
-The recommended development environment is Ubuntu 16.04 (can build the kernel successfully). Tasks described here 
-may or may not work on other Linux distributions. Familiarity with the command 
-line is also needeed. Install the following packages.
+The recommended development environment is Ubuntu 20.04 or later. The actual building of the kernel is done inside an Ubuntu 16.04 container. Familiarity with the command line is also needeed. GitHub Codespaces can also be used but will not have graphics support. Install the following packages on your local machine/VM or in Codespaces terminal after opening the repo. 
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $sudo apt update
@@ -86,15 +84,17 @@ and laboratory section. Credit is five (5) points.
 
 \subsection*{Task 1: Install Docker and Docker-Compose}
 \texttt{docker}\footnote{https://docs.docker.com/engine/install/ubuntu/} and 
-\texttt{docker-compose}\footnote{https://docs.docker.com/compose/install/linux/#install-using-the-repository} 
+\texttt{docker-compose}\footnote{https://docs.docker.com/compose/install/linux/\#install-using-the-repository} 
 should be installed to build in the latest versions of Ubuntu (see footnote for 
 links to the guides). Also perform the post-install steps\footnote{https://docs.docker.com/engine/install/linux-postinstall/}. 
 
+In Codespaces, these are already installed.
 
 \subsection*{Task 2: Clone the repository and explore the source tree}
 ICS-OS\footnote{https://github.com/srg-ics-uplb/ics-os/} is open source and is 
 hosted on Github. Run the following command to checkout the source code and 
-explore the source tree.
+explore the source tree. This step should be done if you are not using Codespaces.
+
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 $git clone https://github.com/srg-ics-uplb/ics-os.git ics-os-yourinitials
@@ -146,6 +146,14 @@ $cd $ICSOS_HOME/ics-os
 $sudo make floppy
 $make boot-floppy 
 \end{minted}
+
+In GitHub Codespaces, the following commands must be used since its harder to set up the GUI.
+\begin{minted}[frame=single,framesep=10pt]{bash}
+	$sudo make floppy
+	$qemu-system-i386 -fda ics-os-floppy.img -curses 
+\end{minted}
+
+
 
 You should now see the GRUB boot menu. Simply press enter to boot ICS-OS. Note 
 that the details of the steps are in the \texttt{\$ICSOS\_HOME/ics-os/Makefile}.
