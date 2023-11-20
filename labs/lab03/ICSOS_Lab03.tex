@@ -30,7 +30,7 @@
 \fancyhf{} % clear all fields
 
 \pagestyle{fancy}
-\lhead{CMSC 125: Operating Systems \\ First Semester 2021-2022}
+\lhead{CMSC 125: Operating Systems \\ First Semester 2023-2024}
 \rhead{Institute of Computer Science \\ University of the Philippines Los Banos}
 \rfoot{JACHermocilla | CC BY-NC-SA 4.0}
 %\cfoot{Enjoy!:)}
@@ -59,11 +59,21 @@
 A process is a program in execution. In this lab, you will explore the process-related services provided by ICS-OS. 
 
 \section{Prerequisites}
-In order not to mess your setup, get a fresh copy of the source and place it to a new folder, \texttt{ics-os-lab03}, as shown below. It is assumed that you have already set up the build environment as described in ICS-OS Lab 01.
+
+IMPORTANT: This lab should be done in an Ubuntu VM. Keys F11 and F12 need to be captured by ICS-OS but this cannot be done in Codespaces.
+
+
+To proceed with this lab, you should have completed \texttt{Lab 02}. Most of 
+the commands that we will use in this lab will be run relative to the 
+\texttt{\$ICSOS\_HOME/ics-os} directory. Update your local copy of the source 
+code and create a new branch for this lab with the commands below.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
-$ git clone https://github.com/srg-ics-uplb/ics-os.git ics-os-lab03
-$ cd ics-os-lab03
+	$cd $ICSOS_HOME/ics-os
+	$git checkout master
+	$git pull
+	$git checkout -b lab03
+	$git branch    #to check the currrent branch
 \end{minted}
 
 Take note that the \textit{top-level directory} of the source 
@@ -73,14 +83,9 @@ tree contains the following.
 extras  ics-os  ics-os.gif  labs  README.md  wiki
 \end{minted}
 
-However, most of the commands will be described relative to the \texttt{ics-os} directory.
-For consistency, we will refer to this folder as \texttt{\$ICSOS\_HOME}. Use the \texttt{cd} 
-command to transfer from one directory to another.
-\begin{minted}[frame=single,framesep=10pt]{bash}
-$ cd ics-os
-$ export ICSOS_HOME=`pwd`  #use backtick
-$ echo $ICSOS_HOME
-\end{minted}
+
+
+
 
 \section{Deliverables and Credit}
 Perform the tasks below and capture screen shots while you do them. Answer
@@ -92,7 +97,7 @@ section. You may need to review ICS-OS Lab 01 and ICS-OS Lab 02. Total is \textb
 
 \subsection*{Task 1: Environment Variables (3 points)} 
 Processes do not run in isolation. In fact, most processes are created from a \textit{parent} process. 
-In multitasking/multisharing systems, several processes are in memory and are scheduled for execution 
+In multitasking/timesharing systems, several processes are in memory and are scheduled for execution 
 on the CPU. Some processes even communicate with other processes. Thus, processes exist in an \textit{environment}. Operating systems provide \textit{environment variables} to allow processes to obtain information about the environment. An example of an environment variable is \texttt{PATH}. This 
 environment variable has a value that specifies where in the filesystem executables 
 can be found. A shell process can then use this environment variable so that users need not specify the absolute path to executables when running programs.
@@ -142,7 +147,7 @@ the executables are and \texttt{SDK\_HOME} to where the SDK is located. Accompli
 [7]% set
 \end{minted}
 
-Your next task is to write and compile the \texttt{envtest.c} program. Use \texttt{/icsos/apps/ed.exe}, a simple text editor for ICS-OS. Use \texttt{CTRL+o,ENTER} to save and \texttt{CTRL+x} to exit. Take note that this editor has a very limited set of features. Unfortunately, there is no copy and paste option.
+Your next task is to write and compile the \texttt{envtest.c} program given below. Use \texttt{/icsos/apps/ed.exe}, a simple text editor for ICS-OS. Use \texttt{CTRL+o,ENTER} to save and \texttt{CTRL+x} to exit. Take note that this editor has a very limited set of features. Unfortunately, there is no copy and paste option.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 [8]% pwd
@@ -209,7 +214,7 @@ typedef struct _PCB386{
 
 \subsubsection*{Task 3.2: Startup Processes (5 points)}
 
-After GRUB, the ICS-OS boot process proceeds by the execution of a sequence of functions from the kernel as shown below. 
+After GRUB, the ICS-OS boot process proceeds with the execution of a sequence of functions from the kernel as shown below. 
 
 \begin{enumerate}[itemsep=0pt,parsep=0pt]
     \item{\texttt{startup:}, \textit{Source:}\texttt{kernel/startup/startup.asm}, \textit{Purpose:} enable 32-bit protected mode, set up memory address linear selectors, calls \texttt{main()}}
@@ -223,14 +228,14 @@ After GRUB, the ICS-OS boot process proceeds by the execution of a sequence of f
 \textit{Purpose:} select the next process to execute.}
 \end{enumerate}   
 
-When the task switcher kicks in, the kernel is now in full control and begins selecting processes and threads for execution. The task switcher is essentially the \textit{CPU scheduler}. 
+When the task switcher kicks in, the kernel is now in full control and begins selecting processes and threads for execution. The task switcher is essentially the \textit{Process scheduler}. 
 
 During boot, several processes have already been created and are running in the background, 
 including the \texttt{console} where you are typing commands. 
 
 You might be wondering how these startup processes/threads got created and started. There are two functions to look at in the source:  \texttt{process\_init()} from \texttt{kernel/process/process.c} and \texttt{dex\_init()} from \texttt{kernel/kernel32.c}. Study these two functions and answer the questions. You will observe that 
 the PCBs of the startup processes are \textit{hard-coded}, which means that the values of the fields are 
-set at compile time of the kernel.
+set at \textit{compile time of the kernel}.
 
 Now, run the command below.
 
@@ -272,7 +277,7 @@ Create a new console using the command below. You can move across consoles using
 
 \subsubsection*{Task 3.4: User Processes (2 points)}
 Edit and compile \texttt{count.c} within ICS-OS but DO NOT RUN yet. Copy the executable to 
-\texttt{/icsos/apps} folder. Do not forget to set the environment variables.
+\texttt{/icsos/apps} folder. Do not forget to set the needed environment variables described above.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
 % ed.exe count.c
@@ -332,8 +337,8 @@ There are two low-level functions to create processes (see \texttt{kernel/proces
 The \texttt{forkprocess()} approach creates a duplicate of the PCB of the parent process while the \texttt{createprocess()} approach creates the PCB from scratch. In both approaches, after the PCB has been created, it is added to the ready queue using \texttt{ps\_enqueue()}. At this point, a process has been \textit{dispatched} and can now be scheduled by the CPU scheduler for execution. 
 
 As mentioned above, the instructions to be executed by the process will come from the program image, which can 
-be in different formats. In ICS-OS, the following formats are supported: ELF32, PE, COFF, B32. A \textit{module loader} for each format is implemented in \texttt{kernel/module/}. For example, the module to load linux executables is in \texttt{kernel/module/elf\_module.c}. These loaders 
-eventually call \texttt{createprocess()} after all the information needed to create the PCB have been obtained from the program image.
+be in different formats. In ICS-OS, the following formats are supported: ELF32, PE, COFF, B32. A \textit{module loader} for each format is implemented and can be found in the \texttt{kernel/module/} folder. For example, the module to load linux executables is in \texttt{kernel/module/elf\_module.c}. These loaders 
+eventually call \texttt{createprocess()} after all the information needed to create the PCB have been obtained from the program image. The function \texttt{dex32\_loader()} in \texttt{kernel/module/module.c} calls the appropriate loader for the program image.
 
 For application programming, you can use the \texttt{execp()} function in the SDK which invokes  
 \texttt{user\_execp()} through a system call. It returns 0 if the call failed or the process id if successful. 
@@ -380,7 +385,7 @@ int main() {
 	}
 }
 
-The \texttt{forkprocess()} method of creating processes can be used through the \texttt{fork()} function in the sdk. This function invokes  
+The \texttt{forkprocess()} method of creating processes can be used through the \texttt{fork()} function in the SDK. This function invokes  
 \texttt{user\_fork()} through a system call. Compile \texttt{fork.c} below. Create a new console and run \texttt{meshell.exe} on the new console. Run \texttt{fork.exe} in meshell. Switch to the previous console and run \texttt{ps}. Observe the list of processes and capture some screenshots.
 \begin{minted}[frame=single,framesep=10pt]{bash}
 % cd /icsos/apps
