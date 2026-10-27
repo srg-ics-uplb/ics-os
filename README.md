@@ -12,7 +12,7 @@ Latest floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/
 
 Test the floppy image in qemu.
 ```
-$qemu-system-i386 -fda ics-os-demo-floppy.img
+$qemu-system-i386 -fda ics-os-floppy.img
 ```
 ## Build Environment
 
@@ -32,13 +32,13 @@ Run the following command to enter the build environment:
 
 or if you are using the docker-compose plugin:
 
-`$docker compose run ics-os-build`
+`$docker compose run --remove-orphans ics-os-build`
 
 You will be dropped to a shell where you can perform the build. The ics-os folder is mapped inside the container. Thus, 
 you can perform the edits outside the container(in another terminal) and the changes will be reflected inside the build environment.
 
 ```
-#cd /home/ics-os
+#cd /home/ics-os/ics-os
 #make clean
 #make
 #exit

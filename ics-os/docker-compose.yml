@@ -5,7 +5,7 @@ services:
     command:
       - /bin/bash
     volumes:
-      - .:/home/ics-os
+      - ..:/home/ics-os
     security_opt:
       - seccomp:unconfined
     cap_add:

@@ -3,6 +3,12 @@
 # written by Joseph Anthony C. Hermocilla
 #
 
+GIT_VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo unknown)
+GIT_HASH    := $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
+
+CFLAGS += -DICSOS_VERSION=\"$(GIT_VERSION)\" -DICSOS_GIT_HASH=\"$(GIT_HASH)\"
+
+
 vmdex:
 	make -C kernel/
 

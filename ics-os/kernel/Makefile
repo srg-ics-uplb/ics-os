@@ -3,6 +3,10 @@ CFLAGS=-fno-stack-protector -fgnu89-inline -m32 -w -nostdlib -fno-builtin -ffree
 ASM=nasm
 ASMFLAGS=-f elf32
 
+GIT_VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo unknown)
+GIT_HASH    := $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
+CFLAGS += -DICSOS_VERSION=\"$(GIT_VERSION)\" -DICSOS_GIT_HASH=\"$(GIT_HASH)\"
+
 bzImage: all
 	objcopy --only-keep-debug Kernel32.bin Kernel32.sym
 	objcopy --strip-debug Kernel32.bin
