@@ -75,12 +75,36 @@ the public repo is always an explicit, deliberate act (section 5).
 
 Every collaborator with private access repeats 1.2 on their machine.
 
+### 1.3 Create the `dev` branch
+
+The mirror in 1.1 contains only the public repo's branches, so `dev` does not
+exist yet. The maintainer creates it once, from `master`, and pushes it:
+
+```bash
+git checkout master
+git checkout -b dev
+git push -u origin dev
+```
+
+`-u` links your local `dev` to `origin/dev`, so later `git push` and `git pull`
+need no arguments.
+
+Collaborators do not create it again. After cloning (1.2) they just run:
+
+```bash
+git checkout dev                       # git sets up tracking from origin/dev
+```
+
+Optional, on GitHub: set `dev` as the repo's default branch (Settings ->
+Branches). A fresh clone then lands on `dev` rather than the `master` mirror
+that nobody should commit to, and pull requests target `dev` by default.
+
 ## 2. Branch layout (private repo)
 
 | Branch | Purpose | Rules |
 |---|---|---|
 | `master` | Mirror of public `upstream/master` | Never commit here directly; updated only by fast-forward from upstream (section 3) |
-| `dev` | Integration branch for all private work (what you build and run day to day) | Topic branches merge in here; never published wholesale, never used as a branch point |
+| `dev` | Integration branch for all private work (what you build and run day to day); created once in section 1.3 | Topic branches merge in here; never published wholesale, never used as a branch point |
 | `fix/*`, `feature/*` | One topic branch per change (`fix/thread-join`, `feature/lottery-plugin`) | **Branched from `master`**; **one concern per branch**; must contain no answer-key material |
 | `solutions/*` | Lab answer keys (`solutions/lottery-lab`, `solutions/memlab`) | Stay private forever; never merged toward anything public |
 
@@ -265,6 +289,64 @@ git diff master fix/<topic> -- <the files you changed>   # empty = already in ma
 ```
 
 If that diff is empty, the change is in `master` and `git branch -D` is safe.
+
+### 4.9 Recovering a deleted topic branch
+
+If you deleted a topic branch **before publishing it**, nothing is lost yet.
+Deleting a branch removes only its name; the commits stay in the repository
+until git cleans up unreachable ones, which by default is weeks later. Find
+which case you are in:
+
+**Deleted locally, still on `origin`:**
+
+```bash
+git fetch origin
+git checkout fix/<topic>               # recreates it from origin/fix/<topic>
+```
+
+**Already merged into `dev`.** If you merged with `--no-ff` (section 4.4),
+the merge commit remembers the branch tip as its second parent:
+
+```bash
+git log --merges --oneline dev         # find "Merge branch 'fix/<topic>'"
+git branch fix/<topic> <merge-sha>^2   # ^2 = the tip of the merged branch
+```
+
+If the commits arrived without a merge commit (fast-forward or squash), find
+them by the files they touched and cherry-pick them onto a new branch from
+`master`:
+
+```bash
+git log --oneline dev -- path/to/changed/file
+git checkout -b fix/<topic> master
+git cherry-pick <sha> <sha>
+```
+
+**Deleted everywhere and never merged.** Use the reflog, which records where
+your local branches pointed:
+
+```bash
+git reflog                             # find the last commit on that branch
+git branch fix/<topic> <sha>
+```
+
+`git branch -D` also prints the commit it deleted ("Deleted branch fix/x (was
+1a2b3c4)"), so that line in your terminal history gives you the sha directly.
+If the branch only ever existed on a colleague's machine or was deleted on
+GitHub, ask them to push it again, or use the **Restore branch** button on its
+closed pull request.
+
+**Then publish as normal.** Once the branch exists again, follow section 5.
+First check that the restored branch holds only your change:
+
+```bash
+git merge-base master fix/<topic>      # should be a recent master commit
+git log --stat master..fix/<topic>     # should list only your commits and files
+```
+
+If the branch turns out to carry extra commits (for instance it was cut from
+`dev` by mistake), do not publish it as it is. Create a fresh branch from
+`master` and cherry-pick only your commits onto it.
 
 ## 5. Routine: publishing selected fixes OUT
 
