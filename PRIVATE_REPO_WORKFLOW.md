@@ -95,9 +95,11 @@ Collaborators do not create it again. After cloning (1.2) they just run:
 git checkout dev                       # git sets up tracking from origin/dev
 ```
 
-Optional, on GitHub: set `dev` as the repo's default branch (Settings ->
+Recommended, on GitHub: set `dev` as the repo's default branch (Settings ->
 Branches). A fresh clone then lands on `dev` rather than the `master` mirror
-that nobody should commit to, and pull requests target `dev` by default.
+that nobody should commit to, and pull requests target `dev` by default. If
+`master` stays the default, GitHub offers `dev` -> `master` pull requests, and
+merging one breaks the mirror (see the warning in section 2).
 
 ## 2. Branch layout (private repo)
 
@@ -107,6 +109,14 @@ that nobody should commit to, and pull requests target `dev` by default.
 | `dev` | Integration branch for all private work (what you build and run day to day); created once in section 1.3 | Topic branches merge in here; never published wholesale, never used as a branch point |
 | `fix/*`, `feature/*` | One topic branch per change (`fix/thread-join`, `feature/lottery-plugin`) | **Branched from `master`**; **one concern per branch**; must contain no answer-key material |
 | `solutions/*` | Lab answer keys (`solutions/lottery-lab`, `solutions/memlab`) | Stay private forever; never merged toward anything public |
+
+**Never open or merge a pull request from `dev` into `master`.** Pull requests
+in the private repo go from `fix/*` or `feature/*` into `dev`, and that is the
+only direction. A `dev` -> `master` merge, whether done on GitHub's web page or
+on the command line, puts all of `dev` (unpublished and private work) into the
+branch that section 5 publishes from, and `master` stops being a mirror. It is
+not a way to publish; publishing means pushing a clean topic branch to the
+public repo (section 5).
 
 The single most important discipline: **never mix solution files into a fix
 branch.** A fix branch that stayed clean can be published with one merge; a
@@ -139,6 +149,77 @@ Notes:
   solo maintainer may use `git rebase master` for linear history.
 - Sync **frequently**. Conflicts surface in small, manageable doses instead
   of one giant reconciliation at semester's end.
+
+### 3.1 Troubleshooting: `git push origin master` is rejected
+
+Symptom: `git merge --ff-only upstream/master` says "Already up to date", but
+`git push origin master` fails with `! [rejected] master -> master (fetch
+first)`, and your shell prompt or `git status` shows `master` both ahead and
+behind `origin` (for example "up 5, down 2").
+
+This means your private `master` and `origin/master` have diverged, so `master`
+is no longer an exact copy of the public repo. Do **not** run `git pull`: it
+would create a merge commit on `master` and make the problem permanent.
+
+**Step 1. Find out what the extra commits are.**
+
+```bash
+git fetch origin
+git log --stat upstream/master..master          # commits only on your local master
+git log --stat upstream/master..origin/master   # commits only on GitHub's master
+```
+
+Commits that appear here are on `master` but not in the public repo. The usual
+causes:
+
+| What the log shows | Cause |
+|---|---|
+| `Merge pull request #N from .../dev`, authored by the GitHub noreply address | Someone merged a `dev` -> `master` pull request on GitHub |
+| Your own commits on `master` | You committed on `master` instead of on a topic branch |
+| Commits you do not recognize | Another clone or a collaborator pushed to `master` |
+
+**Step 2. Save anything that is real work.**
+
+```bash
+git branch fix/<topic> master                   # your own local commits
+git push origin fix/<topic>
+```
+
+Merge commits from a `dev` -> `master` pull request carry nothing of their own.
+Confirm that before discarding them; this should list only those merge
+commits:
+
+```bash
+git log --oneline origin/dev..origin/master
+```
+
+If it lists anything else, save that to a branch too
+(`git branch backup/<name> origin/master`).
+
+**Step 3. Make `master` a mirror again.**
+
+```bash
+git checkout master
+git reset --hard upstream/master
+git push --force-with-lease origin master
+```
+
+The force push is acceptable here because this is the private repo and
+everything worth keeping is on `dev` or a saved branch. `--force-with-lease`
+refuses to overwrite commits you have not fetched. If GitHub reports a
+protected branch, relax protection on the private `master` for this one push.
+`dev` is untouched by all of this.
+
+**Step 4. Fix the cause.** Make `dev` the default branch (section 1.3) so
+pull requests stop defaulting to `master`, and tell collaborators to reset
+their copy once:
+
+```bash
+git fetch origin && git checkout master && git reset --hard origin/master
+```
+
+Then carry on with section 3 as normal. `git merge master` into `dev` will
+bring across only the real public changes.
 
 ## 4. Routine: fixing a bug or adding a feature
 
@@ -445,7 +526,8 @@ git diff master solutions/<lab> > <lab>-solution.patch
 2. `git push upstream` is disabled; publishing is always by explicit URL.
 3. Topic branches start from `master`, never from `dev`.
 4. One concern per topic branch; no answer-key files outside `solutions/*`.
-5. `dev` is never merged or pushed to the public repo.
+5. `dev` is never merged into `master` (no `dev` -> `master` pull request) and
+   never pushed to the public repo.
 6. Build and boot-test every change before it merges into `dev`.
 7. Sync from upstream often; publish stable fixes promptly.
 8. Delete a topic branch once its change is back in `master` through a sync.
