@@ -1,4 +1,4 @@
-i# ICS-OS Development Workflow: Private Repo with a Public Upstream
+# ICS-OS Development Workflow: Private Repo with a Public Upstream
 
 This document describes how to maintain a **private development repository**
 for ICS-OS alongside the **public repository**
