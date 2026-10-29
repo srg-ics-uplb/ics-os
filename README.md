@@ -8,11 +8,11 @@ Thus, this project aims to develop a simple yet operational instructional operat
 
 ## Downloads
 
-Latest floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/ics-os/ics-os-floppy.img'>ics-os-floppy.img</a>
+Demo floppy image: <a href='https://github.com/srg-ics-uplb/ics-os/raw/master/ics-os/ics-os-floppy.img'>ics-os-demo-floppy.img</a>
 
-Test the floppy image in qemu.
+Test the demo floppy image in qemu.
 ```
-$qemu-system-i386 -fda ics-os-floppy.img
+$qemu-system-i386 -fda ics-os-demo-floppy.img
 ```
 ## Build Environment
 
