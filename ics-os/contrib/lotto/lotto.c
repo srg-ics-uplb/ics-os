@@ -26,10 +26,11 @@ expected, and the work is simply split evenly by the round-robin scheduler.
    stay far below the 32-bit limit even on a fast machine. */
 volatile unsigned int workA = 0, workB = 0;
 volatile unsigned int sinkA = 0, sinkB = 0;
+volatile int stop = 0;      /* set by main() to tell the workers to finish */
 
 void workerA(){
    int j;
-   while (1){
+   while (!stop){
       for (j = 0; j < 1000; j++) sinkA++;
       workA++;
    }
@@ -37,7 +38,7 @@ void workerA(){
 
 void workerB(){
    int j;
-   while (1){
+   while (!stop){
       for (j = 0; j < 1000; j++) sinkB++;
       workB++;
    }
@@ -89,6 +90,15 @@ int main(int argc, char *argv[]){
    a = workA;
    b = workB;
    total = a + b;
+
+   /* The workers must be finished before main() returns: when a process
+      exits, the kernel frees its memory, and a thread still running in
+      that memory would crash the machine. Tell them to stop, and wait
+      for both to leave (they return into thread_exit()). */
+   stop = 1;
+   thread_join(tidA);
+   thread_join(tidB);
+
    if (total == 0){
       printf("lotto: the threads did no work.\n");
       return 1;
