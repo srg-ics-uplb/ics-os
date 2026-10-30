@@ -685,6 +685,19 @@ int console_execute(const char *str){
    if (strcmp(u,"procs") == 0 || strcmp(u,"ps") == 0){  //-- List the running processes. "ps" can also be used.
       show_process();
    }else
+   if (strcmp(u,"tickets") == 0){      //-- Sets the lottery tickets of a process. Args: <pid> <tickets>
+      char *p1 = strtok(0," ");
+      char *p2 = strtok(0," ");
+      if (p1!=0 && p2!=0){
+         PCB386 *proc = ps_findprocess(atoi(p1));
+         if (proc != (PCB386*)-1){
+            proc->priority = atoi(p2);
+            printf("tickets: pid %d now holds %d ticket(s).\n", atoi(p1), atoi(p2));
+         }else
+            printf("tickets: process %d not found.\n", atoi(p1));
+      }else
+         printf("usage: tickets <pid> <ntickets>\n");
+   }else
    if (strcmp(u,"cls") == 0 || strcmp(u,"clear") == 0){          //-- Clears the screen. 
       clrscr();
       unsigned char stk[10240];
