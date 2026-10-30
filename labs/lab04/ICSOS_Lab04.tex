@@ -66,11 +66,9 @@ The default ICS-OS scheduler is \textit{round-robin}: every runnable process get
 
 To proceed with this lab, you should have completed \texttt{Lab 01} and \texttt{Lab 02}. Build the kernel in the Docker build environment described in Lab 01 and the README. Most of the commands below are run relative to the \texttt{\$ICSOS\_HOME} directory. Update your local copy of the source code and create a new branch for this lab with the commands below.
 
-\begin{minted}[frame=single,framesep=10pt]{bash}
-$cd $ICSOS_HOME
-$git checkout master
-$git pull
-$git checkout -b starter/lottery-scheduling-lab
+\begin{minted}[frame=single,framesep=10pt,fontsize=\fontsize{9pt}{11pt}\selectfont]{bash}
+$git clone -b starter/lottery-scheduling-lab https://github.com/srg-ics-uplb/ics-os.git ics-os-lottery
+$cd $ICSOS_HOME  #this is set to the ics-os-lottery
 $git branch    #to check the current branch
 \end{minted}
 
@@ -120,7 +118,6 @@ static DWORD lottery_rand(){
 	lottery_state ^= lottery_state << 5;
 	return lottery_state;
 };
-
 \end{minted}
 
 \subsection*{The \texttt{tickets} command (provided)}
@@ -131,9 +128,9 @@ The kernel shell in your starter code already has a command that sets the ticket
 tickets <pid> <ntickets>
 \end{minted}
 
-Here's the implementation in \texttt{kernel/console/console.c}:
+Here's the implementation in \texttt{console/console.c}:
 
-\begin{minted}[frame=single,framesep=10pt]{C}
+\begin{minted}[frame=single,framesep=10pt,fontsize=\fontsize{9pt}{11pt}\selectfont]{C}
 if (strcmp(u,"tickets") == 0){      //-- Sets the lottery tickets of a process. Args: <pid> <tickets>
 	char *p1 = strtok(0," ");
 	char *p2 = strtok(0," ");
@@ -149,7 +146,7 @@ if (strcmp(u,"tickets") == 0){      //-- Sets the lottery tickets of a process. 
 }
 \end{minted}
 
-It finds the process with \texttt{ps\_findprocess(pid)} and stores \texttt{ntickets} in its \texttt{priority} field, the same field your scheduler will read. It prints a usage message when an argument is missing and an error when the pid does not exist. \textbf{Note that we used the priority field of the PCB as the placeholder for the tickets assigned to a process}.
+It finds the process with \texttt{ps\_findprocess(pid)} and stores \texttt{ntickets} in its \texttt{priority} field, the same field your scheduler will read. It prints a usage message when an argument is missing and an error when the pid does not exist. \textbf{Note that we used the priority field of the PCB as the placeholder for the number of tickets assigned to a process}.
 
 
 \subsection*{Returning the number of tickets held by a process (provided)}
@@ -180,7 +177,7 @@ lotto.exe <ticketsA> <ticketsB> [seconds]
 
 \texttt{lotto.exe} starts two CPU-bound threads, A and B. It gives them the tickets you ask for by running the \texttt{tickets} command on them, lets them compete for \texttt{[seconds]} (default 10), and then prints how much work each one completed and what share of the total that is. If your scheduler is correct, the share of A is close to $\texttt{ticketsA} / (\texttt{ticketsA} + \texttt{ticketsB})$.
 
-While \texttt{lotto.exe} runs, the shell is busy and does not accept typing. Wait for the prompt to come back.
+While \texttt{lotto.exe} runs, the shell is busy and does not accept typing. Wait for the prompt to come back. Before running \texttt{lotto.exe}, create a new console first so that you can see the processes using \texttt{ps} on another console. 
 
 The ``seconds'' are kernel seconds. Under an emulator such as QEMU, the kernel clock can run slower than your wall clock, so a 10-second run may take noticeably longer to finish.
 
@@ -199,22 +196,24 @@ No coding is needed here. Read the source files described in the Background and 
 }
 
 \subsection*{Task 2: Baseline, Measure Round-Robin (5 points)}
-Before you change anything, build the stock kernel (one with default scheduler) and measure it. Run the commands below (the first group inside the Docker build environment).
+Before you change anything, build the stock kernel (one with default round-robin scheduler) and measure it. Run the commands below (the first group inside the Docker build environment).
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
-$docker compose --remove-orphans run ics-os-build
-(in container)# cd /home/ics-os && make clean && make
-(in container)# cd contrib/lotto && make && make install && cd ../..
+$cd $ICSOS_HOME/ics-os
+$docker compose run --remove-orphans ics-os-build
+(in container)# cd /home/ics-os/ics-os && make clean && make
+(in container)# cd contrib/lotto && make clean; make && make install && cd ../..
 (in container)# exit
 $sudo make floppy
-$qemu-system-i386 -fda ics-os-floppy.img
+$make boot-floppy # or qemu-system-i386 -fda ics-os-floppy.img
 \end{minted}
 
-At the ICS-OS prompt run the two commands below.
+At the ICS-OS prompt run the commands below. Press F11 or F12 to move accross consoles. You can run \texttt{ps} on the other console to view the running processes/threads.
 
 \begin{minted}[frame=single,framesep=10pt]{bash}
-[1]% lotto.exe 10 10 20
-[2]% lotto.exe 30 10 20
+[1]% newconsole 
+[2]% lotto.exe 10 10 20
+[3]% lotto.exe 30 10 20
 \end{minted}
 
 \texttt{lotto.exe} will report that thread A and thread B hold the tickets you asked for, but the stock scheduler ignores them. Capture a screen shot and record the shares printed. Round-robin ignores tickets, so \textbf{both} runs should split the work close to 50\% / 50\%, even though the second run gives A three times the tickets of B.
@@ -223,15 +222,15 @@ At the ICS-OS prompt run the two commands below.
 Edit \texttt{process/scheduler.c}. This is the only file you modify. Replace the round-robin logic in \texttt{scheduler()} with lottery scheduling:
 
 \begin{enumerate}[itemsep=0pt,parsep=0pt]
-  \item Add a \texttt{lottery\_rand()} xorshift32 PRNG (a \texttt{static DWORD} state variable with a non-zero seed).
-  \item Add a helper \texttt{lottery\_tickets(PCB386 *ptr)} that returns the process's ticket count. Use the unused \texttt{priority} field as the ticket count. If it is \texttt{0} (the default for every process), return \texttt{DEFAULT\_TICKETS} (use 10).
-  \item \textbf{Pass 1:} traverse the circular list exactly once, starting at \texttt{lastprocess->next}. Decrement \texttt{waiting} on sleepers, and sum the tickets of runnable processes (not \texttt{PS\_ATTB\_BLOCKED}, not \texttt{waiting}).
+  \item Add a \texttt{lottery\_rand()} xorshift32 PRNG (a \texttt{static DWORD} state variable with a non-zero seed). Code has been provided above.
+  \item Add a helper \texttt{lottery\_tickets(PCB386 *ptr)} that returns the process's ticket count. Use the unused \texttt{priority} field as the ticket count. If it is \texttt{0} (the default for every process), return \texttt{DEFAULT\_TICKETS} (use 10). Code has been provided above.
+  \item \textbf{Pass 1:} traverse the circular list exactly once, starting at \texttt{lastprocess->next}. Decrement \texttt{waiting} on sleepers, and sum the tickets of runnable processes (not \texttt{PS\_ATTB\_BLOCKED}, not \texttt{waiting}). Implement this in the body of \texttt{PCB386 *scheduler(PCB386 *lastprocess)} function.
   \item If \texttt{totaltickets == 0}, fall back to the original round-robin loop, so that the kernel still behaves if nothing is runnable on this tick.
   \item \textbf{Pass 2:} draw \texttt{winner = lottery\_rand() \% totaltickets}, walk the list again accumulating the tickets of runnable processes, and return the winner.
   \item Update the strings in \texttt{ps\_scheduler\_install()} (\texttt{hdr.name}, \texttt{hdr.description}, and the startup \texttt{printf}) so that they say lottery instead of round-robin.
 \end{enumerate}
 
-\noindent\textbf{Constraints.} Do \textbf{not} modify \texttt{PCB386}, \texttt{taskswitcher()} or \texttt{console.c}. Your whole change lives in \texttt{scheduler.c}. Interrupts are already disabled when \texttt{scheduler()} runs, so no extra locking is needed. Your function must terminate, and it must never return a blocked or waiting process.
+\noindent\textbf{Constraints.} Only modify \texttt{scheduler.c}. Interrupts are already disabled when \texttt{scheduler()} runs, so no extra locking is needed. Your function must terminate, and it must never return a blocked or waiting process.
 
 \subsection*{Task 4: Build and Experiment (20 points)}
 Rebuild the kernel and the floppy image as in Task 2 and boot it. Only \texttt{scheduler.c} has changed, so you do not need to rebuild \texttt{lotto}.
@@ -270,9 +269,7 @@ The two shares can add up to 99\% because each is rounded down.
 \begin{enumerate}[itemsep=0pt,parsep=0pt]
   \item{Your measured shares will not be exactly the expected ones. Give two reasons. (Think: how many lotteries are held in a 20-second run at 100 ticks per second, and which other processes hold tickets?)}
   \item{The baseline in Task 2 ignored tickets, and the lottery kernel did not. Which lines of your \texttt{scheduler()} are responsible for the difference?}
-  \item{Lottery scheduling is probabilistic. Describe \textit{stride scheduling}, its deterministic counterpart, and one advantage it has.}
   \item{What happens if a malicious user program could set its own tickets to a huge value? How do real systems guard proportional-share mechanisms?}
-  \item{Why is it acceptable for the scheduler to use a weak, non-cryptographic PRNG here?}
 \end{enumerate}
 }
 
