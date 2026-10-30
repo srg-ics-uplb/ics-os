@@ -127,7 +127,6 @@ static DWORD lottery_rand(){
 The kernel shell in your starter code already has a command that sets the tickets of a process:
 
 
-
 \begin{minted}[frame=single,framesep=10pt]{bash}
 tickets <pid> <ntickets>
 \end{minted}
@@ -154,7 +153,7 @@ It finds the process with \texttt{ps\_findprocess(pid)} and stores \texttt{ntick
 
 
 \subsection*{Returning the number of tickets held by a process (provided)}
-This is a helper function that returns the number of tickets held by a process. For processes that were not allocated tickets (such as the startup processes and kernel threads), a default nnumber of tickets is returned.
+This is a helper function that returns the number of tickets held by a process. For processes that were not allocated tickets (such as the startup processes and kernel threads), a default number of tickets is returned. Call this when implementing the lottery scheduler.
 
 
 \begin{minted}[frame=single,framesep=10pt]{C}
