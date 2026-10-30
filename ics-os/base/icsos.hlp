@@ -40,6 +40,7 @@ rmdir- Removes a directory and all its subdirectories. Args: <dirname>
 run- Executes a batch file or script. Args: <script>
 set- Sets an environment variable. Args: <key>=<value>
 shutdown- Shuts down the system.
+tickets- Sets the lottery tickets of a process. Args: <pid> <tickets>
 time- Displays date and time.
 type- Displays the contents of a file. Args: <filename> [-p]
 umount- Unmounts a mounted device. Args: <mount point>
